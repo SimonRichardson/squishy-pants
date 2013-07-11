@@ -1,0 +1,19 @@
+{
+  "name": "squishy-pants",
+  "description": "Semi serious functional programming library for JavaScript",
+  "author": "Simon Richardson <stickupkid@gmail.com> (https://github.com/SimonRichardson)",
+  "homepage": "https://github.com/SimonRichardson/squishy-pants",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimonRichardson/squishy-pants.git"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "devDependencies": {
+    "grunt": "0.4.x"
+  },
+  "main": "squishy-pants.js",
+  "version": "0.0.1"
+}
