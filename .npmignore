@@ -1,5 +1,4 @@
 *.log
 .DS_Store
-bin
 coverage
 node_modules

@@ -9,10 +9,13 @@
     "url": "https://github.com/SimonRichardson/squishy-pants.git"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "grunt rig jshint nodeunit"
   },
   "devDependencies": {
-    "grunt": "0.4.x"
+    "grunt": "0.4.x",
+    "grunt-rigger": "0.5.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.x"
   },
   "main": "squishy-pants.js",
   "version": "0.0.1"
