@@ -38,12 +38,12 @@ function environment(methods, properties) {
     };
 
     for(i in methods) {
-        if(self[i]) throw new Error("Method " + i + " already in environment.");
+        if(self[i]) throw new Error("Method `" + i + "` already in environment.");
         self[i] = makeMethod(methods[i]);
     }
 
     for(i in properties) {
-        if(self[i]) throw new Error("Property " + i + " already in environment.");
+        if(self[i]) throw new Error("Property `" + i + "` already in environment.");
         self[i] = properties[i];
     }
 
