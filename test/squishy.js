@@ -122,3 +122,65 @@ exports.extend = {
     }
 };
 
+exports.bind = {
+    testBind: function(test) {
+        var a = _.bind(function(a, b, c) {
+            test.equal(a + b + c, 6);
+        });
+
+        a()(1, 2, 3);
+
+        test.expect(1);
+        test.done();
+    },
+    testCurryFunctionName: function(test) {
+        var a = _.bind(function namedFunction(a, b, c) {})();
+
+        test.equal(_.functionName(a), 'namedFunction');
+        test.done();
+    },
+    testCurryFunctionLength: function(test) {
+        var a = _.bind(function(a, b, c) {})();
+
+        test.equal(_.functionLength(a), 3);
+        test.done();
+    }
+};
+
+exports.curry = {
+    testCurry: function(test) {
+        var a = _.curry(function(a, b, c){
+            test.equal(a + b + c, 6);
+        });
+
+        // Possible ways to complete a curry
+        a(1, 2, 3);
+        a(1, 2)(3);
+        a(1)(2)(3);
+        a(1)(2, 3);
+
+        test.expect(4);
+        test.done();
+    },
+    testCurryFunctionName: function(test) {
+        var a = _.curry(function namedFunction(a, b, c) {});
+
+        test.equal(_.functionName(a), 'namedFunction');
+        test.equal(_.functionName(a(1)), 'namedFunction');
+        test.equal(_.functionName(a(1)(2)), 'namedFunction');
+
+        test.expect(3);
+        test.done();
+    },
+    testCurryFunctionLength: function(test) {
+        var a = _.curry(function(a, b, c) {});
+
+        test.equal(_.functionLength(a), 3);
+        test.equal(_.functionLength(a(1)), 2);
+        test.equal(_.functionLength(a(1)(2)), 1);
+
+        test.expect(3);
+        test.done();
+    }
+};
+
