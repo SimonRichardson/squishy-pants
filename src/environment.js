@@ -80,12 +80,10 @@ function makeMethod(registrations) {
 }
 
 //
-//   ## environment(methods = {}, properties = {})
+//   ## environment(methods, properties)
 //
 //   * method(name, predicate, f) - adds an multimethod implementation
 //   * property(name, value) - sets a property to value
-//   * envConcat(extraMethods, extraProperties) - adds methods + properties
-//   * envAppend(e) - combines two environemts, biased to `e`
 //
 function environment(methods, properties) {
     var self = getInstance(this, environment),
@@ -109,12 +107,12 @@ function environment(methods, properties) {
 
     for(i in methods) {
         if(self[i]) throw new Error("Method `" + i + "` already in environment.");
-        self[i] = makeMethod(methods[i]);
+        else self[i] = makeMethod(methods[i]);
     }
 
     for(i in properties) {
         if(self[i]) throw new Error("Property `" + i + "` already in environment.");
-        self[i] = properties[i];
+        else self[i] = properties[i];
     }
 
     return self;

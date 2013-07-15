@@ -95,7 +95,14 @@ function bind(f) {
     function curriedBind(o) {
         /* If native bind doesn't exist, use a polyfill. */
         var args = [].slice.call(arguments, 1),
-            g = f.bind.apply(f, [o].concat(args));
+            g;
+
+        if(f.bind) g = f.bind.apply(f, [o].concat(args));
+        else {
+            g = function() {
+                return f.apply(o, args.concat([].slice.call(arguments)));
+            };
+        }
 
         /* 
            Let's try and associate all curried functions with the same name as the originator.
@@ -109,7 +116,7 @@ function bind(f) {
 
     /* Manual currying since `curry` relies in bind. */
     if(arguments.length > 1) return curriedBind.apply(this, [].slice.call(arguments, 1));
-    return curriedBind;
+    else return curriedBind;
 }
 
 //  
@@ -135,7 +142,7 @@ function curry(f) {
         var g = bind(f).apply(f, [this].concat([].slice.call(arguments)));
 
         if(!functionLength(g)) return g();
-        return curry(g);
+        else return curry(g);
     };
 
     /* 
@@ -148,6 +155,39 @@ function curry(f) {
     return a;
 }
 
+//
+//  ## arrayOf(type)
+//
+//  Sentinal value for when an array of a particular type is needed:
+//
+//       arrayOf(Number)
+//
+function arrayOf(type) {
+    var self = getInstance(this, arrayOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## objectLike(props)
+//
+//  Sentinal value for when an object with specified properties is
+//  needed:
+//
+//       objectLike({
+//           age: Number,
+//           name: String
+//       })
+//
+function objectLike(props) {
+    var self = getInstance(this, objectLike);
+    self.props = props;
+    return self;
+}
+
+// 
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('functionName', functionName)
     .property('functionLength', functionLength)
@@ -156,4 +196,6 @@ squishy = squishy
     .property('singleton', singleton)
     .property('extend', extend)
     .property('bind', bind)
-    .property('curry', curry);
+    .property('curry', curry)
+    .property('arrayOf', arrayOf)
+    .property('objectLike', objectLike);
