@@ -60,6 +60,9 @@ Promise.prototype.chain = function(f) {
 //
 var isPromise = isInstanceOf(Promise);
 
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('Promise', Promise)
     .property('isPromise', isPromise);
