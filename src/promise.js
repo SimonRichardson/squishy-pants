@@ -1,23 +1,23 @@
 //
-//  ## `Promise(fork)`
+//  ## `Promise(deferred)`
 //
-//  Promise is a constructor which takes a `fork` function. The `fork`
+//  Promise is a constructor which takes a `deferred` function. The `deferred`
 //  function takes two arguments:
 //
-//       fork(resolve, reject)
+//       deferred(resolve, reject)
 //
 //  Both `resolve` and `reject` are side-effecting callbacks.
 //
-//  ### `fork(resolve, reject)`
+//  ### `deferred(resolve, reject)`
 //
 //  The `resolve` callback gets called on a "successful" value. The
 //  `reject` callback gets called on a "failure" value.
 //
-var Promise = function(fork) {
+var Promise = function(deferred) {
     var result;
     this.fork = function(resolve, reject) {
         if (!result) {
-            fork(function (data) {
+            deferred(function (data) {
                 result = data;
                 resolve(result);
             });
