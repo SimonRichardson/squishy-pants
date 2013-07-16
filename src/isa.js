@@ -94,7 +94,7 @@ var isArrayOf = isInstanceOf(arrayOf);
 //
 var isObjectLike = isInstanceOf(objectLike);
 
-// 
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
