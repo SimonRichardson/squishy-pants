@@ -104,7 +104,7 @@ function bind(f) {
             };
         }
 
-        /* 
+        /*
            Let's try and associate all curried functions with the same name as the originator.
            Can't override length but can set _length for currying
         */
@@ -119,7 +119,7 @@ function bind(f) {
     else return curriedBind;
 }
 
-//  
+//
 //  ## curry(f)
 //
 //  Takes a normal function `f` and allows partial application of its
@@ -136,7 +136,7 @@ function bind(f) {
 //  when enough arguments are filled:
 //
 //       add(15, 27) == 42;
-//  
+//
 function curry(f) {
     var a = function() {
         var g = bind(f).apply(f, [this].concat([].slice.call(arguments)));
@@ -145,7 +145,7 @@ function curry(f) {
         else return curry(g);
     };
 
-    /* 
+    /*
        Let's try and associate all curried functions with the same name as the originator.
        Can't override length but can set _length for currying
     */
@@ -158,7 +158,7 @@ function curry(f) {
 //
 //  ## arrayOf(type)
 //
-//  Sentinal value for when an array of a particular type is needed:
+//  Sentinel value for when an array of a particular type is needed:
 //
 //       arrayOf(Number)
 //
@@ -171,7 +171,7 @@ function arrayOf(type) {
 //
 //  ## objectLike(props)
 //
-//  Sentinal value for when an object with specified properties is
+//  Sentinel value for when an object with specified properties is
 //  needed:
 //
 //       objectLike({
@@ -185,7 +185,7 @@ function objectLike(props) {
     return self;
 }
 
-// 
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
