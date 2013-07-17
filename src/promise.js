@@ -13,7 +13,9 @@
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
 //  either be a success or a failure.
 //
-var Promise = function(deferred) {
+var Promise = function Promise(deferred) {
+    var self = getInstance(this, Promise);
+
     /* It would be nice to be able to remove the state */
     var attempt,
         append = curry(function(a, b) {
@@ -34,13 +36,15 @@ var Promise = function(deferred) {
             }
         };
 
-    this.fork = function(resolve) {
+    self.fork = function(resolve) {
         if (attempt) {
             resolve(attempt);
         } else {
             curriedDeferred(append(resolve));
         }
     };
+
+    return self;
 };
 
 //

@@ -3,7 +3,7 @@ var _ = require('../bin/squishy-pants');
 exports.promise = {
     testPromise: function(test) {
         var expected = _.success(41),
-            promise = new _.Promise(function(resolve) {
+            promise = _.Promise(function(resolve) {
                 resolve(expected);
             });
 
@@ -18,7 +18,7 @@ exports.promise = {
         var expected = _.success(41),
             total = 10,
             i,
-            promise = new _.Promise(function(resolve) {
+            promise = _.Promise(function(resolve) {
                 resolve(expected);
             });
 
@@ -36,7 +36,7 @@ exports.promise = {
         test.done();
     },
     testDeferredCalledOnce: function(test) {
-        var promise = new _.Promise(function(resolve) {
+        var promise = _.Promise(function(resolve) {
             test.ok(true);
             resolve(_.success(41));
         });
@@ -47,7 +47,7 @@ exports.promise = {
     },
     testDeferredCalledOnceWithAsyncResolve: function(test) {
         var expected = _.success(41),
-            promise = new _.Promise(function(resolve) {
+            promise = _.Promise(function(resolve) {
                 test.ok(true);
                 setTimeout(function() {
                     resolve(expected);
