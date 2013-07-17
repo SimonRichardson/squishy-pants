@@ -72,3 +72,15 @@ exports.promise = {
         }, 100);
     }
 };
+
+exports.promiseOf = {
+    testPromiseOf: function(test) {
+        _.Promise.of(1).fork(
+            function(data) {
+                test.deepEqual(data, _.success(1));
+            }
+        );
+        test.expect(1);
+        test.done();
+    }
+};

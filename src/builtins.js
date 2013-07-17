@@ -10,5 +10,5 @@ squishy = squishy
 
 squishy = squishy
         .method('map', squishy.liftA2(or, isNumber, isString), function(a, b) {
-            return compose(b, a);
+            return b(a);
         });
