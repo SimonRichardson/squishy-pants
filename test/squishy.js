@@ -147,6 +147,30 @@ exports.bind = {
     }
 };
 
+exports.compose = {
+    testCompose: function(test) {
+        function f(x) {
+            return x + 1;
+        }
+        function g(x) {
+            return x + 2;
+        }
+
+        test.equal(_.compose(f, g)(1), f(g(1)));
+        test.done();
+    }
+};
+
+exports.liftA2 = {
+    testliftA2: function(test) {
+        function f(x) {
+            return x;
+        }
+        test.equal(_.liftA2(_.add, f, f)(1), 2);
+        test.done();
+    }
+};
+
 exports.curry = {
     testCurry: function(test) {
         var a = _.curry(function(a, b, c){

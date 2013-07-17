@@ -156,6 +156,30 @@ function curry(f) {
 }
 
 //
+//  ## compose(f, g)
+//
+//  Creates a new function that applies `f` to the result of `g` of the
+//  input argument:
+//
+//       forall f g x. compose(f, g)(x) == f(g(x))
+//
+function compose(f, g) {
+    return function() {
+        return f(g.apply(this, [].slice.call(arguments)));
+    };
+}
+
+//
+//  ## liftA2(f, a, b)
+//
+//  Lifts a curried, binary function `f` into the applicative passes
+//  `a` and `b` as parameters.
+//
+function liftA2(f, a, b) {
+    return this.ap(this.map(a, f), b);
+}
+
+//
 //  ## arrayOf(type)
 //
 //  Sentinel value for when an array of a particular type is needed:
@@ -186,6 +210,51 @@ function objectLike(props) {
 }
 
 //
+//  ## or(a)(b)
+//
+//  Curried function for `||`.
+//
+var or = curry(function(a, b) {
+    return a || b;
+});
+
+//
+//  ## and(a)(b)
+//
+//  Curried function for `&&`.
+//
+var and = curry(function(a, b) {
+    return a && b;
+});
+
+//
+//  ## add(a)(b)
+//
+//  Curried function for `+`.
+//
+var add = curry(function(a, b) {
+    return a + b;
+});
+
+//
+//  ## strictEquals(a)(b)
+//
+//  Curried function for `===`.
+//
+var strictEquals = curry(function(a, b) {
+    return a === b;
+});
+
+//
+//  ## not(a)
+//
+//  Returns `true` if `a` is not a valid value.
+//
+function not(a) {
+    return !a;
+}
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -197,5 +266,11 @@ squishy = squishy
     .property('extend', extend)
     .property('bind', bind)
     .property('curry', curry)
+    .property('compose', compose)
+    .property('liftA2', liftA2)
     .property('arrayOf', arrayOf)
-    .property('objectLike', objectLike);
+    .property('objectLike', objectLike)
+    .property('or', or)
+    .property('and', and)
+    .property('add', add)
+    .property('not', not);
