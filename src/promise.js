@@ -14,15 +14,44 @@
 //  `reject` callback gets called on a "failure" value.
 //
 var Promise = function(deferred) {
-    var result;
+    var listeners = [],
+        dispatched = false,
+        attempt;
+
     this.fork = function(resolve, reject) {
-        if (!result) {
-            deferred(function (data) {
-                result = data;
-                resolve(result);
+        if (attempt) {
+            attempt.match({
+                success: function(data) {
+                    resolve(data);
+                },
+                failure: function(errors) {
+                    reject(errors);
+                }
             });
         } else {
-            resolve(result);
+            listeners.push({
+                resolve: resolve,
+                reject: reject
+            });
+
+            if (!dispatched) {
+                dispatched = true;
+
+                deferred(
+                    function(data) {
+                        attempt = Attempt.success(data);
+                        for (var i = 0; i < listeners.length; i++) {
+                            listeners[i].resolve(data);
+                        }
+                    },
+                    function(errors) {
+                        attempt = Attempt.failure(errors);
+                        for (var i = 0; i < listeners.length; i++) {
+                            listeners[i].reject(data);
+                        }
+                    }
+                );
+            }
         }
     };
 };
