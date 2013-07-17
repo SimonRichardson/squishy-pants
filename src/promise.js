@@ -1,5 +1,5 @@
 //
-//  ## `Promise(deferred)`
+//  ## Promise(deferred)
 //
 //  Promise is a constructor which takes a `deferred` function. The `deferred`
 //  function takes two arguments:
@@ -8,7 +8,7 @@
 //
 //  Both `resolve` and `reject` are side-effecting callbacks.
 //
-//  ### `deferred(resolve, reject)`
+//  ### deferred(resolve, reject)
 //
 //  The `resolve` callback gets called on a "successful" value. The
 //  `reject` callback gets called on a "failure" value.
@@ -28,7 +28,7 @@ var Promise = function(deferred) {
 };
 
 //
-//  ### `Promise.of(x)`
+//  ### Promise.of(x)
 //
 //  Creates a Promise that contains a successful value.
 //
@@ -39,7 +39,7 @@ Promise.of = function(x) {
 };
 
 //
-//  ### `chain(f)`
+//  ### chain(f)
 //
 //  Returns a new promise that evaluates `f` when the current promise
 //  is successfully fulfilled. `f` must return a new promise.
