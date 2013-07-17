@@ -14,38 +14,31 @@
 //  either be a success or a failure.
 //
 var Promise = function(deferred) {
-    /* It would be nice to be able to remove the listeners */
-    var listeners = [],
-        attempt;
-
-    var append = curry(function(a, b) {
-        a.push(b);
-    })(listeners);
-
-    var dispatch = curry(function(a, b) {
-        for (var i = a.length - 1; i > -1; i--) {
-            a.pop()(b);
-        }
-    })(listeners);
-
-    var curriedDeferred = (function(init) {
-        return function() {
-            if (!init) {
-                init = true;
+    /* It would be nice to be able to remove the state */
+    var attempt,
+        append = curry(function(a, b) {
+            a.push(b);
+            return a;
+        })([]),
+        removeAndInvoke = function(a, b) {
+            for (var i = a.length - 1; i > -1; i--) {
+                a.pop()(b);
+            }
+        },
+        curriedDeferred = function(listeners) {
+            if (listeners.length - 1 < 1) {
                 deferred(function(data) {
                     attempt = data;
-                    dispatch(data);
+                    removeAndInvoke(listeners, data);
                 });
             }
         };
-    })(false);
 
     this.fork = function(resolve) {
         if (attempt) {
             resolve(attempt);
         } else {
-            append(resolve);
-            curriedDeferred();
+            curriedDeferred(append(resolve));
         }
     };
 };
@@ -56,8 +49,10 @@ var Promise = function(deferred) {
 //  Creates a Promise that contains a successful value.
 //
 Promise.of = function(x) {
-    return new Promise(function(resolve, reject) {
-        resolve(x);
+    return new Promise(function(resolve) {
+        resolve(squishy.map(x, function(a) {
+            return Attempt.success(a);
+        }));
     });
 };
 
@@ -69,10 +64,10 @@ Promise.of = function(x) {
 //
 Promise.prototype.chain = function(f) {
     var promise = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         promise.fork(function(a) {
-            f(a).fork(resolve, reject);
-        }, reject);
+            f(a).fork(resolve);
+        });
     });
 };
 
