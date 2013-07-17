@@ -4,54 +4,48 @@
 //  Promise is a constructor which takes a `deferred` function. The `deferred`
 //  function takes two arguments:
 //
-//       deferred(resolve, reject)
+//       deferred(resolve)
 //
-//  Both `resolve` and `reject` are side-effecting callbacks.
+//  `resolve` are side-effecting callbacks.
 //
-//  ### deferred(resolve, reject)
+//  ### deferred(resolve)
 //
-//  The `resolve` callback gets called on a "successful" value. The
-//  `reject` callback gets called on a "failure" value.
+//  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
+//  either be a success or a failure.
 //
 var Promise = function(deferred) {
+    /* It would be nice to be able to remove the listeners */
     var listeners = [],
-        dispatched = false,
         attempt;
 
-    this.fork = function(resolve, reject) {
-        if (attempt) {
-            attempt.match({
-                success: function(data) {
-                    resolve(data);
-                },
-                failure: function(errors) {
-                    reject(errors);
-                }
-            });
-        } else {
-            listeners.push({
-                resolve: resolve,
-                reject: reject
-            });
+    var append = curry(function(a, b) {
+        a.push(b);
+    })(listeners);
 
-            if (!dispatched) {
-                dispatched = true;
+    var dispatch = curry(function(a, b) {
+        for (var i = a.length - 1; i > -1; i--) {
+            a.pop()(b);
+        }
+    })(listeners);
 
-                deferred(
-                    function(data) {
-                        attempt = Attempt.success(data);
-                        for (var i = 0; i < listeners.length; i++) {
-                            listeners[i].resolve(data);
-                        }
-                    },
-                    function(errors) {
-                        attempt = Attempt.failure(errors);
-                        for (var i = 0; i < listeners.length; i++) {
-                            listeners[i].reject(data);
-                        }
-                    }
-                );
+    var curriedDeferred = (function(init) {
+        return function() {
+            if (!init) {
+                init = true;
+                deferred(function(data) {
+                    attempt = data;
+                    dispatch(data);
+                });
             }
+        };
+    })(false);
+
+    this.fork = function(resolve) {
+        if (attempt) {
+            resolve(attempt);
+        } else {
+            append(resolve);
+            curriedDeferred();
         }
     };
 };

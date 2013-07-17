@@ -2,40 +2,30 @@ var _ = require('../bin/squishy-pants');
 
 exports.promise = {
     testPromise: function(test) {
-        var expected = 42,
-            promise = new _.Promise(function(resolve, reject) {
+        var expected = _.success(41),
+            promise = new _.Promise(function(resolve) {
                 resolve(expected);
             });
 
-        promise.fork(
-            function(data) {
-                test.equal(data, expected);
-            },
-            function(error) {
-                test.fail('Failed if called');
-            }
-        );
+        promise.fork(function(data) {
+            test.deepEqual(data, expected);
+        });
 
         test.expect(1);
         test.done();
     },
     testMultipleFork: function(test) {
-        var expected = 42,
+        var expected = _.success(41),
             total = 10,
             i,
-            promise = new _.Promise(function(resolve, reject) {
+            promise = new _.Promise(function(resolve) {
                 resolve(expected);
             });
 
         function testCase(promise) {
-            promise.fork(
-                function(data) {
-                    test.equal(data, expected);
-                },
-                function(error) {
-                    test.fail('Failed if called');
-                }
-            );
+            promise.fork(function(data) {
+                test.deepEqual(data, expected);
+            });
         }
 
         for (i = 0; i < total; i++) {
@@ -46,24 +36,18 @@ exports.promise = {
         test.done();
     },
     testDeferredCalledOnce: function(test) {
-        var promise = new _.Promise(function(resolve, reject) {
+        var promise = new _.Promise(function(resolve) {
             test.ok(true);
-            resolve(42);
+            resolve(_.success(41));
         });
-        promise.fork(
-            function() {},
-            function() {}
-        );
-        promise.fork(
-            function() {},
-            function() {}
-        );
+        promise.fork(function() {});
+        promise.fork(function() {});
         test.expect(1);
         test.done();
     },
     testDeferredCalledOnceWithAsyncResolve: function(test) {
-        var expected = 42,
-            promise = new _.Promise(function(resolve, reject) {
+        var expected = _.success(41),
+            promise = new _.Promise(function(resolve) {
                 test.ok(true);
                 setTimeout(function() {
                     resolve(expected);
@@ -71,14 +55,9 @@ exports.promise = {
             });
 
         function testCase(promise) {
-            promise.fork(
-                function(data) {
-                    test.equal(data, expected);
-                },
-                function(error) {
-                    test.fail('Failed if called');
-                }
-            );
+            promise.fork(function(data) {
+                test.deepEqual(data, expected);
+            });
         }
 
         testCase(promise);
