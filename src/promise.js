@@ -40,6 +40,7 @@ var Promise = function Promise(deferred) {
                     },
                     function(errors) {
                         attempt = Attempt.failure(errors);
+                        removeAndInvoke(listeners, attempt);
                     }
                 );
             }
@@ -67,6 +68,17 @@ var Promise = function Promise(deferred) {
 Promise.of = function(x) {
     return new Promise(function(resolve, reject) {
         resolve(x);
+    });
+};
+
+//
+//  ### Promise.reject(x)
+//
+//  Creates a Promise that contains a unsuccessful value.
+//
+Promise.reject = function(x) {
+    return new Promise(function(resolve, reject) {
+        reject([x]);
     });
 };
 

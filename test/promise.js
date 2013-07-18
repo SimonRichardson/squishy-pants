@@ -104,6 +104,21 @@ exports.promiseOf = {
     }
 };
 
+exports.promiseReject = {
+    testPromiseReject: function(test) {
+        _.Promise.reject('failed').fork(
+            function(data) {
+                test.ok(false, 'Failed if called');
+            },
+            function(errors) {
+                test.deepEqual(['failed'], errors);
+            }
+        );
+        test.expect(1);
+        test.done();
+    }
+};
+
 exports.promiseChain = {
     testPromiseChain: function(test) {
         var promise = _.Promise.of(41).chain(
