@@ -95,6 +95,57 @@ var isArrayOf = isInstanceOf(arrayOf);
 var isObjectLike = isInstanceOf(objectLike);
 
 //
+//  ## isAnyOf(a)(b)
+//
+//  Returns `true` if `b` is any `strictEquals [a]`.
+//
+var isAnyOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i < a.length; i++) {
+        if(strictEquals(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ## isAnyTypeOf(a)(b)
+//
+//  Returns `true` if `b` is any `typeof [a]`.
+//
+var isAnyTypeOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i < a.length; i++) {
+        if(isTypeOf(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ## isAnyInstanceOf(a)(b)
+//
+//  Returns `true` if `b` is any `instanceof [a]`.
+//
+var isAnyInstanceOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i < a.length; i++) {
+        if(isInstanceOf(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -109,5 +160,8 @@ squishy = squishy
     .property('isOdd', isOdd)
     .property('isInstanceOf', isInstanceOf)
     .property('isArrayOf', isArrayOf)
-    .property('isObjectLike', isObjectLike);
+    .property('isObjectLike', isObjectLike)
+    .property('isAnyOf', isAnyOf)
+    .property('isAnyTypeOf', isAnyTypeOf)
+    .property('isAnyInstanceOf', isAnyInstanceOf);
 

@@ -102,9 +102,9 @@ squishy = squishy
     .property('success', Attempt.success)
     .property('failure', Attempt.failure)
     .property('isAttempt', isAttempt)
-    .method('map', isAttempt, function(v, f) {
-        return v.map(f);
+    .method('map', isAttempt, function(a, b) {
+        return a.map(b);
     })
-    .method('ap', isAttempt, function(vf, v) {
-        return vf.ap(v, this.concat);
+    .method('ap', isAttempt, function(a, b) {
+        return a.ap(b, this.concat);
     });

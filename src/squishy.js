@@ -255,6 +255,13 @@ function not(a) {
 }
 
 //
+//  ## AnyVal
+//
+//  Sentinel value for when any type of primitive value is needed.
+//
+var AnyVal = {};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -273,4 +280,5 @@ squishy = squishy
     .property('or', or)
     .property('and', and)
     .property('add', add)
-    .property('not', not);
+    .property('not', not)
+    .property('AnyVal', AnyVal);
