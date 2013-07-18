@@ -48,7 +48,7 @@ function tagged(name, fields) {
 //        }
 //        listLength(List.Cons(1, new List.Cons(2, List.Nil()))) == 2;
 //
-function taggedSum(constructors) {
+function taggedSum(name, constructors) {
     var key, proto;
 
     function definitions() {
@@ -88,6 +88,8 @@ function taggedSum(constructors) {
         definitions[key] = tagged(key, constructors[key]);
         definitions[key].prototype = makeProto(key);
     }
+
+    definitions._name = name;
 
     return definitions;
 }

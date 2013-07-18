@@ -24,23 +24,35 @@ var Promise = function Promise(deferred) {
         })([]),
         removeAndInvoke = function(a, b) {
             for (var i = a.length - 1; i > -1; i--) {
-                a.pop()(b);
+                var f = a.pop();
+                b.match({
+                    success: f[0],
+                    failure: f[1]
+                });
             }
         },
         curriedDeferred = function(listeners) {
             if (listeners.length - 1 < 1) {
-                deferred(function(data) {
-                    attempt = data;
-                    removeAndInvoke(listeners, data);
-                });
+                deferred(
+                    function(data) {
+                        attempt = Attempt.success(data);
+                        removeAndInvoke(listeners, attempt);
+                    },
+                    function(errors) {
+                        attempt = Attempt.failure(errors);
+                    }
+                );
             }
         };
 
-    self.fork = function(resolve) {
+    self.fork = function(resolve, reject) {
         if (attempt) {
-            resolve(attempt);
+            attempt.match({
+                success: resolve,
+                failure: reject
+            });
         } else {
-            curriedDeferred(append(resolve));
+            curriedDeferred(append([resolve, reject]));
         }
     };
 
@@ -53,10 +65,8 @@ var Promise = function Promise(deferred) {
 //  Creates a Promise that contains a successful value.
 //
 Promise.of = function(x) {
-    return new Promise(function(resolve) {
-        resolve(squishy.map(x, function(a) {
-            return Attempt.success(a);
-        }));
+    return new Promise(function(resolve, reject) {
+        resolve(x);
     });
 };
 
@@ -68,10 +78,13 @@ Promise.of = function(x) {
 //
 Promise.prototype.chain = function(f) {
     var promise = this;
-    return new Promise(function(resolve) {
-        promise.fork(function(a) {
-            f(a).fork(resolve);
-        });
+    return new Promise(function(resolve, reject) {
+        promise.fork(
+            function(a) {
+                f(a).fork(resolve, reject);
+            },
+            reject
+        );
     });
 };
 
@@ -87,4 +100,7 @@ var isPromise = isInstanceOf(Promise);
 //
 squishy = squishy
     .property('Promise', Promise)
-    .property('isPromise', isPromise);
+    .property('isPromise', isPromise)
+    .method('map', isPromise, function(a, b) {
+        return a.map(b);
+    });
