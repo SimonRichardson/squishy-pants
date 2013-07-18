@@ -104,14 +104,14 @@ exports.promiseOf = {
     }
 };
 
-exports.promiseReject = {
-    testPromiseReject: function(test) {
-        _.Promise.reject('failed').fork(
+exports.promiseError = {
+    testPromiseError: function(test) {
+        _.Promise.error('failed').fork(
             function(data) {
                 test.ok(false, 'Failed if called');
             },
             function(errors) {
-                test.deepEqual(['failed'], errors);
+                test.equal('failed', errors);
             }
         );
         test.expect(1);
@@ -120,15 +120,74 @@ exports.promiseReject = {
 };
 
 exports.promiseChain = {
-    testPromiseChain: function(test) {
+    testPromiseChainOf: function(test) {
         var promise = _.Promise.of(41).chain(
             function(a) {
                 return _.Promise.of(a + 1);
             }
         );
-        promise.fork(function(data) {
-            test.equal(42, data);
-        });
+        promise.fork(
+            function(data) {
+                test.equal(42, data);
+            },
+            function(errors) {
+                test.ok(false, 'Failed if called');
+            }
+        );
+        test.expect(1);
+        test.done();
+    },
+    testPromiseChainError: function(test) {
+        var promise = _.Promise.of(41).chain(
+            function(a) {
+                return _.Promise.error(a + 1);
+            }
+        );
+        promise.fork(
+            function(data) {
+                test.ok(false, 'Failed if called');
+            },
+            function(errors) {
+                test.equal(42, errors);
+            }
+        );
+        test.expect(1);
+        test.done();
+    }
+};
+
+exports.promiseReject = {
+    testPromiseRejectError: function(test) {
+        var promise = _.Promise.error(41).reject(
+            function(a) {
+                return _.Promise.error(a + 1);
+            }
+        );
+        promise.fork(
+            function(data) {
+                test.ok(false, 'Failed if called');
+            },
+            function(errors) {
+                test.equal(42, errors);
+            }
+        );
+        test.expect(1);
+        test.done();
+    },
+    testPromiseRejectOf: function(test) {
+        var promise = _.Promise.error(41).reject(
+            function(a) {
+                return _.Promise.of(a + 1);
+            }
+        );
+        promise.fork(
+            function(data) {
+                test.equal(42, data);
+            },
+            function(errors) {
+                test.ok(false, 'Failed if called');
+            }
+        );
         test.expect(1);
         test.done();
     }

@@ -72,13 +72,13 @@ Promise.of = function(x) {
 };
 
 //
-//  ### Promise.reject(x)
+//  ### `Promise.error(x)`
 //
-//  Creates a Promise that contains a unsuccessful value.
+//  Creates a Promise that contains a failure value.
 //
-Promise.reject = function(x) {
+Promise.error = function(x) {
     return new Promise(function(resolve, reject) {
-        reject([x]);
+        reject(x);
     });
 };
 
@@ -99,6 +99,22 @@ Promise.prototype.chain = function(f) {
         );
     });
 };
+
+//
+//  ### `reject(f)`
+//
+//  Returns a new promise that evaluates `f` when the current promise
+//  fails. `f` must return a new promise.
+//
+Promise.prototype.reject = function(f) {
+    var promise = this;
+    return new Promise(function(resolve, reject) {
+        promise.fork(resolve, function(a) {
+            f(a).fork(resolve, reject);
+        });
+    });
+};
+
 
 //
 //  ## isPromise(a)
