@@ -60,6 +60,44 @@ squishy = squishy
     });
 
 squishy = squishy
+    .method('arb', strictEquals(AnyVal), function(a, s) {
+        var types = [Boolean, Number, String];
+        return this.arb(this.oneOf(types), s - 1);
+    })
+    .method('arb', strictEquals(Array), function(a, s) {
+        return this.arb(arrayOf(AnyVal), s - 1);
+    })
+    .method('arb', strictEquals(Boolean), function(a, s) {
+        return Math.random() < 0.5;
+    })
+    .method('arb', strictEquals(Function), function(a, s) {
+        return function(){};
+    })
+    .method('arb', strictEquals(Number), function(a, s) {
+        /*
+          Divide the Number.MAX_VALUE by the goal, so we don't get 
+          a Number overflow (worst case Infinity), meaning we can 
+          add multiple arb(Number) together without issues.
+        */
+        var variance = Number.MAX_VALUE / this.goal;
+        return this.randomRange(-variance, variance);
+    })
+    .method('arb', strictEquals(Object), function(a, s) {
+        var o = {},
+            length = this.randomRange(0, s),
+            i;
+
+        for(i = 0; i < length; i++) {
+            o[this.arb(String, s - 1)] = this.arb(arrayOf(AnyVal), s - 1);
+        }
+
+        return o;
+    })
+    .method('arb', strictEquals(String), function(a, s) {
+        return this.arb(arrayOf(Char), s - 1).join('');
+    });
+
+squishy = squishy
     .method('empty', strictEquals(AnyVal), function() {
         var types = [Boolean, Number, String];
         return this.empty(this.oneOf(types));

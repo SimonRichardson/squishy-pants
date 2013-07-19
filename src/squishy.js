@@ -262,6 +262,13 @@ function not(a) {
 var AnyVal = {};
 
 //
+//  ## Char
+//
+//  Sentinel value for when a single character string is needed.
+//
+var Char = {};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -281,4 +288,5 @@ squishy = squishy
     .property('and', and)
     .property('add', add)
     .property('not', not)
-    .property('AnyVal', AnyVal);
+    .property('AnyVal', AnyVal)
+    .property('Char', Char);
