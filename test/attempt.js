@@ -30,39 +30,55 @@ exports.testAttemptMatch = {
 };
 
 exports.testAttemptSuccess = {
-    testSuccess: function(test) {
-        test.equal(_.success(1).value, 1);
-        test.done();
-    },
-    testSuccessIsAttempt: function(test) {
-        test.ok(_.isAttempt(_.success(1)));
-        test.done();
-    },
-    testSuccessIsSuccess: function(test) {
-        test.ok(_.success(1).isSuccess);
-        test.done();
-    },
-    testSuccessNotIsFailure: function(test) {
-        test.notEqual(_.success(1).isFailure);
-        test.done();
-    }
+    testSuccess: _.check(
+        function(a) {
+            return _.success(a).value === a;
+        },
+        [_.AnyVal]
+    ),
+    testSuccessIsAttempt: _.check(
+        function(a) {
+            return _.isAttempt(_.success(a));
+        },
+        [_.AnyVal]
+    ),
+    testSuccessIsSuccess: _.check(
+        function(a) {
+            return _.success(a).isSuccess;
+        },
+        [_.AnyVal]
+    ),
+    testSuccessIsNotFailure: _.check(
+        function(a) {
+            return !_.success(a).isFailure;
+        },
+        [_.AnyVal]
+    )
 };
 
 exports.testAttemptFailure = {
-    testFailure: function(test) {
-        test.deepEqual(_.failure(['failure']).errors, ['failure']);
-        test.done();
-    },
-    testFailureIsAttempt: function(test) {
-        test.ok(_.isAttempt(_.failure(1)));
-        test.done();
-    },
-    testFailureIsFailure: function(test) {
-        test.ok(_.failure(1).isFailure);
-        test.done();
-    },
-    testFailureNotIsSuccess: function(test) {
-        test.notEqual(_.failure(1).isSuccess);
-        test.done();
-    }
+    testFailure: _.check(
+        function(a) {
+            return _.failure(a).errors === a;
+        },
+        [_.AnyVal]
+    ),
+    testFailureIsAttempt: _.check(
+        function(a) {
+            return _.isAttempt(_.failure(a));
+        },
+        [_.AnyVal]
+    ),
+    testFailureIsFailure: _.check(
+        function(a) {
+            return _.failure(a).isFailure;
+        },
+        [_.AnyVal]
+    ),
+    testFailureIsNotSuccess: _.check(
+        function(a) {
+            return !_.failure(a).isSuccess;
+        },
+        [_.AnyVal]
+    )
 };
