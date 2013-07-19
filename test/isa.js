@@ -132,6 +132,21 @@ exports.isOdd = {
     }
 };
 
+exports.isPalindrome = {
+    testIsPalindrome: function(test) {
+        test.ok(_.isPalindrome('abba'));
+        test.ok(_.isPalindrome('abcde!//$£@!$T%%T$!@£$//!edcba'));
+        test.expect(2);
+        test.done();
+    },
+    testNotIsPalindrome: function(test) {
+        test.notEqual(_.isPalindrome('abbc'));
+        test.notEqual(_.isPalindrome('%T$!@£$//!edcbaasdkjmlkjo'));
+        test.expect(2);
+        test.done();
+    }
+};
+
 exports.isInstanceOf = {
     testIsInstanceOf: function(test) {
         var Point = function() {};

@@ -71,6 +71,19 @@ function isOdd(a) {
 }
 
 //
+//  ## isPalindrome(a)
+//
+//  Returns `true` if `a` is a valid palindrome.
+//
+function isPalindrome(s) {
+    var total = s.length;
+    if(total < 2) return true;
+    if(s.charAt(0) !== s.charAt(total - 1)) return false;
+
+    return isPalindrome(s.substr(1, total - 2));
+}
+
+//
 //  ## isInstanceOf(a)(b)
 //
 //  Returns `true` if `a` is an instance of `b`.
@@ -158,6 +171,7 @@ squishy = squishy
     .property('isArray', isArray)
     .property('isEven', isEven)
     .property('isOdd', isOdd)
+    .property('isPalindrome', isPalindrome)
     .property('isInstanceOf', isInstanceOf)
     .property('isArrayOf', isArrayOf)
     .property('isObjectLike', isObjectLike)
