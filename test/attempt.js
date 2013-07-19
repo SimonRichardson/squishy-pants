@@ -1,32 +1,32 @@
 var _ = require('./lib/test');
 
 exports.testAttemptMatch = {
-    testSuccessMatch: function(test) {
-        var a = _.success(1);
-        a.match({
-            success: function(data) {
-                test.equal(data, 1);
-            },
-            failure: function(errors) {
-                test.fail('Failed if called');
-            }
-        });
-        test.expect(1);
-        test.done();
-    },
-    testFailureMatch: function(test) {
-        var a = _.failure(['failure']);
-        a.match({
-            success: function(data) {
-                test.fail('Failed if called');
-            },
-            failure: function(errors) {
-                test.deepEqual(errors, ['failure']);
-            }
-        });
-        test.expect(1);
-        test.done();
-    }
+    testSuccessMatch: _.check(
+        function(a) {
+            return _.success(a).match({
+                success: function(b) {
+                    return a === b;
+                },
+                failure: function() {
+                    return false;
+                }
+            });
+        },
+        [_.AnyVal]
+    ),
+    testFailureMatch: _.check(
+        function(a) {
+            return _.failure(a).match({
+                success: function() {
+                    return false;
+                },
+                failure: function(b) {
+                    return a === b;
+                }
+            });
+        },
+        [String]
+    )
 };
 
 exports.testAttemptSuccess = {
