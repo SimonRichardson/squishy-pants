@@ -15,7 +15,7 @@
     "grunt": "0.4.x",
     "grunt-rigger": "0.5.x",
     "grunt-contrib-jshint": "0.6.x",
-    "grunt-contrib-nodeunit": "0.2.x"
+    "grunt-contrib-nodeunit": "0.2.0"
   },
   "main": "squishy-pants.js",
   "version": "0.0.1"
