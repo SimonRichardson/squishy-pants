@@ -1,4 +1,4 @@
-var _ = require('../bin/squishy-pants');
+var _ = require('./lib/test');
 
 exports.functionName = {
     testNamed: function(test) {

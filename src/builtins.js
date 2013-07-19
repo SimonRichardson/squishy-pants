@@ -77,8 +77,33 @@ squishy = squishy
     .method('arb', strictEquals(Boolean), function(a, s) {
         return Math.random() < 0.5;
     })
+    .method('arb', strictEquals(Char), function(a, s) {
+        /* Should consider 127 (DEL) to be quite dangerous? */
+        return String.fromCharCode(Math.floor(this.randomRange(32, 255)));
+    })
     .method('arb', strictEquals(Function), function(a, s) {
         return function(){};
+    })
+    .method('arb', isArrayOf, function(a, s) {
+        var accum = [],
+            length = this.randomRange(0, s),
+            i;
+
+        for(i = 0; i < length; i++) {
+            accum.push(this.arb(a.type, s - 1));
+        }
+
+        return accum;
+    })
+    .method('arb', isObjectLike, function(a, s) {
+        var o = {},
+            i;
+
+        for(i in a.props) {
+            o[i] = this.arb(a.props[i]);
+        }
+
+        return o;
     })
     .method('arb', strictEquals(Number), function(a, s) {
         /*
@@ -137,3 +162,46 @@ squishy = squishy
         return '';
     });
 
+squishy = squishy
+    .method('shrink', isArray, function(a) {
+        var accum = [[]],
+            x = a.length;
+
+        while(x) {
+            x = Math.floor(x / 2);
+
+            if (x) accum.push(a.slice(a.length = x));
+        }
+
+        return accum;
+    })
+    .method('shrink', isBoolean, function() {
+        return b ? [false] : [];
+    })
+    .method('shrink', isNumber, function(n) {
+        var accum = [0],
+            x = n;
+
+        if (n < 0) accum.push(-n);
+
+        while(x) {
+            x = x / 2;
+            x = x < 0 ? Math.ceil(x) : Math.floor(x);
+
+            if (x) accum.push(n - x);
+        }
+
+        return accum;
+    })
+    .method('shrink', isString, function(s) {
+        var accum = [''],
+            x = s.length;
+
+        while(x) {
+            x = Math.floor(x / 2);
+
+            if (x) accum.push(s.substring(0, s.length - x));
+        }
+
+        return accum;
+    });
