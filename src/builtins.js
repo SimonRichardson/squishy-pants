@@ -59,6 +59,13 @@ squishy = squishy
         return Math.random() * (b - a) + a;
     });
 
+//
+//  ### arbitrary values
+//
+//  Creates an arbitrary value depending on the type.
+//
+//       console.log(squishy.arb(Number)); // Outputs a random number
+//
 squishy = squishy
     .method('arb', strictEquals(AnyVal), function(a, s) {
         var types = [Boolean, Number, String];
@@ -75,8 +82,8 @@ squishy = squishy
     })
     .method('arb', strictEquals(Number), function(a, s) {
         /*
-          Divide the Number.MAX_VALUE by the goal, so we don't get 
-          a Number overflow (worst case Infinity), meaning we can 
+          Divide the Number.MAX_VALUE by the goal, so we don't get
+          a Number overflow (worst case Infinity), meaning we can
           add multiple arb(Number) together without issues.
         */
         var variance = Number.MAX_VALUE / this.goal;
@@ -97,6 +104,15 @@ squishy = squishy
         return this.arb(arrayOf(Char), s - 1).join('');
     });
 
+//
+//  ### empty values
+//
+//  Creates an empty value depending on the type. Each resulting value
+//  will be classified as falsy for the type. Boolean will be
+//  `false` and Array will be an empty `[]` for example.
+//
+//       console.log(squishy.empty(Array)); // Outputs `[]`
+//
 squishy = squishy
     .method('empty', strictEquals(AnyVal), function() {
         var types = [Boolean, Number, String];
