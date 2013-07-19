@@ -30,26 +30,70 @@ var Attempt = taggedSum('Attempt', {
     failure: ['errors']
 });
 
-Attempt.success.prototype.map = function(f) {
-    return Attempt.success.of(f(this.value));
-};
-
-Attempt.success.prototype.ap = function(v) {
-    return v.map(this.value);
-};
-
-Attempt.failure.prototype.map = function() {
-    return this;
-};
-
-Attempt.failure.prototype.ap = function(b, concat) {
+Attempt.prototype.ap = function(b, concat) {
     var a = this;
-    return b.match({
+    return a.match({
         success: function(value) {
-            return a;
+            return b.map(value);
         },
-        failure: function(errors) {
-            return Attempt.failure.of(concat(a.errors, errors));
+        failure: function(e) {
+            return b.match({
+                success: function(value) {
+                    return a;
+                },
+                failure: function(errors) {
+                    return Attempt.failure(concat(e, errors));
+                }
+            });
+        }
+    });
+};
+
+Attempt.prototype.flatMap = function(f) {
+    return this.match({
+        success: function(a) {
+            return f(a);
+        },
+        failure: function(e) {
+            return Attempt.failure(e);
+        }
+    });
+};
+
+Attempt.prototype.fold = function(a, b) {
+    return this.match({
+        success: function(x) {
+            return a(x);
+        },
+        failure: function(x) {
+            return b(x);
+        }
+    });
+};
+
+Attempt.prototype.map = function(f) {
+    return this.match({
+        success: function(a) {
+            return Attempt.success(f(a));
+        },
+        failure: function(e) {
+            return Attempt.failure(e);
+        }
+    });
+};
+
+Attempt.prototype.swap = function() {
+    return this.match({
+        success: Attempt.failure,
+        failure: Attempt.success
+    });
+};
+
+Attempt.prototype.toOption = function() {
+    return this.match({
+        success: Option.some,
+        failure: function() {
+            return Option.none;
         }
     });
 };
@@ -102,9 +146,18 @@ squishy = squishy
     .property('success', Attempt.success)
     .property('failure', Attempt.failure)
     .property('isAttempt', isAttempt)
+    .method('ap', isAttempt, function(a, b) {
+        return a.ap(b, this.concat);
+    })
+    .method('flatMap', isAttempt, function(a, b) {
+        return a.flatMap(b);
+    })
+    .method('fold', isAttempt, function(a, b, c) {
+        return a.fold(b, c);
+    })
     .method('map', isAttempt, function(a, b) {
         return a.map(b);
     })
-    .method('ap', isAttempt, function(a, b) {
-        return a.ap(b, this.concat);
+    .method('toOption', isAttempt, function(a) {
+        return a.toOption();
     });

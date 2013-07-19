@@ -12,10 +12,72 @@ var Option = taggedSum('Option', {
     none: []
 });
 
+Option.prototype.ap = function(b) {
+    return this.match({
+        some: function(x) {
+            return b.map(x);
+        },
+        none: function() {
+            return this;
+        }
+    });
+};
+
+Option.prototype.concat = function(s, f) {
+    return this.match({
+        some: function(x) {
+            return s.map(function(y) {
+                return f(x, y);
+            });
+        },
+        none: function() {
+            return this;
+        }
+    });
+};
+
+Option.prototype.flatMap = function(f) {
+    return this.match({
+        some: f,
+        none: function() {
+            return this;
+        }
+    });
+};
+
 Option.prototype.fold = function(f, g) {
     return this.match({
         some: f,
         none: g
+    });
+};
+
+Option.prototype.getOrElse = function(x) {
+    return this.match({
+        some: identity,
+        none: function() {
+            return x;
+        }
+    });
+};
+
+Option.prototype.map = function(f) {
+    return this.match({
+        some: function(x) {
+            return Option.some(f(x));
+        },
+        none: function() {
+            return this;
+        }
+    });
+};
+
+Option.prototype.toAttempt = function(f) {
+    return this.match({
+        some: Attempt.success,
+        none: function() {
+            return Attempt.failure(squishy.empty(Array));
+        }
     });
 };
 
@@ -55,6 +117,21 @@ squishy = squishy
     .property('some', Option.some)
     .property('none', Option.none)
     .property('isOption', isOption)
+    .method('ap', isOption, function(a, b) {
+        return a.ap(b);
+    })
+    .method('concat', isOption, function(a, b) {
+        return a.concat(b, this.concat);
+    })
+    .method('flatMap', isOption, function(a, b) {
+        return a.flatMap(b);
+    })
     .method('fold', isOption, function(a, b, c) {
         return a.fold(b, c);
+    })
+    .method('map', isOption, function(a, b) {
+        return a.map(b);
+    })
+    .method('toAttempt', isOption, function(a) {
+        return a.toAttempt();
     });

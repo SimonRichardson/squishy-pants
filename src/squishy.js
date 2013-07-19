@@ -170,6 +170,31 @@ function compose(f, g) {
 }
 
 //
+//  ## identity(o)
+//
+//  Identity function. Returns `o`:
+//
+//       forall a. identity(a) == a
+//
+function identity(o) {
+    return o;
+}
+
+//
+//  ## constant(c)
+//
+//  Constant function. Creates a function that always returns `c`, no
+//  matter the argument:
+//
+//      forall a b. constant(a)(b) == a
+//
+function constant(c) {
+    return function() {
+        return c;
+    };
+}
+
+//
 //  ## liftA2(f, a, b)
 //
 //  Lifts a curried, binary function `f` into the applicative passes
@@ -255,6 +280,17 @@ function not(a) {
 }
 
 //
+//  ## error(s)
+//
+//  Turns the `throw new Error(s)` statement into an expression.
+//
+function error(s) {
+    return function() {
+        throw new Error(s);
+    };
+}
+
+//
 //  ## AnyVal
 //
 //  Sentinel value for when any type of primitive value is needed.
@@ -281,6 +317,8 @@ squishy = squishy
     .property('bind', bind)
     .property('curry', curry)
     .property('compose', compose)
+    .property('identity', identity)
+    .property('constant', constant)
     .property('liftA2', liftA2)
     .property('arrayOf', arrayOf)
     .property('objectLike', objectLike)
@@ -288,5 +326,6 @@ squishy = squishy
     .property('and', and)
     .property('add', add)
     .property('not', not)
+    .property('error', error)
     .property('AnyVal', AnyVal)
     .property('Char', Char);

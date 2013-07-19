@@ -175,7 +175,7 @@ squishy = squishy
 
         return accum;
     })
-    .method('shrink', isBoolean, function() {
+    .method('shrink', isBoolean, function(b) {
         return b ? [false] : [];
     })
     .method('shrink', isNumber, function(n) {
