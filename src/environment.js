@@ -84,6 +84,7 @@ function makeMethod(registrations) {
 //
 //   * method(name, predicate, f) - adds an multimethod implementation
 //   * property(name, value) - sets a property to value
+//   * isDefined(name) - is a multimethod implement defined
 //
 function environment(methods, properties) {
     var self = getInstance(this, environment),
@@ -105,9 +106,18 @@ function environment(methods, properties) {
         return environment(methods, newProperties);
     };
 
+    self.isDefined = function(name) {
+        return self[name] && functionName(self[name]) === name;
+    };
+
     for(i in methods) {
         if(self[i]) throw new Error("Method `" + i + "` already in environment.");
-        else self[i] = makeMethod(methods[i]);
+        else {
+            /* Make sure the methods are names */
+            var method = makeMethod(methods[i]);
+            method._name = i;
+            self[i] = method;
+        }
     }
 
     for(i in properties) {

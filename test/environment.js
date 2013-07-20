@@ -82,5 +82,27 @@ exports.environment = {
 
         test.equals(msg, 'Property `a` already in environment.');
         test.done();
+    },
+    testIsDefinedWithMethod: function(test) {
+        var env0 = _.environment().method('a', always, function() {
+            return true;
+        });
+
+        test.ok(env0.isDefined('a'));
+        test.done();
+    },
+    testNotIsDefinedWithMethod: function(test) {
+        var env0 = _.environment().method('a', always, function() {
+            return true;
+        });
+
+        test.ok(!env0.isDefined('b'));
+        test.done();
+    },
+    testNotIsDefinedWithProperty: function(test) {
+        var env0 = _.environment().property('a', 1);
+
+        test.ok(!env0.isDefined('a'));
+        test.done();
     }
 };
