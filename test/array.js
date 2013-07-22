@@ -30,5 +30,18 @@ exports.array = {
             return _.filter(a, _.isEven).toString() === accum.toString();
         },
         [_.arrayOf(Number)]
+    ),
+    'when testing filterNot with array should yield items': _.check(
+        function(a) {
+            var accum = [],
+                i;
+
+            for(i = 0; i < a.length; i++) {
+                if (_.isOdd(a[i])) accum.push(a[i]);
+            }
+
+            return _.filterNot(a, _.isEven).toString() === accum.toString();
+        },
+        [_.arrayOf(Number)]
     )
 };
