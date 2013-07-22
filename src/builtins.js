@@ -51,14 +51,6 @@ squishy = squishy
         return accum;
     });
 
-squishy = squishy
-    .property('oneOf', function(a) {
-        return a[Math.floor(this.randomRange(0, a.length))];
-    })
-    .property('randomRange', function(a, b) {
-        return Math.random() * (b - a) + a;
-    });
-
 //
 //  ### arbitrary values
 //

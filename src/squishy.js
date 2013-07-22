@@ -305,6 +305,24 @@ var AnyVal = {};
 var Char = {};
 
 //
+//  ## oneOf
+//
+//  Selects one of the values at random.
+//
+function oneOf(a) {
+    return a[Math.floor(this.randomRange(0, a.length))];
+}
+
+//
+//  ## randomRange
+//
+//  Returns a random number between the range.
+//
+function randomRange(a, b) {
+    return Math.random() * (b - a) + a;
+}
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -328,4 +346,6 @@ squishy = squishy
     .property('not', not)
     .property('error', error)
     .property('AnyVal', AnyVal)
-    .property('Char', Char);
+    .property('Char', Char)
+    .property('oneOf', oneOf)
+    .property('randomRange', randomRange);
