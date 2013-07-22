@@ -208,3 +208,19 @@ exports.curry = {
     }
 };
 
+exports.oneOf = {
+    testOneOf: function(test) {
+        var a = ['boolean', 'number', 'string'];
+        test.ok(_.isAnyOf(a)(_.oneOf(a)));
+        test.done();
+    }
+};
+
+exports.randomRange = {
+    testRandomRange: function(test) {
+        var a = _.randomRange(10, 100);
+        test.ok(a >= 10 && a <= 100);
+        test.done();
+    }
+};
+
