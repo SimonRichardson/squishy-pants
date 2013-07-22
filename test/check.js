@@ -1,7 +1,4 @@
-var _ = require('./lib/test'),
-    reverse = function(s) {
-        return s.split('').reverse().join('');
-    };
+var _ = require('./lib/test');
 
 exports.failureReporter = {
     testFailureReporterWithInput: _.check(

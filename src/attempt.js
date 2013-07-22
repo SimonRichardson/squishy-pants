@@ -98,6 +98,20 @@ Attempt.prototype.toOption = function() {
     });
 };
 
+Attempt.prototype.toLeft = function(o) {
+    return this.match({
+        success: Either.left,
+        failure: Either.right
+    });
+};
+
+Attempt.prototype.toRight = function(o) {
+    return this.match({
+        success: Either.left,
+        failure: Either.right
+    });
+};
+
 //
 //  ## success(x)
 //
@@ -157,7 +171,4 @@ squishy = squishy
     })
     .method('map', isAttempt, function(a, b) {
         return a.map(b);
-    })
-    .method('toOption', isAttempt, function(a) {
-        return a.toOption();
     });

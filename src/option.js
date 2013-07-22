@@ -81,6 +81,20 @@ Option.prototype.toAttempt = function(f) {
     });
 };
 
+Option.prototype.toLeft = function(o) {
+    return this.match({
+        some: Either.left,
+        none: Either.right
+    });
+};
+
+Option.prototype.toRight = function(o) {
+    return this.match({
+        some: Either.left,
+        none: Either.right
+    });
+};
+
 //
 //  ## of(x)
 //
@@ -131,7 +145,4 @@ squishy = squishy
     })
     .method('map', isOption, function(a, b) {
         return a.map(b);
-    })
-    .method('toAttempt', isOption, function(a) {
-        return a.toAttempt();
     });
