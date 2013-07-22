@@ -105,7 +105,7 @@ function forAll(property, args) {
 //
 //  Default is `100`.
 //
-var goal = 100;
+var goal = 10;//00;
 
 squishy = squishy
     .property('failureReporter', failureReporter)

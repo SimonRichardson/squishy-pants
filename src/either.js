@@ -46,7 +46,7 @@ Either.prototype.flatMap = function(f) {
             return this;
         },
         right: function(x) {
-            return [x];
+            return f(x);
         }
     });
 };
@@ -96,6 +96,17 @@ Either.prototype.toAttempt = function() {
     });
 };
 
+Either.prototype.toArray = function() {
+    return this.match({
+        left: function(x) {
+            return [];
+        },
+        right: function(x) {
+            return [x];
+        }
+    });
+};
+
 //
 //  ## left(x)
 //
@@ -134,4 +145,7 @@ squishy = squishy
     })
     .method('concat', isEither, function(a, b) {
         return a.concat(b, this.concat);
+    })
+    .method('toArray', isEither, function(a) {
+        return a.toArray();
     });

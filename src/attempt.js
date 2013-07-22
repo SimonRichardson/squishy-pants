@@ -98,17 +98,28 @@ Attempt.prototype.toOption = function() {
     });
 };
 
-Attempt.prototype.toLeft = function(o) {
+Attempt.prototype.toLeft = function() {
     return this.match({
         success: Either.left,
         failure: Either.right
     });
 };
 
-Attempt.prototype.toRight = function(o) {
+Attempt.prototype.toRight = function() {
     return this.match({
         success: Either.left,
         failure: Either.right
+    });
+};
+
+Attempt.prototype.toArray = function() {
+    return this.match({
+        success: function(x) {
+            return [x];
+        },
+        failure: function(x) {
+            return [];
+        }
     });
 };
 
@@ -171,4 +182,7 @@ squishy = squishy
     })
     .method('map', isAttempt, function(a, b) {
         return a.map(b);
+    })
+    .method('toArray', isAttempt, function(a) {
+        return a.toArray();
     });

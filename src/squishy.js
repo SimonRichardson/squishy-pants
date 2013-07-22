@@ -323,6 +323,24 @@ function randomRange(a, b) {
 }
 
 //
+//  ## inc
+//
+//  Increments the number by 1
+//
+function inc(x) {
+    return x + 1;
+}
+
+//
+//  ## dec
+//
+//  Decrement the number by 1
+//
+function dec(x) {
+    return x - 1;
+}
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -348,4 +366,6 @@ squishy = squishy
     .property('AnyVal', AnyVal)
     .property('Char', Char)
     .property('oneOf', oneOf)
-    .property('randomRange', randomRange);
+    .property('randomRange', randomRange)
+    .property('inc', inc)
+    .property('dec', dec);

@@ -95,6 +95,17 @@ Option.prototype.toRight = function(o) {
     });
 };
 
+Option.prototype.toArray = function() {
+    return this.match({
+        some: function(x) {
+            return [x];
+        },
+        none: function() {
+            return [];
+        }
+    });
+};
+
 //
 //  ## of(x)
 //
@@ -145,4 +156,7 @@ squishy = squishy
     })
     .method('map', isOption, function(a, b) {
         return a.map(b);
+    })
+    .method('toArray', isOption, function(a) {
+        return a.toArray();
     });
