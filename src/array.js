@@ -8,7 +8,7 @@
 //  * `ap(a, b)` - Applicative ap(ply)
 //  * `concat(a, b)` - Appends two array objects.
 //  * `count(a, f)` - Count the number of elements in the array which satisfy a predicate.
-//  * `dropLeft(a, n)` - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.
+//  * `drop(a, n)` - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.
 //  * `dropRight(a, n)` - Returns the array without its rightmost n elements.
 //  * `dropWhile(a, f)` - Returns the longest suffix of this array whose first element does not satisfy the predicate.
 //  * `exists(a, f)` - Tests the existence in this array of an element that satisfies the predicate.
@@ -16,13 +16,13 @@
 //  * `filterNot(a, f)` - Returns all the elements of this array that does not satisfy the predicate p.
 //  * `flatMap(a, f)` - Applies the given function f to each element of this array, then concatenates the results.
 //  * `flatten(a)` - Concatenate the elements of this array.
-//  * `foldLeft(a, v, f)` - Combines the elements of this array together using the binary function f, from left to right, and starting with the value v.
+//  * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from left to right, and starting with the value v.
 //  * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from right to left, and starting with the value v.
 //  * `map(a, f)` - Returns the array resulting from applying the given function f to each element of this array.
 //  * `partition(a, f)` - Partition the array in two sub-arrays according to a predicate.
-//  * `reduceLeft(a, f)` - Combines the elements of this array together using the binary operator op, from left to right
+//  * `reduce(a, f)` - Combines the elements of this array together using the binary operator op, from left to right
 //  * `reduceRight(a, f)` - Combines the elements of this array together using the binary operator op, from right to left
-//  * `takeLeft(n)` - Returns the n first elements of this array.
+//  * `take(n)` - Returns the n first elements of this array.
 //  * `takeRight(n)` - Returns the rightmost n elements from this array.
 //  * `takeWhile(f)` - Returns the longest prefix of this array whose elements satisfy the predicate.
 //  * `zip(a, b)` - Returns a array formed from this array and the specified array that by associating each element of the former with the element at the same position in the latter.
@@ -62,7 +62,7 @@ var count = curry(function(a, f) {
     return accum;
 });
 
-var dropLeft = curry(function(a, n) {
+var drop = curry(function(a, n) {
     return a.slice(n);
 });
 
@@ -142,7 +142,7 @@ var flatMap = curry(function(a, f) {
     return accum;
 });
 
-var foldLeft = curry(function(a, v, f) {
+var fold = curry(function(a, v, f) {
     var total,
         i;
 
@@ -193,7 +193,7 @@ var partition = curry(function(a, f) {
     return Tuple2(left, right);
 });
 
-var reduceLeft = curry(function(a, f) {
+var reduce = curry(function(a, f) {
     var total = a.length,
         i,
         v;
@@ -223,7 +223,7 @@ var reduceRight = curry(function(a, f) {
     return Option.some(v);
 });
 
-var takeLeft = curry(function(a, m) {
+var take = curry(function(a, m) {
     return a.slice(0, m);
 });
 
@@ -263,7 +263,7 @@ squishy = squishy
     .method('ap', isArray, ap)
     .method('concat', isArray, concat)
     .method('count', isArray, count)
-    .method('dropLeft', isArray, dropLeft)
+    .method('drop', isArray, drop)
     .method('dropRight', isArray, dropRight)
     .method('dropWhile', isArray, dropWhile)
     .method('exists', isArray, exists)
@@ -272,13 +272,13 @@ squishy = squishy
     .method('filterNot', isArray, filterNot)
     .method('flatten', isArray, flatten)
     .method('flatMap', isArray, flatMap)
-    .method('foldLeft', isArray, foldLeft)
+    .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
     .method('map', isArray, map)
     .method('partition', isArray, partition)
-    .method('reduceLeft', isArray, reduceLeft)
+    .method('reduce', isArray, reduce)
     .method('reduceRight', isArray, reduceRight)
-    .method('takeLeft', isArray, takeLeft)
+    .method('take', isArray, take)
     .method('takeRight', isArray, takeRight)
     .method('takeWhile', isArray, takeWhile)
     .method('zip', isArray, zip);

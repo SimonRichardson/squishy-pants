@@ -69,7 +69,7 @@ function findRegistered(registrations, args) {
             return registrations[i].f;
     }
 
-    throw new Error("Method not implemented for this input");
+    throw new Error('Method not implemented for this input');
 }
 
 function makeMethod(registrations) {

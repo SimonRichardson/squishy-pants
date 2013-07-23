@@ -31,3 +31,36 @@ exports.empty = {
         test.done();
     }
 };
+
+exports.equal = {
+    'when testing equal with Boolean should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [Boolean]
+    ),
+    'when testing equal with Function should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [Function]
+    ),
+    'when testing equal with Number should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [Number]
+    ),
+    'when testing equal with String should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [String]
+    ),
+    'when testing equal with Array should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [_.arrayOf(_.AnyVal)]
+    )
+};
