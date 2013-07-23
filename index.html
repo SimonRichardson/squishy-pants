@@ -30,7 +30,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-07-23 09:33 */</span>
+            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-07-23 18:18 */</span>
 (<span class="keyword">function</span>(global) {
 
     <span class="string">'use strict'</span>;
@@ -115,7 +115,7 @@
                 <span class="keyword">return</span> registrations[i].f;
         }
     
-        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Method not implemented for this input"</span>);
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Method not implemented for this input'</span>);
     }
     
     <span class="function"><span class="keyword">function</span> <span class="title">makeMethod</span><span class="params">(registrations)</span> {</span>
@@ -1168,73 +1168,39 @@
               <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
-              <h3>arbitrary values</h3>
-<p> Creates an arbitrary value depending on the type.</p>
-<pre><code>  console.log(squishy.arb(Number)); // Outputs a random number</code></pre>
+              <h3>equal</h3>
+<p> Checks to see if a type equals another type. This is a uses deep equality for
+ complex structures like <code>object</code> and <code>array</code>s.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    squishy = squishy
-        .method(<span class="string">'arb'</span>, strictEquals(AnyVal), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">var</span> types = [Boolean, Number, String];
-            <span class="keyword">return</span> <span class="keyword">this</span>.arb(<span class="keyword">this</span>.oneOf(types), s - <span class="number">1</span>);
+        .method(<span class="string">'equal'</span>, isBoolean, strictEquals)
+        .method(<span class="string">'equal'</span>, isFunction, strictEquals)
+        .method(<span class="string">'equal'</span>, isNumber, strictEquals)
+        .method(<span class="string">'equal'</span>, isString, strictEquals)
+        .method(<span class="string">'equal'</span>, isArray, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">var</span> env = <span class="keyword">this</span>;
+            <span class="keyword">return</span> env.fold(env.zip(a, b), <span class="literal">true</span>, <span class="keyword">function</span>(v, t) {
+                <span class="keyword">return</span> v &amp;&amp; env.equal(t._1, t._2);
+            });
         })
-        .method(<span class="string">'arb'</span>, strictEquals(Array), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(Boolean), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">return</span> Math.random() &lt; <span class="number">0.5</span>;
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(Char), <span class="keyword">function</span>(a, s) {
-            <span class="comment">/* Should consider 127 (DEL) to be quite dangerous? */</span>
-            <span class="keyword">return</span> String.fromCharCode(Math.floor(<span class="keyword">this</span>.randomRange(<span class="number">32</span>, <span class="number">127</span>)));
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(Function), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">return</span> <span class="keyword">function</span>(){};
-        })
-        .method(<span class="string">'arb'</span>, isArrayOf, <span class="keyword">function</span>(a, s) {
-            <span class="keyword">var</span> accum = [],
-                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
-                i;
+        .method(<span class="string">'equal'</span>, isObject, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">var</span> i;
     
-            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
-                accum.push(<span class="keyword">this</span>.arb(a.type, s - <span class="number">1</span>));
+            <span class="keyword">for</span> (i <span class="keyword">in</span> a) {
+                <span class="keyword">if</span> (!<span class="keyword">this</span>.equal(a[i], b[i])) {
+                    <span class="keyword">return</span> <span class="literal">false</span>;
+                }
             }
     
-            <span class="keyword">return</span> accum;
-        })
-        .method(<span class="string">'arb'</span>, isObjectLike, <span class="keyword">function</span>(a, s) {
-            <span class="keyword">var</span> o = {},
-                i;
-    
-            <span class="keyword">for</span>(i <span class="keyword">in</span> a.props) {
-                o[i] = <span class="keyword">this</span>.arb(a.props[i]);
+            <span class="keyword">for</span> (i <span class="keyword">in</span> b) {
+                <span class="keyword">if</span> (!<span class="keyword">this</span>.equal(b[i], a[i])) {
+                    <span class="keyword">return</span> <span class="literal">false</span>;
+                }
             }
     
-            <span class="keyword">return</span> o;
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(Number), <span class="keyword">function</span>(a, s) {
-            <span class="comment">/*
-              Divide the Number.MAX_VALUE by the goal, so we don't get
-              a Number overflow (worst case Infinity), meaning we can
-              add multiple arb(Number) together without issues.
-            */</span>
-            <span class="keyword">var</span> variance = Number.MAX_VALUE / <span class="keyword">this</span>.goal;
-            <span class="keyword">return</span> <span class="keyword">this</span>.randomRange(-variance, variance);
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(Object), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">var</span> o = {},
-                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
-                i;
-    
-            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
-                o[<span class="keyword">this</span>.arb(String, s - <span class="number">1</span>)] = <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
-            }
-    
-            <span class="keyword">return</span> o;
-        })
-        .method(<span class="string">'arb'</span>, strictEquals(String), <span class="keyword">function</span>(a, s) {
-            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(Char), s - <span class="number">1</span>).join(<span class="string">''</span>);
+            <span class="keyword">return</span> <span class="literal">true</span>;
         });</pre></div></div>
             
         </li>
@@ -1276,50 +1242,6 @@
         })
         .method(<span class="string">'empty'</span>, strictEquals(String), <span class="keyword">function</span>() {
             <span class="keyword">return</span> <span class="string">''</span>;
-        });
-    
-    squishy = squishy
-        .method(<span class="string">'shrink'</span>, isArray, <span class="keyword">function</span>(a) {
-            <span class="keyword">var</span> accum = [[]],
-                x = a.length;
-    
-            <span class="keyword">while</span>(x) {
-                x = Math.floor(x / <span class="number">2</span>);
-    
-                <span class="keyword">if</span> (x) accum.push(a.slice(a.length = x));
-            }
-    
-            <span class="keyword">return</span> accum;
-        })
-        .method(<span class="string">'shrink'</span>, isBoolean, <span class="keyword">function</span>(b) {
-            <span class="keyword">return</span> b ? [<span class="literal">false</span>] : [];
-        })
-        .method(<span class="string">'shrink'</span>, isNumber, <span class="keyword">function</span>(n) {
-            <span class="keyword">var</span> accum = [<span class="number">0</span>],
-                x = n;
-    
-            <span class="keyword">if</span> (n &lt; <span class="number">0</span>) accum.push(-n);
-    
-            <span class="keyword">while</span>(x) {
-                x = x / <span class="number">2</span>;
-                x = x &lt; <span class="number">0</span> ? Math.ceil(x) : Math.floor(x);
-    
-                <span class="keyword">if</span> (x) accum.push(n - x);
-            }
-    
-            <span class="keyword">return</span> accum;
-        })
-        .method(<span class="string">'shrink'</span>, isString, <span class="keyword">function</span>(s) {
-            <span class="keyword">var</span> accum = [<span class="string">''</span>],
-                x = s.length;
-    
-            <span class="keyword">while</span>(x) {
-                x = Math.floor(x / <span class="number">2</span>);
-    
-                <span class="keyword">if</span> (x) accum.push(s.substring(<span class="number">0</span>, s.length - x));
-            }
-    
-            <span class="keyword">return</span> accum;
         });</pre></div></div>
             
         </li>
@@ -1449,9 +1371,48 @@
             
             <div class="content"><div class='highlight'><pre>    squishy = squishy
         .property(<span class="string">'tagged'</span>, tagged)
-        .property(<span class="string">'taggedSum'</span>, taggedSum);
+        .property(<span class="string">'taggedSum'</span>, taggedSum);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <h1>Array</h1>
+<pre><code>  Array a</code></pre>
+<p> Represents a sequence of values that are indexed by integers.</p>
+<ul>
+<li><code>ap(a, b)</code> - Applicative ap(ply)</li>
+<li><code>concat(a, b)</code> - Appends two array objects.</li>
+<li><code>count(a, f)</code> - Count the number of elements in the array which satisfy a predicate.</li>
+<li><code>drop(a, n)</code> - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.</li>
+<li><code>dropRight(a, n)</code> - Returns the array without its rightmost n elements.</li>
+<li><code>dropWhile(a, f)</code> - Returns the longest suffix of this array whose first element does not satisfy the predicate.</li>
+<li><code>exists(a, f)</code> - Tests the existence in this array of an element that satisfies the predicate.</li>
+<li><code>filter(a, f)</code> - Returns all the elements of this array that satisfy the predicate p.</li>
+<li><code>filterNot(a, f)</code> - Returns all the elements of this array that does not satisfy the predicate p.</li>
+<li><code>flatMap(a, f)</code> - Applies the given function f to each element of this array, then concatenates the results.</li>
+<li><code>flatten(a)</code> - Concatenate the elements of this array.</li>
+<li><code>fold(a, v, f)</code> - Combines the elements of this array together using the binary function f, from left to right, and starting with the value v.</li>
+<li><code>foldRight(a, v, f)</code> - Combines the elements of this array together using the binary function f, from right to left, and starting with the value v.</li>
+<li><code>map(a, f)</code> - Returns the array resulting from applying the given function f to each element of this array.</li>
+<li><code>partition(a, f)</code> - Partition the array in two sub-arrays according to a predicate.</li>
+<li><code>reduce(a, f)</code> - Combines the elements of this array together using the binary operator op, from left to right</li>
+<li><code>reduceRight(a, f)</code> - Combines the elements of this array together using the binary operator op, from right to left</li>
+<li><code>take(n)</code> - Returns the n first elements of this array.</li>
+<li><code>takeRight(n)</code> - Returns the rightmost n elements from this array.</li>
+<li><code>takeWhile(f)</code> - Returns the longest prefix of this array whose elements satisfy the predicate.</li>
+<li><code>zip(a, b)</code> - Returns a array formed from this array and the specified array that by associating each element of the former with the element at the same position in the latter.</li>
+</ul>
 
-    <span class="keyword">var</span> ap = curry(<span class="keyword">function</span>(a, b, f) {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    
+    <span class="keyword">var</span> ap = curry(<span class="keyword">function</span>(a, b) {
         <span class="keyword">var</span> accum = [],
             x,
             y,
@@ -1485,12 +1446,12 @@
         <span class="keyword">return</span> accum;
     });
     
-    <span class="keyword">var</span> dropLeft = curry(<span class="keyword">function</span>(a, m) {
-        <span class="keyword">return</span> a.slice(m);
+    <span class="keyword">var</span> drop = curry(<span class="keyword">function</span>(a, n) {
+        <span class="keyword">return</span> a.slice(n);
     });
     
-    <span class="keyword">var</span> dropRight = curry(<span class="keyword">function</span>(a, m) {
-        <span class="keyword">return</span> a.slice(<span class="number">0</span>, -m);
+    <span class="keyword">var</span> dropRight = curry(<span class="keyword">function</span>(a, n) {
+        <span class="keyword">return</span> a.slice(<span class="number">0</span>, -n);
     });
     
     <span class="keyword">var</span> dropWhile = curry(<span class="keyword">function</span>(a, f) {
@@ -1498,12 +1459,12 @@
             i;
     
         <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
-            <span class="keyword">if</span>(f(a[i])) {
-                <span class="keyword">return</span> a.slice(<span class="number">0</span>, i - <span class="number">1</span>);
+            <span class="keyword">if</span>(!f(a[i])) {
+                <span class="keyword">return</span> a.slice(i);
             }
         }
     
-        <span class="keyword">return</span> [];
+        <span class="keyword">return</span> a.slice();
     });
     
     <span class="keyword">var</span> exists = curry(<span class="keyword">function</span>(a, f) {
@@ -1565,7 +1526,7 @@
         <span class="keyword">return</span> accum;
     });
     
-    <span class="keyword">var</span> foldLeft = curry(<span class="keyword">function</span>(a, v, f) {
+    <span class="keyword">var</span> fold = curry(<span class="keyword">function</span>(a, v, f) {
         <span class="keyword">var</span> total,
             i;
     
@@ -1602,7 +1563,21 @@
         <span class="keyword">return</span> accum;
     });
     
-    <span class="keyword">var</span> reduceLeft = curry(<span class="keyword">function</span>(a, f) {
+    <span class="keyword">var</span> partition = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> left = [],
+            right = [],
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(f(a[i])) left.push(a[i]);
+            <span class="keyword">else</span> right.push(a[i]);
+        }
+    
+        <span class="keyword">return</span> Tuple2(left, right);
+    });
+    
+    <span class="keyword">var</span> reduce = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total = a.length,
             i,
             v;
@@ -1632,28 +1607,84 @@
         <span class="keyword">return</span> Option.some(v);
     });
     
-    squishy = squishy
-        .method(<span class="string">'ap'</span>, isArray, ap)
-        .method(<span class="string">'concat'</span>, isArray, concat)
-        .method(<span class="string">'exists'</span>, isArray, exists)
-        .method(<span class="string">'filter'</span>, isArray, filter)
-        .method(<span class="string">'filterNot'</span>, isArray, filterNot)
-        .method(<span class="string">'flatten'</span>, isArray, flatten)
-        .method(<span class="string">'flatMap'</span>, isArray, flatMap)
-        .method(<span class="string">'foldLeft'</span>, isArray, foldLeft)
-        .method(<span class="string">'foldRight'</span>, isArray, foldRight)
-        .method(<span class="string">'map'</span>, isArray, map)
-        .method(<span class="string">'reduceLeft'</span>, isArray, reduceLeft)
-        .method(<span class="string">'reduceRight'</span>, isArray, reduceRight);</pre></div></div>
+    <span class="keyword">var</span> take = curry(<span class="keyword">function</span>(a, m) {
+        <span class="keyword">return</span> a.slice(<span class="number">0</span>, m);
+    });
+    
+    <span class="keyword">var</span> takeRight = curry(<span class="keyword">function</span>(a, m) {
+        <span class="keyword">return</span> a.slice(-m);
+    });
+    
+    <span class="keyword">var</span> takeWhile = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(!f(a[i])) {
+                <span class="keyword">return</span> a.slice(<span class="number">0</span>, i);
+            }
+        }
+    
+        <span class="keyword">return</span> [];
+    });
+    
+    <span class="keyword">var</span> zip = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">var</span> accum = [],
+            total = Math.min(a.length, b.length),
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; total; i++) {
+            accum[i] = Tuple2(a[i], b[i]);
+        }
+    
+        <span class="keyword">return</span> accum;
+    });</pre></div></div>
             
         </li>
         
         
-        <li id="section-54">
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'ap'</span>, isArray, ap)
+        .method(<span class="string">'concat'</span>, isArray, concat)
+        .method(<span class="string">'count'</span>, isArray, count)
+        .method(<span class="string">'drop'</span>, isArray, drop)
+        .method(<span class="string">'dropRight'</span>, isArray, dropRight)
+        .method(<span class="string">'dropWhile'</span>, isArray, dropWhile)
+        .method(<span class="string">'exists'</span>, isArray, exists)
+        .method(<span class="string">'get'</span>, isArray, get)
+        .method(<span class="string">'filter'</span>, isArray, filter)
+        .method(<span class="string">'filterNot'</span>, isArray, filterNot)
+        .method(<span class="string">'flatten'</span>, isArray, flatten)
+        .method(<span class="string">'flatMap'</span>, isArray, flatMap)
+        .method(<span class="string">'fold'</span>, isArray, fold)
+        .method(<span class="string">'foldRight'</span>, isArray, foldRight)
+        .method(<span class="string">'map'</span>, isArray, map)
+        .method(<span class="string">'partition'</span>, isArray, partition)
+        .method(<span class="string">'reduce'</span>, isArray, reduce)
+        .method(<span class="string">'reduceRight'</span>, isArray, reduceRight)
+        .method(<span class="string">'take'</span>, isArray, take)
+        .method(<span class="string">'takeRight'</span>, isArray, takeRight)
+        .method(<span class="string">'takeWhile'</span>, isArray, takeWhile)
+        .method(<span class="string">'zip'</span>, isArray, zip);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <h1>Attempt</h1>
 <pre><code>  Attempt e v = Failure e + Success v</code></pre>
@@ -1671,6 +1702,18 @@
 <p> Represents a successful <code>value</code>.</p>
 <h2>failure(errors)</h2>
 <p> Represents a failure.</p>
+<ul>
+<li><code>ap(b, concat)</code> - Applicative ap(ply)</li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>left</code>, <code>b</code> if <code>right</code></li>
+<li><code>map(f)</code> - Functor map</li>
+<li><code>swap()</code> - Swap values</li>
+<li><code>isSuccess</code> - <code>true</code> if <code>this</code> is <code>success</code></li>
+<li><code>isFailure</code> - <code>true</code> if <code>this</code> is <code>failure</code></li>
+<li><code>toOption(r)</code> - <code>some(x)</code> if <code>success(x)</code>, <code>none</code> if <code>failure()</code></li>
+<li><code>toLeft(r)</code> - <code>left(x)</code> if <code>some(x)</code>, <code>right(r)</code> if none</li>
+<li><code>toRight(l)</code> - <code>right(x)</code> if <code>some(x)</code>, <code>left(l)</code> if none</li>
+</ul>
 
             </div>
             
@@ -1776,11 +1819,11 @@
         </li>
         
         
-        <li id="section-55">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <h2>success(x)</h2>
 <p> Constructor to represent the existance of a value, <code>x</code>.</p>
@@ -1793,11 +1836,11 @@
         </li>
         
         
-        <li id="section-56">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Attempt.success</code> with value of <code>x</code>.</p>
@@ -1811,11 +1854,11 @@
         </li>
         
         
-        <li id="section-57">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               <h2>failure(x)</h2>
 <p> Constructor to represent the existance of a value, <code>x</code>.</p>
@@ -1828,11 +1871,11 @@
         </li>
         
         
-        <li id="section-58">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-58">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Attempt.failure</code> with value of <code>x</code>.</p>
@@ -1846,11 +1889,11 @@
         </li>
         
         
-        <li id="section-59">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-59">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <h2>isAttempt(a)</h2>
 <p> Returns <code>true</code> iff <code>a</code> is a <code>success</code> or a <code>failure</code>.</p>
@@ -1862,11 +1905,11 @@
         </li>
         
         
-        <li id="section-60">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-60">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -1895,16 +1938,28 @@
         </li>
         
         
-        <li id="section-61">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-61">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <h1>Either</h1>
 <pre><code>  Either a b = Left a + Right b</code></pre>
 <p> Represents a tagged disjunction between two sets of values; <code>a</code> or
  <code>b</code>. Methods are right-biased.</p>
+<ul>
+<li><code>ap(e)</code> - Applicative ap(ply)</li>
+<li><code>concat(s, f)</code> - Semigroup concat</li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>left</code>, <code>b</code> if <code>right</code></li>
+<li><code>map(f)</code> - Functor map</li>
+<li><code>swap()</code> - If this is a Left, then return the left value in Right or vice versa.</li>
+<li><code>isLeft</code> - <code>true</code> iff <code>this</code> is <code>left</code></li>
+<li><code>isRight</code> - <code>true</code> iff <code>this</code> is <code>right</code></li>
+<li><code>toOption()</code> - <code>none</code> if <code>left</code>, <code>some</code> value of <code>right</code></li>
+<li><code>toArray()</code> - <code>[]</code> if <code>left</code>, singleton value if <code>right</code></li>
+</ul>
 
             </div>
             
@@ -2012,11 +2067,11 @@
         </li>
         
         
-        <li id="section-62">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <h2>left(x)</h2>
 <p> Constructor to represent the left case.</p>
@@ -2029,11 +2084,11 @@
         </li>
         
         
-        <li id="section-63">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <h2>right(x)</h2>
 <p> Constructor to represent the (biased) right case.</p>
@@ -2046,11 +2101,11 @@
         </li>
         
         
-        <li id="section-64">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <h2>isEither(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>left</code> or a <code>right</code>.</p>
@@ -2082,21 +2137,35 @@
         </li>
         
         
-        <li id="section-65">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <h1>Option</h1>
 <pre><code>  Option a = Some a + None</code></pre>
 <p>  The option type encodes the presence and absence of a value. The
   <code>some</code> constructor represents a value and <code>none</code> represents the
   absence.</p>
+<ul>
+<li><code>ap(s)</code> - Applicative ap(ply)</li>
+<li><code>concat(s, plus)</code> - Semigroup concat</li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>fold(a, b)</code> - Applies <code>a</code> to value if <code>some</code> or defaults to <code>b</code></li>
+<li><code>getOrElse(a)</code> - Default value for <code>none</code></li>
+<li><code>map(f)</code> - Functor map</li>
+<li><code>isSome</code> - <code>true</code> if <code>this</code> is <code>some</code></li>
+<li><code>isNone</code> - <code>true</code> if <code>this</code> is <code>none</code></li>
+<li><code>toAttempt(r)</code> - <code>success(x)</code> if <code>some(x)</code>, <code>failure(r)</code> if none</li>
+<li><code>toLeft(r)</code> - <code>left(x)</code> if <code>some(x)</code>, <code>right(r)</code> if none</li>
+<li><code>toRight(l)</code> - <code>right(x)</code> if <code>some(x)</code>, <code>left(l)</code> if none</li>
+</ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Option = taggedSum(<span class="string">'Option'</span>, {
+            <div class="content"><div class='highlight'><pre>    
+    <span class="keyword">var</span> Option = taggedSum(<span class="string">'Option'</span>, {
         some: [<span class="string">'value'</span>],
         none: []
     });
@@ -2161,7 +2230,7 @@
         });
     };
     
-    Option.prototype.toAttempt = <span class="keyword">function</span>(f) {
+    Option.prototype.toAttempt = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             some: Attempt.success,
             none: <span class="keyword">function</span>() {
@@ -2198,11 +2267,11 @@
         </li>
         
         
-        <li id="section-66">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Option</code> with value of <code>x</code>.</p>
@@ -2216,11 +2285,11 @@
         </li>
         
         
-        <li id="section-67">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <h2>some(x)</h2>
 <p> Constructor to represent the existence of a value, <code>x</code>.</p>
@@ -2233,11 +2302,11 @@
         </li>
         
         
-        <li id="section-68">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
               <h2>none</h2>
 <p> Represents the absence of a value.</p>
@@ -2250,11 +2319,11 @@
         </li>
         
         
-        <li id="section-69">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
               <h2>isOption(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>some</code> or <code>none</code>.</p>
@@ -2284,16 +2353,75 @@
         })
         .method(<span class="string">'toArray'</span>, isOption, <span class="keyword">function</span>(a) {
             <span class="keyword">return</span> a.toArray();
-        });</pre></div></div>
+        });
+
+    <span class="comment">/**
+        # Tuples
+    
+        Tuples are another way of storing multiple values in a single value.
+        They have a fixed number of elements (immutable), and so you can't
+        cons to a tuple.
+        Elements of a tuple do not need to be all of the same type
+    
+        Example usage:
+    
+             squishy.Tuple2(1, 2);
+             squishy.Tuple3(1, 2, 3);
+             squishy.Tuple4(1, 2, 3, 4);
+             squishy.Tuple5(1, 2, 3, 4, 5);
+    
+    **/</span>
+    <span class="keyword">var</span> Tuple2 = tagged(<span class="string">'Tuple2'</span>, [<span class="string">'_1'</span>, <span class="string">'_2'</span>]),
+        Tuple3 = tagged(<span class="string">'Tuple3'</span>, [<span class="string">'_1'</span>, <span class="string">'_2'</span>, <span class="string">'_3'</span>]),
+        Tuple4 = tagged(<span class="string">'Tuple4'</span>, [<span class="string">'_1'</span>, <span class="string">'_2'</span>, <span class="string">'_3'</span>, <span class="string">'_4'</span>]),
+        Tuple5 = tagged(<span class="string">'Tuple5'</span>, [<span class="string">'_1'</span>, <span class="string">'_2'</span>, <span class="string">'_3'</span>, <span class="string">'_4'</span>, <span class="string">'_5'</span>]);
+    
+    <span class="comment">/**
+       ## isTuple2(a)
+    
+       Returns `true` if `a` is `Tuple2`.
+    **/</span>
+    <span class="keyword">var</span> isTuple2 = isInstanceOf(Tuple2);
+    
+    <span class="comment">/**
+       ## isTuple4(a)
+    
+       Returns `true` if `a` is `Tuple3`.
+    **/</span>
+    <span class="keyword">var</span> isTuple3 = isInstanceOf(Tuple3);
+    
+    <span class="comment">/**
+       ## isTuple4(a)
+    
+       Returns `true` if `a` is `Tuple4`.
+    **/</span>
+    <span class="keyword">var</span> isTuple4 = isInstanceOf(Tuple4);
+    
+    <span class="comment">/**
+       ## isTuple5(a)
+    
+       Returns `true` if `a` is `Tuple5`.
+    **/</span>
+    <span class="keyword">var</span> isTuple5 = isInstanceOf(Tuple5);
+    
+    squishy = squishy
+        .property(<span class="string">'Tuple2'</span>, Tuple2)
+        .property(<span class="string">'Tuple3'</span>, Tuple3)
+        .property(<span class="string">'Tuple4'</span>, Tuple4)
+        .property(<span class="string">'Tuple5'</span>, Tuple5)
+        .property(<span class="string">'isTuple2'</span>, isTuple2)
+        .property(<span class="string">'isTuple3'</span>, isTuple3)
+        .property(<span class="string">'isTuple4'</span>, isTuple4)
+        .property(<span class="string">'isTuple5'</span>, isTuple5);</pre></div></div>
             
         </li>
         
         
-        <li id="section-70">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-72">&#182;</a>
               </div>
               <h2>Promise(deferred)</h2>
 <p> Promise is a constructor which takes a <code>deferred</code> function. The <code>deferred</code>
@@ -2356,11 +2484,11 @@
         </li>
         
         
-        <li id="section-71">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-71">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
               <h3>Promise.of(x)</h3>
 <p> Creates a Promise that contains a successful value.</p>
@@ -2376,11 +2504,11 @@
         </li>
         
         
-        <li id="section-72">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <h3><code>Promise.error(x)</code></h3>
 <p> Creates a Promise that contains a failure value.</p>
@@ -2396,11 +2524,11 @@
         </li>
         
         
-        <li id="section-73">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <h3>chain(f)</h3>
 <p> Returns a new promise that evaluates <code>f</code> when the current promise
@@ -2423,11 +2551,11 @@
         </li>
         
         
-        <li id="section-74">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
               <h3><code>reject(f)</code></h3>
 <p> Returns a new promise that evaluates <code>f</code> when the current promise
@@ -2447,11 +2575,11 @@
         </li>
         
         
-        <li id="section-75">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
               <h2>isPromise(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Promise</code>.</p>
@@ -2463,11 +2591,11 @@
         </li>
         
         
-        <li id="section-76">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-76">&#182;</a>
+                <a class="pilcrow" href="#section-78">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -2483,11 +2611,11 @@
         </li>
         
         
-        <li id="section-77">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-77">&#182;</a>
+                <a class="pilcrow" href="#section-79">&#182;</a>
               </div>
               <h1>Trampoline</h1>
 <p> Reifies continutations onto the heap, rather than the stack. Allows
@@ -2511,11 +2639,11 @@
         </li>
         
         
-        <li id="section-78">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-78">&#182;</a>
+                <a class="pilcrow" href="#section-80">&#182;</a>
               </div>
               <h2>done(result)</h2>
 <p> Result constructor for a continuation.</p>
@@ -2532,11 +2660,11 @@
         </li>
         
         
-        <li id="section-79">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-79">&#182;</a>
+                <a class="pilcrow" href="#section-81">&#182;</a>
               </div>
               <h2>cont(thunk)</h2>
 <p> Continuation constructor. <code>thunk</code> is a nullary closure, resulting
@@ -2554,11 +2682,11 @@
         </li>
         
         
-        <li id="section-80">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-80">&#182;</a>
+                <a class="pilcrow" href="#section-82">&#182;</a>
               </div>
               <h2>trampoline(bounce)</h2>
 <p> The beginning of the continuation to call. Will repeatedly evaluate
@@ -2581,13 +2709,13 @@
         </li>
         
         
-        <li id="section-81">
+        <li id="section-83">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-81">&#182;</a>
+                <a class="pilcrow" href="#section-83">&#182;</a>
               </div>
-              <h2><code>Stream(state)</code></h2>
+              <h2>Stream(state)</h2>
 <p> The Stream type represents a flow of data ever evolving values over time.</p>
 <p> Here is an example of a continuous random numbers piped through to the console.</p>
 <pre><code>   Stream.poll(
@@ -2748,11 +2876,11 @@
         </li>
         
         
-        <li id="section-82">
+        <li id="section-84">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-82">&#182;</a>
+                <a class="pilcrow" href="#section-84">&#182;</a>
               </div>
               <h2>promise</h2>
 <pre><code> Stream.promise(promise).foreach(function (a) {
@@ -2779,11 +2907,11 @@
         </li>
         
         
-        <li id="section-83">
+        <li id="section-85">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-83">&#182;</a>
+                <a class="pilcrow" href="#section-85">&#182;</a>
               </div>
               <h2>sequential</h2>
 <pre><code> Stream.sequential([1, 2, 3, 4]).foreach(function (a) {
@@ -2805,11 +2933,11 @@
         </li>
         
         
-        <li id="section-84">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-84">&#182;</a>
+                <a class="pilcrow" href="#section-86">&#182;</a>
               </div>
               <h2>poll</h2>
 <pre><code> Stream.poll(function() {
@@ -2836,20 +2964,33 @@
         </li>
         
         
-        <li id="section-85">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-87">&#182;</a>
               </div>
               <h2>isStream(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Stream</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isStream = isInstanceOf(Stream);
-    
-    squishy = squishy
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isStream = isInstanceOf(Stream);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
         .property(<span class="string">'Stream'</span>, Stream)
         .property(<span class="string">'isStream'</span>, isStream)
         .method(<span class="string">'zip'</span>, isStream, <span class="keyword">function</span>(b) {
@@ -2862,11 +3003,11 @@
         </li>
         
         
-        <li id="section-86">
+        <li id="section-89">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-89">&#182;</a>
               </div>
               <h1>QuickCheck</h1>
 <p> QuickCheck is a form of <em>automated specification testing</em>. Instead
@@ -2919,11 +3060,11 @@
         </li>
         
         
-        <li id="section-87">
+        <li id="section-90">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-90">&#182;</a>
               </div>
               <h3>failureReporter</h3>
 <ul>
@@ -2943,11 +3084,11 @@
         </li>
         
         
-        <li id="section-88">
+        <li id="section-91">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-91">&#182;</a>
               </div>
               <h2>forAll(property, args)</h2>
 <p> Generates values for each type in <code>args</code> using <code>squishy.arb</code> and
@@ -2983,11 +3124,11 @@
         </li>
         
         
-        <li id="section-89">
+        <li id="section-92">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-92">&#182;</a>
               </div>
               <h2>goal</h2>
 <p> The number of successful inputs necessary to declare the whole
@@ -3002,7 +3143,144 @@
     squishy = squishy
         .property(<span class="string">'failureReporter'</span>, failureReporter)
         .property(<span class="string">'forAll'</span>, forAll)
-        .property(<span class="string">'goal'</span>, goal);
+        .property(<span class="string">'goal'</span>, goal);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <h3>arbitrary values</h3>
+<p> Creates an arbitrary value depending on the type.</p>
+<pre><code>  console.log(squishy.arb(Number)); // Outputs a random number</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'arb'</span>, strictEquals(AnyVal), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> types = [Boolean, Number, String];
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(<span class="keyword">this</span>.oneOf(types), s - <span class="number">1</span>);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Array), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Boolean), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> Math.random() &lt; <span class="number">0.5</span>;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Char), <span class="keyword">function</span>(a, s) {
+            <span class="comment">/* Should consider 127 (DEL) to be quite dangerous? */</span>
+            <span class="keyword">return</span> String.fromCharCode(Math.floor(<span class="keyword">this</span>.randomRange(<span class="number">32</span>, <span class="number">127</span>)));
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Function), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">function</span>(){};
+        })
+        .method(<span class="string">'arb'</span>, isArrayOf, <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> accum = [],
+                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
+                i;
+    
+            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
+                accum.push(<span class="keyword">this</span>.arb(a.type, s - <span class="number">1</span>));
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'arb'</span>, isObjectLike, <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> o = {},
+                i;
+    
+            <span class="keyword">for</span>(i <span class="keyword">in</span> a.props) {
+                o[i] = <span class="keyword">this</span>.arb(a.props[i]);
+            }
+    
+            <span class="keyword">return</span> o;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Number), <span class="keyword">function</span>(a, s) {
+            <span class="comment">/*
+              Divide the Number.MAX_VALUE by the goal, so we don't get
+              a Number overflow (worst case Infinity), meaning we can
+              add multiple arb(Number) together without issues.
+            */</span>
+            <span class="keyword">var</span> variance = Number.MAX_VALUE / <span class="keyword">this</span>.goal;
+            <span class="keyword">return</span> <span class="keyword">this</span>.randomRange(-variance, variance);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Object), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> o = {},
+                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
+                i;
+    
+            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
+                o[<span class="keyword">this</span>.arb(String, s - <span class="number">1</span>)] = <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
+            }
+    
+            <span class="keyword">return</span> o;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(String), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(Char), s - <span class="number">1</span>).join(<span class="string">''</span>);
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <h3>shrink values</h3>
+<p> Shrinks values for utilizing against checking values.</p>
+<pre><code>  console.log(squishy.shrink([1, 2, 3, 4])); // [[1, 2, 3, 4], [1, 2, 3]]</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'shrink'</span>, isArray, <span class="keyword">function</span>(a) {
+            <span class="keyword">var</span> accum = [[]],
+                x = a.length;
+    
+            <span class="keyword">while</span>(x) {
+                x = Math.floor(x / <span class="number">2</span>);
+    
+                <span class="keyword">if</span> (x) accum.push(a.slice(a.length = x));
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'shrink'</span>, isBoolean, <span class="keyword">function</span>(b) {
+            <span class="keyword">return</span> b ? [<span class="literal">false</span>] : [];
+        })
+        .method(<span class="string">'shrink'</span>, isNumber, <span class="keyword">function</span>(n) {
+            <span class="keyword">var</span> accum = [<span class="number">0</span>],
+                x = n;
+    
+            <span class="keyword">if</span> (n &lt; <span class="number">0</span>) accum.push(-n);
+    
+            <span class="keyword">while</span>(x) {
+                x = x / <span class="number">2</span>;
+                x = x &lt; <span class="number">0</span> ? Math.ceil(x) : Math.floor(x);
+    
+                <span class="keyword">if</span> (x) accum.push(n - x);
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'shrink'</span>, isString, <span class="keyword">function</span>(s) {
+            <span class="keyword">var</span> accum = [<span class="string">''</span>],
+                x = s.length;
+    
+            <span class="keyword">while</span>(x) {
+                x = Math.floor(x / <span class="number">2</span>);
+    
+                <span class="keyword">if</span> (x) accum.push(s.substring(<span class="number">0</span>, s.length - x));
+            }
+    
+            <span class="keyword">return</span> accum;
+        });
 
     <span class="keyword">if</span> (<span class="keyword">typeof</span> exports != <span class="string">'undefined'</span>) {
         <span class="comment">/*jshint node: true*/</span>
