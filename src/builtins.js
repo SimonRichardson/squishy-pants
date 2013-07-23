@@ -42,26 +42,25 @@ squishy = squishy
         return env.fold(env.zip(a, b), true, function(v, t) {
             return v && env.equal(t._1, t._2);
         });
-    });
-    /*
+    })
     .method('equal', isObject, function(a, b) {
         var i;
 
         for (i in a) {
-            if (!env.equal(a[i], b[i])) {
+            if (!this.equal(a[i], b[i])) {
                 return false;
             }
         }
 
         for (i in b) {
-            if (!env.equal(b[i], a[i])) {
+            if (!this.equal(b[i], a[i])) {
                 return false;
             }
         }
 
         return true;
     });
-*/
+
 //
 //  ### empty values
 //

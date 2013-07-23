@@ -62,5 +62,11 @@ exports.equal = {
             return _.equal(a, a);
         },
         [_.arrayOf(_.AnyVal)]
+    ),
+    'when testing equal with Object should return true': _.check(
+        function(a) {
+            return _.equal(a, a);
+        },
+        [Object]
     )
 };
