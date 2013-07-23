@@ -18,6 +18,41 @@ var concat = curry(function(a, b) {
     return a.concat(b);
 });
 
+var count = curry(function(a, f) {
+    var accum = 0,
+        total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        if(f(a[i])) {
+            accum = inc(accum);
+        }
+    }
+
+    return accum;
+});
+
+var dropLeft = curry(function(a, m) {
+    return a.slice(m);
+});
+
+var dropRight = curry(function(a, m) {
+    return a.slice(0, -m);
+});
+
+var dropWhile = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        if(f(a[i])) {
+            return a.slice(0, i - 1);
+        }
+    }
+
+    return [];
+});
+
 var exists = curry(function(a, f) {
     var total,
         i;
