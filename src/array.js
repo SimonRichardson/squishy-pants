@@ -1,3 +1,11 @@
+//
+//  # Array
+//
+//       Array a
+//
+//   Represents a sequence of values that are indexed by integers.
+//
+
 var ap = curry(function(a, b, f) {
     var accum = [],
         x,
@@ -45,12 +53,12 @@ var dropWhile = curry(function(a, f) {
         i;
 
     for (i = 0, total = a.length; i < total; i++) {
-        if(f(a[i])) {
-            return a.slice(0, i - 1);
+        if(!f(a[i])) {
+            return a.slice(i);
         }
     }
 
-    return [];
+    return a.slice();
 });
 
 var exists = curry(function(a, f) {
@@ -179,9 +187,37 @@ var reduceRight = curry(function(a, f) {
     return Option.some(v);
 });
 
+var takeLeft = curry(function(a, m) {
+    return a.slice(0, m);
+});
+
+var takeRight = curry(function(a, m) {
+    return a.slice(-m);
+});
+
+var takeWhile = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        if(!f(a[i])) {
+            return a.slice(0, i);
+        }
+    }
+
+    return [];
+});
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .method('ap', isArray, ap)
     .method('concat', isArray, concat)
+    .method('count', isArray, count)
+    .method('dropLeft', isArray, dropLeft)
+    .method('dropRight', isArray, dropRight)
+    .method('dropWhile', isArray, dropWhile)
     .method('exists', isArray, exists)
     .method('filter', isArray, filter)
     .method('filterNot', isArray, filterNot)
@@ -191,4 +227,7 @@ squishy = squishy
     .method('foldRight', isArray, foldRight)
     .method('map', isArray, map)
     .method('reduceLeft', isArray, reduceLeft)
-    .method('reduceRight', isArray, reduceRight);
+    .method('reduceRight', isArray, reduceRight)
+    .method('takeLeft', isArray, takeLeft)
+    .method('takeRight', isArray, takeRight)
+    .method('takeWhile', isArray, takeWhile);
