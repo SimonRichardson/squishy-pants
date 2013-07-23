@@ -1,5 +1,5 @@
 //
-//  ## `Stream(state)`
+//  ## Stream(state)
 //
 //  The Stream type represents a flow of data ever evolving values over time.
 //
@@ -227,6 +227,9 @@ Stream.poll = function(p, d) {
 //
 var isStream = isInstanceOf(Stream);
 
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('Stream', Stream)
     .property('isStream', isStream)
