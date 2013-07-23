@@ -24,6 +24,17 @@
 //
 //  Represents a failure.
 //
+//  * `ap(b, concat)` - Applicative ap(ply)
+//  * `flatMap(f)` - Monadic flatMap/bind
+//  * `fold(a, b)` - `a` applied to value if `left`, `b` if `right`
+//  * `map(f)` - Functor map
+//  * `swap()` - Swap values
+//  * `isSuccess` - `true` if `this` is `success`
+//  * `isFailure` - `true` if `this` is `failure`
+//  * `toOption(r)` - `some(x)` if `success(x)`, `none` if `failure()`
+//  * `toLeft(r)` - `left(x)` if `some(x)`, `right(r)` if none
+//  * `toRight(l)` - `right(x)` if `some(x)`, `left(l)` if none
+//
 
 var Attempt = taggedSum('Attempt', {
     success: ['value'],

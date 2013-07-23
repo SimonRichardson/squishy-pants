@@ -6,6 +6,17 @@
 //  Represents a tagged disjunction between two sets of values; `a` or
 //  `b`. Methods are right-biased.
 //
+//  * `ap(e)` - Applicative ap(ply)
+//  * `concat(s, f)` - Semigroup concat
+//  * `flatMap(f)` - Monadic flatMap/bind
+//  * `fold(a, b)` - `a` applied to value if `left`, `b` if `right`
+//  * `map(f)` - Functor map
+//  * `swap()` - If this is a Left, then return the left value in Right or vice versa.
+//  * `isLeft` - `true` iff `this` is `left`
+//  * `isRight` - `true` iff `this` is `right`
+//  * `toOption()` - `none` if `left`, `some` value of `right`
+//  * `toArray()` - `[]` if `left`, singleton value if `right`
+//
 
 var Either = taggedSum('Either', {
     left: ['value'],

@@ -7,6 +7,19 @@
 //   `some` constructor represents a value and `none` represents the
 //   absence.
 //
+//   * `ap(s)` - Applicative ap(ply)
+//   * `concat(s, plus)` - Semigroup concat
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `fold(a, b)` - Applies `a` to value if `some` or defaults to `b`
+//   * `getOrElse(a)` - Default value for `none`
+//   * `map(f)` - Functor map
+//   * `isSome` - `true` if `this` is `some`
+//   * `isNone` - `true` if `this` is `none`
+//   * `toAttempt(r)` - `success(x)` if `some(x)`, `failure(r)` if none
+//   * `toLeft(r)` - `left(x)` if `some(x)`, `right(r)` if none
+//   * `toRight(l)` - `right(x)` if `some(x)`, `left(l)` if none
+//
+
 var Option = taggedSum('Option', {
     some: ['value'],
     none: []
@@ -72,7 +85,7 @@ Option.prototype.map = function(f) {
     });
 };
 
-Option.prototype.toAttempt = function(f) {
+Option.prototype.toAttempt = function() {
     return this.match({
         some: Attempt.success,
         none: function() {
