@@ -1,0 +1,3020 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>squishy-pants.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>squishy-pants.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-07-23 09:33 */</span>
+(<span class="keyword">function</span>(global) {
+
+    <span class="string">'use strict'</span>;
+
+    <span class="comment">/* squishy pant's environment means `this` is special */</span>
+    <span class="comment">/*jshint validthis: true*/</span>
+
+    <span class="comment">/* squishy pants uses the !(this instanceof c) trick to remove `new` */</span>
+    <span class="comment">/*jshint newcap: false*/</span>
+
+    <span class="keyword">var</span> squishy;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1>Environment</h1>
+<p>  Environments are very important in squishy-pants. The library itself is
+  implemented as a single environment.</p>
+<p>  An environment holds methods and properties.</p>
+<p>  Methods are implemented as multi-methods, which allow a form of
+  <em>ad-hoc polymorphism</em>. Duck typing is another example of ad-hoc
+  polymorphism, but only allows a single implementation at a time, via
+  prototype mutation.</p>
+<p>  A method instance is a product of a name, a predicate and an
+  implementation:</p>
+<pre><code>  var env = squishy.environment()
+      .method(
+          // Name
+          &#39;negate&#39;,
+          // Predicate
+          function(n) {
+              return typeof n == &#39;number&#39;;
+          },
+          // Implementation
+          function(n) {
+              return -n;
+          }
+      );
+
+  env.negate(100) == -100;</code></pre>
+<p>  We can now override the environment with some more implementations:</p>
+<pre><code>  var env2 = env
+      .method(
+          &#39;negate&#39;,
+          function(b) {
+              return typeof b == &#39;boolean&#39;;
+          },
+          function(b) {
+              return !b;
+          }
+      );
+
+  env2.negate(100) == -100;
+  env2.negate(true) == false;</code></pre>
+<p>  Environments are immutable; references to <code>env</code> won&#39;t see an
+  implementation for boolean. The <code>env2</code> environment could have
+  overwritten the implementation for number and code relying on <code>env</code>
+  would still work.</p>
+<p>  Properties can be accessed without dispatching on arguments. They
+  can almost be thought of as methods with predicates that always
+  return true:</p>
+<pre><code>  var env = squishy.environment()
+      .property(&#39;name&#39;, &#39;Squishy&#39;);
+
+  env.name === &#39;Squishy&#39;;</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    
+    <span class="function"><span class="keyword">function</span> <span class="title">findRegistered</span><span class="params">(registrations, args)</span> {</span>
+        <span class="keyword">var</span> i,
+            total;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>, total = registrations.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(registrations[i].predicate.apply(<span class="keyword">this</span>, args))
+                <span class="keyword">return</span> registrations[i].f;
+        }
+    
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Method not implemented for this input"</span>);
+    }
+    
+    <span class="function"><span class="keyword">function</span> <span class="title">makeMethod</span><span class="params">(registrations)</span> {</span>
+        <span class="keyword">return</span> <span class="keyword">function</span>() {
+            <span class="keyword">var</span> args = [].slice.call(arguments);
+            <span class="keyword">return</span> findRegistered(registrations, args).apply(<span class="keyword">this</span>, args);
+        };
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2>environment(methods, properties)</h2>
+<ul>
+<li>method(name, predicate, f) - adds an multimethod implementation</li>
+<li>property(name, value) - sets a property to value</li>
+<li>isDefined(name) - is a multimethod implement defined</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">environment</span><span class="params">(methods, properties)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, environment),
+            i;
+    
+        methods = methods || {};
+        properties = properties || {};
+    
+        self.method = <span class="keyword">function</span>(name, predicate, f) {
+            <span class="keyword">var</span> newMethods = extend(methods, singleton(name, (methods[name] || []).concat({
+                predicate: predicate,
+                f: f
+            })));
+            <span class="keyword">return</span> environment(newMethods, properties);
+        };
+    
+        self.property = <span class="keyword">function</span>(name, value) {
+            <span class="keyword">var</span> newProperties = extend(properties, singleton(name, value));
+            <span class="keyword">return</span> environment(methods, newProperties);
+        };
+    
+        self.isDefined = <span class="keyword">function</span>(name) {
+            <span class="keyword">return</span> self[name] &amp;&amp; functionName(self[name]) === name;
+        };
+    
+        <span class="keyword">for</span>(i <span class="keyword">in</span> methods) {
+            <span class="keyword">if</span>(self[i]) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Method `"</span> + i + <span class="string">"` already in environment."</span>);
+            <span class="keyword">else</span> {
+                <span class="comment">/* Make sure the methods are names */</span>
+                <span class="keyword">var</span> method = makeMethod(methods[i]);
+                method._name = i;
+                self[i] = method;
+            }
+        }
+    
+        <span class="keyword">for</span>(i <span class="keyword">in</span> properties) {
+            <span class="keyword">if</span>(self[i]) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Property `"</span> + i + <span class="string">"` already in environment."</span>);
+            <span class="keyword">else</span> self[i] = properties[i];
+        }
+    
+        <span class="keyword">return</span> self;
+    }
+
+    squishy = environment();
+    squishy = squishy.property(<span class="string">'environment'</span>, environment);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h1>Helpers</h1>
+<p> The helpers module is a collection of functions used often inside
+ of bilby.js or are generally useful for programs.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2>functionName(f)</h2>
+<p> Returns the name of function <code>f</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">functionName</span><span class="params">(f)</span> {</span>
+        <span class="keyword">return</span> f._name || f.name;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2>functionLength(f)</h2>
+<p> Returns the arity of function <code>f</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">functionLength</span><span class="params">(f)</span> {</span>
+        <span class="keyword">return</span> f._length || f.length;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h2>create(proto)</h2>
+<p> Partial polyfill for Object.create - creates a new instance of the
+ given prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">create</span><span class="params">(proto)</span> {</span>
+        <span class="function"><span class="keyword">function</span> <span class="title">Ctor</span><span class="params">()</span> {</span>}
+        Ctor.prototype = proto;
+        <span class="keyword">return</span> <span class="keyword">new</span> Ctor();
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2>getInstance(self, constructor)</h2>
+<p> Always returns an instance of constructor.</p>
+<p> Returns self if it is an instanceof constructor, otherwise
+ constructs an object with the correct prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">getInstance</span><span class="params">(self, constructor)</span> {</span>
+        <span class="keyword">return</span> self <span class="keyword">instanceof</span> constructor ? self : create(constructor.prototype);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h2>singleton(k, v)</h2>
+<p> Creates a new single object using <code>k</code> as the key and <code>v</code> as the
+ value. Useful for creating arbitrary keyed objects without
+ mutation:</p>
+<pre><code>  squishy.singleton([&#39;Hello&#39;, &#39;world&#39;].join(&#39; &#39;), 42) == {&#39;Hello world&#39;: 42}</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">singleton</span><span class="params">(k, v)</span> {</span>
+        <span class="keyword">var</span> o = {};
+        o[k] = v;
+        <span class="keyword">return</span> o;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h2>extend(a, b)</h2>
+<p> Right-biased key-value concat of objects <code>a</code> and <code>b</code>:</p>
+<pre><code>  squishy.extend({a: 1, b: 2}, {b: true, c: false}) == {a: 1, b: true, c: false}</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">extend</span><span class="params">(a, b)</span> {</span>
+        <span class="keyword">var</span> rec = <span class="keyword">function</span>(a, b) {
+            <span class="keyword">var</span> i;
+            <span class="keyword">for</span>(i <span class="keyword">in</span> b) {
+                a[i] = b[i];
+            }
+            <span class="keyword">return</span> a;
+        };
+        <span class="keyword">return</span> rec(rec({}, a), b);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h2>bind(f)(o)</h2>
+<p> Makes <code>this</code> inside of <code>f</code> equal to <code>o</code>:</p>
+<pre><code>  squishy.bind(function() { return this; })(a)() == a</code></pre>
+<p> Also partially applies arguments:</p>
+<pre><code>  squishy.bind(squishy.add)(null, 10)(32) == 42</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">(f)</span> {</span>
+        <span class="function"><span class="keyword">function</span> <span class="title">curriedBind</span><span class="params">(o)</span> {</span>
+            <span class="comment">/* If native bind doesn't exist, use a polyfill. */</span>
+            <span class="keyword">var</span> args = [].slice.call(arguments, <span class="number">1</span>),
+                g;
+    
+            <span class="keyword">if</span>(f.bind) g = f.bind.apply(f, [o].concat(args));
+            <span class="keyword">else</span> {
+                g = <span class="keyword">function</span>() {
+                    <span class="keyword">return</span> f.apply(o, args.concat([].slice.call(arguments)));
+                };
+            }
+    
+            <span class="comment">/*
+               Let's try and associate all curried functions with the same name as the originator.
+               Can't override length but can set _length for currying
+            */</span>
+            g._name = functionName(f);
+            g._length = Math.max(functionLength(f) - args.length, <span class="number">0</span>);
+    
+            <span class="keyword">return</span> g;
+        }
+    
+        <span class="comment">/* Manual currying since `curry` relies in bind. */</span>
+        <span class="keyword">if</span>(arguments.length &gt; <span class="number">1</span>) <span class="keyword">return</span> curriedBind.apply(<span class="keyword">this</span>, [].slice.call(arguments, <span class="number">1</span>));
+        <span class="keyword">else</span> <span class="keyword">return</span> curriedBind;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2>curry(f)</h2>
+<p> Takes a normal function <code>f</code> and allows partial application of its
+ named arguments:</p>
+<pre><code>  var add = bilby.curry(function(a, b) {
+         return a + b;
+     }),
+     add15 = add(15);
+
+  add15(27) == 42;</code></pre>
+<p> Retains ability of complete application by calling the function
+ when enough arguments are filled:</p>
+<pre><code>  add(15, 27) == 42;</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">curry</span><span class="params">(f)</span> {</span>
+        <span class="keyword">var</span> a = <span class="keyword">function</span>() {
+            <span class="keyword">var</span> g = bind(f).apply(f, [<span class="keyword">this</span>].concat([].slice.call(arguments)));
+    
+            <span class="keyword">if</span>(!functionLength(g)) <span class="keyword">return</span> g();
+            <span class="keyword">else</span> <span class="keyword">return</span> curry(g);
+        };
+    
+        <span class="comment">/*
+           Let's try and associate all curried functions with the same name as the originator.
+           Can't override length but can set _length for currying
+        */</span>
+        a._name = functionName(f);
+        a._length = functionLength(f);
+    
+        <span class="keyword">return</span> a;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h2>compose(f, g)</h2>
+<p> Creates a new function that applies <code>f</code> to the result of <code>g</code> of the
+ input argument:</p>
+<pre><code>  forall f g x. compose(f, g)(x) == f(g(x))</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">compose</span><span class="params">(f, g)</span> {</span>
+        <span class="keyword">return</span> <span class="keyword">function</span>() {
+            <span class="keyword">return</span> f(g.apply(<span class="keyword">this</span>, [].slice.call(arguments)));
+        };
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2>identity(o)</h2>
+<p> Identity function. Returns <code>o</code>:</p>
+<pre><code>  forall a. identity(a) == a</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">identity</span><span class="params">(o)</span> {</span>
+        <span class="keyword">return</span> o;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h2>constant(c)</h2>
+<p> Constant function. Creates a function that always returns <code>c</code>, no
+ matter the argument:</p>
+<pre><code> forall a b. constant(a)(b) == a</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">constant</span><span class="params">(c)</span> {</span>
+        <span class="keyword">return</span> <span class="keyword">function</span>() {
+            <span class="keyword">return</span> c;
+        };
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h2>liftA2(f, a, b)</h2>
+<p> Lifts a curried, binary function <code>f</code> into the applicative passes
+ <code>a</code> and <code>b</code> as parameters.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">liftA2</span><span class="params">(f, a, b)</span> {</span>
+        <span class="keyword">return</span> <span class="keyword">this</span>.ap(<span class="keyword">this</span>.map(a, f), b);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <h2>arrayOf(type)</h2>
+<p> Sentinel value for when an array of a particular type is needed:</p>
+<pre><code>  arrayOf(Number)</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">arrayOf</span><span class="params">(type)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, arrayOf);
+        self.type = type;
+        <span class="keyword">return</span> self;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h2>objectLike(props)</h2>
+<p> Sentinel value for when an object with specified properties is
+ needed:</p>
+<pre><code>  objectLike({
+      age: Number,
+      name: String
+  })</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">objectLike</span><span class="params">(props)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, objectLike);
+        self.props = props;
+        <span class="keyword">return</span> self;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h2>or(a)(b)</h2>
+<p> Curried function for <code>||</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> or = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> a || b;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h2>and(a)(b)</h2>
+<p> Curried function for <code>&amp;&amp;</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> and = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> a &amp;&amp; b;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h2>add(a)(b)</h2>
+<p> Curried function for <code>+</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> add = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> a + b;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <h2>strictEquals(a)(b)</h2>
+<p> Curried function for <code>===</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> strictEquals = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> a === b;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <h2>not(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is not a valid value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">not</span><span class="params">(a)</span> {</span>
+        <span class="keyword">return</span> !a;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <h2>error(s)</h2>
+<p> Turns the <code>throw new Error(s)</code> statement into an expression.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">error</span><span class="params">(s)</span> {</span>
+        <span class="keyword">return</span> <span class="keyword">function</span>() {
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error(s);
+        };
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <h2>AnyVal</h2>
+<p> Sentinel value for when any type of primitive value is needed.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> AnyVal = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <h2>Char</h2>
+<p> Sentinel value for when a single character string is needed.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Char = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <h2>oneOf</h2>
+<p> Selects one of the values at random.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">oneOf</span><span class="params">(a)</span> {</span>
+        <span class="keyword">return</span> a[Math.floor(<span class="keyword">this</span>.randomRange(<span class="number">0</span>, a.length))];
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <h2>randomRange</h2>
+<p> Returns a random number between the range.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">randomRange</span><span class="params">(a, b)</span> {</span>
+        <span class="keyword">return</span> Math.random() * (b - a) + a;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <h2>inc</h2>
+<p> Increments the number by 1</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">inc</span><span class="params">(x)</span> {</span>
+        <span class="keyword">return</span> x + <span class="number">1</span>;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <h2>dec</h2>
+<p> Decrement the number by 1</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">dec</span><span class="params">(x)</span> {</span>
+        <span class="keyword">return</span> x - <span class="number">1</span>;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .property(<span class="string">'functionName'</span>, functionName)
+        .property(<span class="string">'functionLength'</span>, functionLength)
+        .property(<span class="string">'create'</span>, create)
+        .property(<span class="string">'getInstance'</span>, getInstance)
+        .property(<span class="string">'singleton'</span>, singleton)
+        .property(<span class="string">'extend'</span>, extend)
+        .property(<span class="string">'bind'</span>, bind)
+        .property(<span class="string">'curry'</span>, curry)
+        .property(<span class="string">'compose'</span>, compose)
+        .property(<span class="string">'identity'</span>, identity)
+        .property(<span class="string">'constant'</span>, constant)
+        .property(<span class="string">'liftA2'</span>, liftA2)
+        .property(<span class="string">'arrayOf'</span>, arrayOf)
+        .property(<span class="string">'objectLike'</span>, objectLike)
+        .property(<span class="string">'or'</span>, or)
+        .property(<span class="string">'and'</span>, and)
+        .property(<span class="string">'add'</span>, add)
+        .property(<span class="string">'not'</span>, not)
+        .property(<span class="string">'error'</span>, error)
+        .property(<span class="string">'AnyVal'</span>, AnyVal)
+        .property(<span class="string">'Char'</span>, Char)
+        .property(<span class="string">'oneOf'</span>, oneOf)
+        .property(<span class="string">'randomRange'</span>, randomRange)
+        .property(<span class="string">'inc'</span>, inc)
+        .property(<span class="string">'dec'</span>, dec);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <h2>isTypeOf(a)(b)</h2>
+<p> Returns <code>true</code> if <code>b</code> has <code>typeof a</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isTypeOf = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> <span class="keyword">typeof</span> b === a;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <h2>isBoolean(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>Boolean</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isBoolean = isTypeOf(<span class="string">'boolean'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <h2>isFunction(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>Function</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isFunction = isTypeOf(<span class="string">'function'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <h2>isNumber(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>Number</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isNumber = isTypeOf(<span class="string">'number'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <h2>isObject(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>Object</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isObject = isTypeOf(<span class="string">'object'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <h2>isString(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>String</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isString = isTypeOf(<span class="string">'string'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <h2>isArray(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is an <code>Array</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">isArray</span><span class="params">(a)</span> {</span>
+        <span class="keyword">if</span>(Array.isArray) <span class="keyword">return</span> Array.isArray(a);
+        <span class="keyword">else</span> <span class="keyword">return</span> Object.prototype.toString.call(a) === <span class="string">"[object Array]"</span>;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <h2>isEven(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is even.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">isEven</span><span class="params">(a)</span> {</span>
+        <span class="keyword">return</span> (a &amp; <span class="number">1</span>) === <span class="number">0</span>;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <h2>isOdd(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is odd.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">isOdd</span><span class="params">(a)</span> {</span>
+        <span class="keyword">return</span> !isEven(a);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <h2>isPalindrome(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a valid palindrome.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">isPalindrome</span><span class="params">(s)</span> {</span>
+        <span class="keyword">var</span> total = s.length;
+        <span class="keyword">if</span>(total &lt; <span class="number">2</span>) <span class="keyword">return</span> <span class="literal">true</span>;
+        <span class="keyword">if</span>(s.charAt(<span class="number">0</span>) !== s.charAt(total - <span class="number">1</span>)) <span class="keyword">return</span> <span class="literal">false</span>;
+    
+        <span class="keyword">return</span> isPalindrome(s.substr(<span class="number">1</span>, total - <span class="number">2</span>));
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <h2>isInstanceOf(a)(b)</h2>
+<p> Returns <code>true</code> if <code>a</code> is an instance of <code>b</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isInstanceOf = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> b <span class="keyword">instanceof</span> a;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <h2>isArrayOf(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is an instance of <code>arrayOf</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isArrayOf = isInstanceOf(arrayOf);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <h2>isObjectLike(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is an instance of <code>objectLike</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isObjectLike = isInstanceOf(objectLike);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <h2>isAnyOf(a)(b)</h2>
+<p> Returns <code>true</code> if <code>b</code> is any <code>strictEquals [a]</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isAnyOf = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">var</span> i;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; a.length; i++) {
+            <span class="keyword">if</span>(strictEquals(a[i])(b)) {
+                <span class="keyword">return</span> <span class="literal">true</span>;
+            }
+        }
+    
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <h2>isAnyTypeOf(a)(b)</h2>
+<p> Returns <code>true</code> if <code>b</code> is any <code>typeof [a]</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isAnyTypeOf = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">var</span> i;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; a.length; i++) {
+            <span class="keyword">if</span>(isTypeOf(a[i])(b)) {
+                <span class="keyword">return</span> <span class="literal">true</span>;
+            }
+        }
+    
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <h2>isAnyInstanceOf(a)(b)</h2>
+<p> Returns <code>true</code> if <code>b</code> is any <code>instanceof [a]</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isAnyInstanceOf = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">var</span> i;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; a.length; i++) {
+            <span class="keyword">if</span>(isInstanceOf(a[i])(b)) {
+                <span class="keyword">return</span> <span class="literal">true</span>;
+            }
+        }
+    
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .property(<span class="string">'isTypeOf'</span>, isTypeOf)
+        .property(<span class="string">'isBoolean'</span>, isBoolean)
+        .property(<span class="string">'isFunction'</span>, isFunction)
+        .property(<span class="string">'isNumber'</span>, isNumber)
+        .property(<span class="string">'isObject'</span>, isObject)
+        .property(<span class="string">'isString'</span>, isString)
+        .property(<span class="string">'isArray'</span>, isArray)
+        .property(<span class="string">'isEven'</span>, isEven)
+        .property(<span class="string">'isOdd'</span>, isOdd)
+        .property(<span class="string">'isPalindrome'</span>, isPalindrome)
+        .property(<span class="string">'isInstanceOf'</span>, isInstanceOf)
+        .property(<span class="string">'isArrayOf'</span>, isArrayOf)
+        .property(<span class="string">'isObjectLike'</span>, isObjectLike)
+        .property(<span class="string">'isAnyOf'</span>, isAnyOf)
+        .property(<span class="string">'isAnyTypeOf'</span>, isAnyTypeOf)
+        .property(<span class="string">'isAnyInstanceOf'</span>, isAnyInstanceOf);
+
+    squishy = squishy
+        .method(<span class="string">'map'</span>, isFunction, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> compose(b, a);
+        })
+        .method(<span class="string">'concat'</span>, isFunction, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a().concat(b());
+        })
+        .method(<span class="string">'ap'</span>, isFunction, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> a(x)(b(x));
+            };
+        });
+    
+    squishy = squishy
+        .method(<span class="string">'map'</span>, isBoolean, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> b(a);
+        })
+        .method(<span class="string">'concat'</span>, isBoolean, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a &amp; b;
+        })
+        .method(<span class="string">'map'</span>, squishy.liftA2(or, isNumber, isString), <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> b(a);
+        })
+        .method(<span class="string">'concat'</span>, squishy.liftA2(or, isNumber, isString), <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a + b;
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <h3>arbitrary values</h3>
+<p> Creates an arbitrary value depending on the type.</p>
+<pre><code>  console.log(squishy.arb(Number)); // Outputs a random number</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'arb'</span>, strictEquals(AnyVal), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> types = [Boolean, Number, String];
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(<span class="keyword">this</span>.oneOf(types), s - <span class="number">1</span>);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Array), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Boolean), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> Math.random() &lt; <span class="number">0.5</span>;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Char), <span class="keyword">function</span>(a, s) {
+            <span class="comment">/* Should consider 127 (DEL) to be quite dangerous? */</span>
+            <span class="keyword">return</span> String.fromCharCode(Math.floor(<span class="keyword">this</span>.randomRange(<span class="number">32</span>, <span class="number">127</span>)));
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Function), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">function</span>(){};
+        })
+        .method(<span class="string">'arb'</span>, isArrayOf, <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> accum = [],
+                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
+                i;
+    
+            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
+                accum.push(<span class="keyword">this</span>.arb(a.type, s - <span class="number">1</span>));
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'arb'</span>, isObjectLike, <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> o = {},
+                i;
+    
+            <span class="keyword">for</span>(i <span class="keyword">in</span> a.props) {
+                o[i] = <span class="keyword">this</span>.arb(a.props[i]);
+            }
+    
+            <span class="keyword">return</span> o;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Number), <span class="keyword">function</span>(a, s) {
+            <span class="comment">/*
+              Divide the Number.MAX_VALUE by the goal, so we don't get
+              a Number overflow (worst case Infinity), meaning we can
+              add multiple arb(Number) together without issues.
+            */</span>
+            <span class="keyword">var</span> variance = Number.MAX_VALUE / <span class="keyword">this</span>.goal;
+            <span class="keyword">return</span> <span class="keyword">this</span>.randomRange(-variance, variance);
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Object), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">var</span> o = {},
+                length = <span class="keyword">this</span>.randomRange(<span class="number">0</span>, s),
+                i;
+    
+            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; length; i++) {
+                o[<span class="keyword">this</span>.arb(String, s - <span class="number">1</span>)] = <span class="keyword">this</span>.arb(arrayOf(AnyVal), s - <span class="number">1</span>);
+            }
+    
+            <span class="keyword">return</span> o;
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(String), <span class="keyword">function</span>(a, s) {
+            <span class="keyword">return</span> <span class="keyword">this</span>.arb(arrayOf(Char), s - <span class="number">1</span>).join(<span class="string">''</span>);
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <h3>empty values</h3>
+<p> Creates an empty value depending on the type. Each resulting value
+ will be classified as falsy for the type. Boolean will be
+ <code>false</code> and Array will be an empty <code>[]</code> for example.</p>
+<pre><code>  console.log(squishy.empty(Array)); // Outputs `[]`</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'empty'</span>, strictEquals(AnyVal), <span class="keyword">function</span>() {
+            <span class="keyword">var</span> types = [Boolean, Number, String];
+            <span class="keyword">return</span> <span class="keyword">this</span>.empty(<span class="keyword">this</span>.oneOf(types));
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Array), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> [];
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Boolean), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> <span class="literal">false</span>;
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Function), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> <span class="keyword">function</span>() {};
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Number), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> <span class="number">0</span>;
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Object), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> {};
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(String), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> <span class="string">''</span>;
+        });
+    
+    squishy = squishy
+        .method(<span class="string">'shrink'</span>, isArray, <span class="keyword">function</span>(a) {
+            <span class="keyword">var</span> accum = [[]],
+                x = a.length;
+    
+            <span class="keyword">while</span>(x) {
+                x = Math.floor(x / <span class="number">2</span>);
+    
+                <span class="keyword">if</span> (x) accum.push(a.slice(a.length = x));
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'shrink'</span>, isBoolean, <span class="keyword">function</span>(b) {
+            <span class="keyword">return</span> b ? [<span class="literal">false</span>] : [];
+        })
+        .method(<span class="string">'shrink'</span>, isNumber, <span class="keyword">function</span>(n) {
+            <span class="keyword">var</span> accum = [<span class="number">0</span>],
+                x = n;
+    
+            <span class="keyword">if</span> (n &lt; <span class="number">0</span>) accum.push(-n);
+    
+            <span class="keyword">while</span>(x) {
+                x = x / <span class="number">2</span>;
+                x = x &lt; <span class="number">0</span> ? Math.ceil(x) : Math.floor(x);
+    
+                <span class="keyword">if</span> (x) accum.push(n - x);
+            }
+    
+            <span class="keyword">return</span> accum;
+        })
+        .method(<span class="string">'shrink'</span>, isString, <span class="keyword">function</span>(s) {
+            <span class="keyword">var</span> accum = [<span class="string">''</span>],
+                x = s.length;
+    
+            <span class="keyword">while</span>(x) {
+                x = Math.floor(x / <span class="number">2</span>);
+    
+                <span class="keyword">if</span> (x) accum.push(s.substring(<span class="number">0</span>, s.length - x));
+            }
+    
+            <span class="keyword">return</span> accum;
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <h2>tagged(name, fields)</h2>
+<p> Creates a simple constructor for a tagged object.</p>
+<pre><code>  var Tuple = tagged(&#39;Tuple&#39;, [&#39;a&#39;, &#39;b&#39;]);
+  var x = Tuple(1, 2);
+  var y = new Tuple(3, 4);
+  x instanceof Tuple &amp;&amp; y instanceof Tuple;</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">tagged</span><span class="params">(name, fields)</span> {</span>
+        <span class="function"><span class="keyword">function</span> <span class="title">wrapped</span><span class="params">()</span> {</span>
+            <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, wrapped),
+                i;
+            <span class="keyword">if</span>(arguments.length != fields.length) {
+                <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">"Expected "</span> + fields.length + <span class="string">" arguments, got "</span> + arguments.length);
+            }
+            <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; fields.length; i++) {
+                self[fields[i]] = arguments[i];
+            }
+            <span class="keyword">return</span> self;
+        }
+    
+        wrapped._name = name;
+        wrapped._length = fields.length;
+    
+        <span class="keyword">return</span> wrapped;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <h2>taggedSum(constructors)</h2>
+<p> Creates a disjoint union of constructors, with a catamorphism.</p>
+<pre><code>   var List = taggedSum({
+       Cons: [&#39;car&#39;, &#39;cdr&#39;],
+       Nil: []
+   });
+   function listLength(l) {
+       return l.match({
+           Cons: function(car, cdr) {
+               return 1 + listLength(cdr);
+           },
+           Nil: function() {
+               return 0;
+           }
+       });
+   }
+   listLength(List.Cons(1, new List.Cons(2, List.Nil()))) == 2;</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">taggedSum</span><span class="params">(name, constructors)</span> {</span>
+        <span class="keyword">var</span> key, proto;
+    
+        <span class="function"><span class="keyword">function</span> <span class="title">definitions</span><span class="params">()</span> {</span>
+            <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">'Tagged sum was called instead of one of its properties.'</span>);
+        }
+    
+        <span class="function"><span class="keyword">function</span> <span class="title">constructMatch</span><span class="params">(key)</span> {</span>
+            <span class="keyword">return</span> <span class="keyword">function</span>(dispatches) {
+                <span class="keyword">var</span> fields = constructors[key],
+                    args = [],
+                    total,
+                    i;
+    
+                <span class="keyword">if</span>(!dispatches[key])
+                    <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">"Constructors given to match didn't include: "</span> + key);
+    
+                <span class="keyword">for</span>(i = <span class="number">0</span>, total = fields.length; i &lt; total; i++) {
+                    args.push(<span class="keyword">this</span>[fields[i]]);
+                }
+    
+                <span class="keyword">return</span> dispatches[key].apply(<span class="keyword">this</span>, args);
+            };
+        }
+    
+        <span class="function"><span class="keyword">function</span> <span class="title">makeProto</span><span class="params">(key)</span> {</span>
+            <span class="keyword">var</span> proto = create(definitions.prototype);
+            proto.match = constructMatch(key);
+            <span class="keyword">return</span> proto;
+        }
+    
+        <span class="keyword">for</span>(key <span class="keyword">in</span> constructors) {
+            <span class="keyword">if</span>(!constructors[key].length) {
+                definitions[key] = makeProto(key);
+                <span class="keyword">continue</span>;
+            }
+    
+            definitions[key] = tagged(key, constructors[key]);
+            definitions[key].prototype = makeProto(key);
+        }
+    
+        definitions._name = name;
+    
+        <span class="keyword">return</span> definitions;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .property(<span class="string">'tagged'</span>, tagged)
+        .property(<span class="string">'taggedSum'</span>, taggedSum);
+
+    <span class="keyword">var</span> ap = curry(<span class="keyword">function</span>(a, b, f) {
+        <span class="keyword">var</span> accum = [],
+            x,
+            y,
+            i,
+            j;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>, x = a.length; i &lt; x; i++) {
+            <span class="keyword">for</span>(j = <span class="number">0</span>, y = b.length; j &lt; y; j++) {
+                accum.push(a[i](b[j]));
+            }
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="keyword">var</span> concat = curry(<span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> a.concat(b);
+    });
+    
+    <span class="keyword">var</span> count = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> accum = <span class="number">0</span>,
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(f(a[i])) {
+                accum = inc(accum);
+            }
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="keyword">var</span> dropLeft = curry(<span class="keyword">function</span>(a, m) {
+        <span class="keyword">return</span> a.slice(m);
+    });
+    
+    <span class="keyword">var</span> dropRight = curry(<span class="keyword">function</span>(a, m) {
+        <span class="keyword">return</span> a.slice(<span class="number">0</span>, -m);
+    });
+    
+    <span class="keyword">var</span> dropWhile = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(f(a[i])) {
+                <span class="keyword">return</span> a.slice(<span class="number">0</span>, i - <span class="number">1</span>);
+            }
+        }
+    
+        <span class="keyword">return</span> [];
+    });
+    
+    <span class="keyword">var</span> exists = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span>(f(a[i])) {
+                <span class="keyword">return</span> <span class="literal">true</span>;
+            }
+        }
+    
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    });
+    
+    <span class="keyword">var</span> filter = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> accum = [],
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span> (f(a[i])) {
+                accum.push(a[i]);
+            }
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="keyword">var</span> filterNot = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> accum = [],
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            <span class="keyword">if</span> (!f(a[i])) {
+                accum.push(a[i]);
+            }
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="function"><span class="keyword">function</span> <span class="title">flatten</span><span class="params">(a)</span> {</span>
+        <span class="keyword">return</span> flatMap(a, <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> squishy.toArray(x);
+        });
+    }
+    
+    <span class="keyword">var</span> flatMap = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> accum = [],
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            accum = accum.concat(f(a[i]));
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="keyword">var</span> foldLeft = curry(<span class="keyword">function</span>(a, v, f) {
+        <span class="keyword">var</span> total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            v = f(v, a[i]);
+        }
+    
+        <span class="keyword">return</span> v;
+    });
+    
+    <span class="keyword">var</span> foldRight = curry(<span class="keyword">function</span>(a, v, f) {
+        <span class="keyword">var</span> i;
+    
+        <span class="keyword">for</span> (i = a.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {
+            v = f(v, a[i]);
+        }
+    
+        <span class="keyword">return</span> v;
+    });
+    
+    <span class="keyword">var</span> get = curry(<span class="keyword">function</span>(a, i) {
+        <span class="keyword">return</span> a[i];
+    });
+    
+    <span class="keyword">var</span> map = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> accum = [],
+            total,
+            i;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>, total = a.length; i &lt; total; i++) {
+            accum[i] = f(a[i]);
+        }
+    
+        <span class="keyword">return</span> accum;
+    });
+    
+    <span class="keyword">var</span> reduceLeft = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> total = a.length,
+            i,
+            v;
+    
+        <span class="keyword">if</span> (total &lt; <span class="number">1</span>) <span class="keyword">return</span> Option.none;
+    
+        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; total; i++) {
+            <span class="keyword">if</span> (i === <span class="number">0</span>) v = a[i];
+            <span class="keyword">else</span> v = f(v, a[i]);
+        }
+    
+        <span class="keyword">return</span> Option.some(v);
+    });
+    
+    <span class="keyword">var</span> reduceRight = curry(<span class="keyword">function</span>(a, f) {
+        <span class="keyword">var</span> total = a.length,
+            i,
+            v;
+    
+        <span class="keyword">if</span> (total &lt; <span class="number">1</span>) <span class="keyword">return</span> Option.none;
+    
+        <span class="keyword">for</span> (i = total - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {
+            <span class="keyword">if</span> (i === <span class="number">0</span>) v = a[i];
+            <span class="keyword">else</span> v = f(v, a[i]);
+        }
+    
+        <span class="keyword">return</span> Option.some(v);
+    });
+    
+    squishy = squishy
+        .method(<span class="string">'ap'</span>, isArray, ap)
+        .method(<span class="string">'concat'</span>, isArray, concat)
+        .method(<span class="string">'exists'</span>, isArray, exists)
+        .method(<span class="string">'filter'</span>, isArray, filter)
+        .method(<span class="string">'filterNot'</span>, isArray, filterNot)
+        .method(<span class="string">'flatten'</span>, isArray, flatten)
+        .method(<span class="string">'flatMap'</span>, isArray, flatMap)
+        .method(<span class="string">'foldLeft'</span>, isArray, foldLeft)
+        .method(<span class="string">'foldRight'</span>, isArray, foldRight)
+        .method(<span class="string">'map'</span>, isArray, map)
+        .method(<span class="string">'reduceLeft'</span>, isArray, reduceLeft)
+        .method(<span class="string">'reduceRight'</span>, isArray, reduceRight);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <h1>Attempt</h1>
+<pre><code>  Attempt e v = Failure e + Success v</code></pre>
+<p> The Attempt data type represents a &quot;success&quot; value or a
+ semigroup of &quot;failure&quot; values. Attempt has an applicative
+ functor which collects failures&#39; errors or creates a new success
+ value.</p>
+<p> Here&#39;s an example function which validates a String:</p>
+<pre><code>  function nonEmpty(field, string) {
+      return string
+          ? squishy.success(string)
+          : squishy.failure([field + &quot; must be non-empty&quot;]);
+  }</code></pre>
+<h2>success(value)</h2>
+<p> Represents a successful <code>value</code>.</p>
+<h2>failure(errors)</h2>
+<p> Represents a failure.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    
+    <span class="keyword">var</span> Attempt = taggedSum(<span class="string">'Attempt'</span>, {
+        success: [<span class="string">'value'</span>],
+        failure: [<span class="string">'errors'</span>]
+    });
+    
+    Attempt.prototype.ap = <span class="keyword">function</span>(b, concat) {
+        <span class="keyword">var</span> a = <span class="keyword">this</span>;
+        <span class="keyword">return</span> a.match({
+            success: <span class="keyword">function</span>(value) {
+                <span class="keyword">return</span> b.map(value);
+            },
+            failure: <span class="keyword">function</span>(e) {
+                <span class="keyword">return</span> b.match({
+                    success: <span class="keyword">function</span>(value) {
+                        <span class="keyword">return</span> a;
+                    },
+                    failure: <span class="keyword">function</span>(errors) {
+                        <span class="keyword">return</span> Attempt.failure(concat(e, errors));
+                    }
+                });
+            }
+        });
+    };
+    
+    Attempt.prototype.flatMap = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: <span class="keyword">function</span>(a) {
+                <span class="keyword">return</span> f(a);
+            },
+            failure: <span class="keyword">function</span>(e) {
+                <span class="keyword">return</span> Attempt.failure(e);
+            }
+        });
+    };
+    
+    Attempt.prototype.fold = <span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> a(x);
+            },
+            failure: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> b(x);
+            }
+        });
+    };
+    
+    Attempt.prototype.map = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: <span class="keyword">function</span>(a) {
+                <span class="keyword">return</span> Attempt.success(f(a));
+            },
+            failure: <span class="keyword">function</span>(e) {
+                <span class="keyword">return</span> Attempt.failure(e);
+            }
+        });
+    };
+    
+    Attempt.prototype.swap = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: Attempt.failure,
+            failure: Attempt.success
+        });
+    };
+    
+    Attempt.prototype.toOption = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: Option.some,
+            failure: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> Option.none;
+            }
+        });
+    };
+    
+    Attempt.prototype.toLeft = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: Either.left,
+            failure: Either.right
+        });
+    };
+    
+    Attempt.prototype.toRight = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: Either.left,
+            failure: Either.right
+        });
+    };
+    
+    Attempt.prototype.toArray = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            success: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [x];
+            },
+            failure: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [];
+            }
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <h2>success(x)</h2>
+<p> Constructor to represent the existance of a value, <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.success.prototype.isSuccess = <span class="literal">true</span>;
+    Attempt.success.prototype.isFailure = <span class="literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <h2>of(x)</h2>
+<p> Constructor <code>of</code> Monad creating <code>Attempt.success</code> with value of <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.success.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> Attempt.success(x);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <h2>failure(x)</h2>
+<p> Constructor to represent the existance of a value, <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.failure.prototype.isSuccess = <span class="literal">false</span>;
+    Attempt.failure.prototype.isFailure = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <h2>of(x)</h2>
+<p> Constructor <code>of</code> Monad creating <code>Attempt.failure</code> with value of <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.failure.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> Attempt.failure(x);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <h2>isAttempt(a)</h2>
+<p> Returns <code>true</code> iff <code>a</code> is a <code>success</code> or a <code>failure</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isAttempt = isInstanceOf(Attempt);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .property(<span class="string">'success'</span>, Attempt.success)
+        .property(<span class="string">'failure'</span>, Attempt.failure)
+        .property(<span class="string">'isAttempt'</span>, isAttempt)
+        .method(<span class="string">'ap'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.ap(b, <span class="keyword">this</span>.concat);
+        })
+        .method(<span class="string">'flatMap'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.flatMap(b);
+        })
+        .method(<span class="string">'fold'</span>, isAttempt, <span class="keyword">function</span>(a, b, c) {
+            <span class="keyword">return</span> a.fold(b, c);
+        })
+        .method(<span class="string">'map'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.map(b);
+        })
+        .method(<span class="string">'toArray'</span>, isAttempt, <span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> a.toArray();
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <h1>Either</h1>
+<pre><code>  Either a b = Left a + Right b</code></pre>
+<p> Represents a tagged disjunction between two sets of values; <code>a</code> or
+ <code>b</code>. Methods are right-biased.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    
+    <span class="keyword">var</span> Either = taggedSum(<span class="string">'Either'</span>, {
+        left: [<span class="string">'value'</span>],
+        right: [<span class="string">'value'</span>]
+    });
+    
+    Either.prototype.ap = <span class="keyword">function</span>(e) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            },
+            right: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> e.map(x);
+            }
+        });
+    };
+    
+    Either.prototype.concat = <span class="keyword">function</span>(s, f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>() {
+                <span class="keyword">var</span> left = <span class="keyword">this</span>;
+                <span class="keyword">return</span> s.fold(
+                  constant(left),
+                  constant(s)
+                );
+            },
+            right: <span class="keyword">function</span>(y) {
+                <span class="keyword">return</span> s.map(<span class="keyword">function</span>(x) {
+                    <span class="keyword">return</span> f(x, y);
+                });
+            }
+        });
+    };
+    
+    Either.prototype.flatMap = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            },
+            right: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> f(x);
+            }
+        });
+    };
+    
+    Either.prototype.fold = <span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: a,
+            right: b
+        });
+    };
+    
+    Either.prototype.map = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            },
+            right: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> Either.right(f(x));
+            }
+        });
+    };
+    
+    Either.prototype.swap = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> Either.right(x);
+            },
+            right: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> Either.left(x);
+            }
+        });
+    };
+    
+    Either.prototype.toOption = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> Option.none;
+            },
+            right: Option.some
+        });
+    };
+    
+    Either.prototype.toAttempt = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: Attempt.failure,
+            right: Attempt.success
+        });
+    };
+    
+    Either.prototype.toArray = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            left: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [];
+            },
+            right: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [x];
+            }
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <h2>left(x)</h2>
+<p> Constructor to represent the left case.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.left.prototype.isLeft = <span class="literal">true</span>;
+    Either.left.prototype.isRight = <span class="literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <h2>right(x)</h2>
+<p> Constructor to represent the (biased) right case.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.right.prototype.isLeft = <span class="literal">false</span>;
+    Either.right.prototype.isRight = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <h2>isEither(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>left</code> or a <code>right</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isEither = isInstanceOf(Either);
+    
+    squishy = squishy
+        .property(<span class="string">'left'</span>, Either.left)
+        .property(<span class="string">'right'</span>, Either.right)
+        .property(<span class="string">'isEither'</span>, isEither)
+        .method(<span class="string">'flatMap'</span>, isEither, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.flatMap(b);
+        })
+        .method(<span class="string">'map'</span>, isEither, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.map(b);
+        })
+        .method(<span class="string">'ap'</span>, isEither, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.ap(b);
+        })
+        .method(<span class="string">'concat'</span>, isEither, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.concat(b, <span class="keyword">this</span>.concat);
+        })
+        .method(<span class="string">'toArray'</span>, isEither, <span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> a.toArray();
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <h1>Option</h1>
+<pre><code>  Option a = Some a + None</code></pre>
+<p>  The option type encodes the presence and absence of a value. The
+  <code>some</code> constructor represents a value and <code>none</code> represents the
+  absence.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Option = taggedSum(<span class="string">'Option'</span>, {
+        some: [<span class="string">'value'</span>],
+        none: []
+    });
+    
+    Option.prototype.ap = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> b.map(x);
+            },
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            }
+        });
+    };
+    
+    Option.prototype.concat = <span class="keyword">function</span>(s, f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> s.map(<span class="keyword">function</span>(y) {
+                    <span class="keyword">return</span> f(x, y);
+                });
+            },
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            }
+        });
+    };
+    
+    Option.prototype.flatMap = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: f,
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            }
+        });
+    };
+    
+    Option.prototype.fold = <span class="keyword">function</span>(f, g) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: f,
+            none: g
+        });
+    };
+    
+    Option.prototype.getOrElse = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: identity,
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> x;
+            }
+        });
+    };
+    
+    Option.prototype.map = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> Option.some(f(x));
+            },
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> <span class="keyword">this</span>;
+            }
+        });
+    };
+    
+    Option.prototype.toAttempt = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: Attempt.success,
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> Attempt.failure(squishy.empty(Array));
+            }
+        });
+    };
+    
+    Option.prototype.toLeft = <span class="keyword">function</span>(o) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: Either.left,
+            none: Either.right
+        });
+    };
+    
+    Option.prototype.toRight = <span class="keyword">function</span>(o) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: Either.left,
+            none: Either.right
+        });
+    };
+    
+    Option.prototype.toArray = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            some: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [x];
+            },
+            none: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> [];
+            }
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <h2>of(x)</h2>
+<p> Constructor <code>of</code> Monad creating <code>Option</code> with value of <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> Option.some(x);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <h2>some(x)</h2>
+<p> Constructor to represent the existence of a value, <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.some.prototype.isSome = <span class="literal">true</span>;
+    Option.some.prototype.isNone = <span class="literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <h2>none</h2>
+<p> Represents the absence of a value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.none.isSome = <span class="literal">false</span>;
+    Option.none.isNone = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <h2>isOption(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is a <code>some</code> or <code>none</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isOption = isInstanceOf(Option);
+    
+    squishy = squishy
+        .property(<span class="string">'some'</span>, Option.some)
+        .property(<span class="string">'none'</span>, Option.none)
+        .property(<span class="string">'isOption'</span>, isOption)
+        .method(<span class="string">'ap'</span>, isOption, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.ap(b);
+        })
+        .method(<span class="string">'concat'</span>, isOption, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.concat(b, <span class="keyword">this</span>.concat);
+        })
+        .method(<span class="string">'flatMap'</span>, isOption, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.flatMap(b);
+        })
+        .method(<span class="string">'fold'</span>, isOption, <span class="keyword">function</span>(a, b, c) {
+            <span class="keyword">return</span> a.fold(b, c);
+        })
+        .method(<span class="string">'map'</span>, isOption, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.map(b);
+        })
+        .method(<span class="string">'toArray'</span>, isOption, <span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> a.toArray();
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <h2>Promise(deferred)</h2>
+<p> Promise is a constructor which takes a <code>deferred</code> function. The <code>deferred</code>
+ function takes two arguments:</p>
+<pre><code>  deferred(resolve)</code></pre>
+<p> <code>resolve</code> are side-effecting callbacks.</p>
+<h3>deferred(resolve)</h3>
+<p> The <code>resolve</code> callback will be called with an <code>Attempt</code>. The <code>Attempt</code> can
+ either be a success or a failure.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Promise = <span class="function"><span class="keyword">function</span> <span class="title">Promise</span><span class="params">(deferred)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, Promise);
+    
+        <span class="comment">/* It would be nice to be able to remove the state */</span>
+        <span class="keyword">var</span> attempt,
+            append = curry(<span class="keyword">function</span>(a, b) {
+                a.push(b);
+                <span class="keyword">return</span> a;
+            })([]),
+            removeAndInvoke = <span class="keyword">function</span>(a, b) {
+                <span class="keyword">for</span> (<span class="keyword">var</span> i = a.length - <span class="number">1</span>; i &gt; -<span class="number">1</span>; i--) {
+                    <span class="keyword">var</span> f = a.pop();
+                    b.match({
+                        success: f[<span class="number">0</span>],
+                        failure: f[<span class="number">1</span>]
+                    });
+                }
+            },
+            curriedDeferred = <span class="keyword">function</span>(listeners) {
+                <span class="keyword">if</span> (listeners.length - <span class="number">1</span> &lt; <span class="number">1</span>) {
+                    deferred(
+                        <span class="keyword">function</span>(data) {
+                            attempt = Attempt.success(data);
+                            removeAndInvoke(listeners, attempt);
+                        },
+                        <span class="keyword">function</span>(errors) {
+                            attempt = Attempt.failure(errors);
+                            removeAndInvoke(listeners, attempt);
+                        }
+                    );
+                }
+            };
+    
+        self.fork = <span class="keyword">function</span>(resolve, reject) {
+            <span class="keyword">if</span> (attempt) {
+                attempt.match({
+                    success: resolve,
+                    failure: reject
+                });
+            } <span class="keyword">else</span> {
+                curriedDeferred(append([resolve, reject]));
+            }
+        };
+    
+        <span class="keyword">return</span> self;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <h3>Promise.of(x)</h3>
+<p> Creates a Promise that contains a successful value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Promise.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">function</span>(resolve, reject) {
+            resolve(x);
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <h3><code>Promise.error(x)</code></h3>
+<p> Creates a Promise that contains a failure value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Promise.error = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">function</span>(resolve, reject) {
+            reject(x);
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <h3>chain(f)</h3>
+<p> Returns a new promise that evaluates <code>f</code> when the current promise
+ is successfully fulfilled. <code>f</code> must return a new promise.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Promise.prototype.chain = <span class="keyword">function</span>(f) {
+        <span class="keyword">var</span> promise = <span class="keyword">this</span>;
+        <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">function</span>(resolve, reject) {
+            promise.fork(
+                <span class="keyword">function</span>(a) {
+                    f(a).fork(resolve, reject);
+                },
+                reject
+            );
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <h3><code>reject(f)</code></h3>
+<p> Returns a new promise that evaluates <code>f</code> when the current promise
+ fails. <code>f</code> must return a new promise.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Promise.prototype.reject = <span class="keyword">function</span>(f) {
+        <span class="keyword">var</span> promise = <span class="keyword">this</span>;
+        <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">function</span>(resolve, reject) {
+            promise.fork(resolve, <span class="keyword">function</span>(a) {
+                f(a).fork(resolve, reject);
+            });
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <h2>isPromise(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is <code>Promise</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isPromise = isInstanceOf(Promise);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p> append methods to the squishy environment.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .property(<span class="string">'Promise'</span>, Promise)
+        .property(<span class="string">'isPromise'</span>, isPromise)
+        .method(<span class="string">'map'</span>, isPromise, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.map(b);
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <h1>Trampoline</h1>
+<p> Reifies continutations onto the heap, rather than the stack. Allows
+ efficient tail calls.</p>
+<p> Example usage:</p>
+<pre><code>  function loop(n) {
+      function inner(i) {
+          if(i == n) return squishy.done(n);
+          return squishy.cont(function() {
+              return inner(i + 1);
+          });
+      }
+
+      return squishy.trampoline(inner(0));
+  }</code></pre>
+<p> Where <code>loop</code> is the identity function for positive numbers. Without
+ trampolining, this function would take <code>n</code> stack frames.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <h2>done(result)</h2>
+<p> Result constructor for a continuation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">done</span><span class="params">(result)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, done);
+        self.isDone = <span class="literal">true</span>;
+        self.result = result;
+        <span class="keyword">return</span> self;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <h2>cont(thunk)</h2>
+<p> Continuation constructor. <code>thunk</code> is a nullary closure, resulting
+ in a <code>done</code> or a <code>cont</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">cont</span><span class="params">(thunk)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, cont);
+        self.isDone = <span class="literal">false</span>;
+        self.thunk = thunk;
+        <span class="keyword">return</span> self;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <h2>trampoline(bounce)</h2>
+<p> The beginning of the continuation to call. Will repeatedly evaluate
+ <code>cont</code> thunks until it gets to a <code>done</code> value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">trampoline</span><span class="params">(bounce)</span> {</span>
+        <span class="keyword">while</span>(!bounce.isDone) {
+            bounce = bounce.thunk();
+        }
+        <span class="keyword">return</span> bounce.result;
+    }
+    
+    squishy = squishy
+        .property(<span class="string">'done'</span>, done)
+        .property(<span class="string">'cont'</span>, cont)
+        .property(<span class="string">'trampoline'</span>, trampoline);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <h2><code>Stream(state)</code></h2>
+<p> The Stream type represents a flow of data ever evolving values over time.</p>
+<p> Here is an example of a continuous random numbers piped through to the console.</p>
+<pre><code>   Stream.poll(
+       function() {
+           return cont(function() {
+               return squishy.method(&#39;arb&#39;, Number);
+           })
+       },
+   0).foreach(
+       function (a) {
+           console.log(a);
+       }
+   );</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">Fork</span><span class="params">(cont)</span> {</span>
+        <span class="keyword">this</span>.cont = cont;
+    }
+    
+    <span class="function"><span class="keyword">function</span> <span class="title">Stream</span><span class="params">(f)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, Stream);
+    
+        <span class="keyword">var</span> resolver;
+        self.fork = <span class="keyword">new</span> Fork(<span class="keyword">function</span>(resolve) {
+            resolver = resolve;
+        });
+    
+        f(<span class="keyword">function</span>(a) {
+            <span class="keyword">if</span> (resolver) resolver(a);
+        });
+    
+        <span class="keyword">return</span> self;
+    }
+    
+    Stream.create = <span class="keyword">function</span>(a, b) {
+        <span class="keyword">var</span> unbinder,
+            bounce;
+    
+        <span class="keyword">return</span> <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+            unbinder = a(<span class="keyword">function</span>() {
+                bounce = b.apply(<span class="literal">null</span>, [].slice.call(arguments));
+                <span class="keyword">if</span> (!bounce.isDone) {
+                    state(bounce.thunk());
+                } <span class="keyword">else</span> {
+                    state(bounce.result);
+                    unbinder();
+                }
+            });
+        });
+    };
+    
+    Stream.prototype.chain = <span class="keyword">function</span>(f) {
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
+        <span class="keyword">return</span> <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+            env.foreach(<span class="keyword">function</span>(a) {
+                f(a).fold(
+                    <span class="keyword">function</span>(a) {
+                        state(a);
+                    },
+                    <span class="keyword">function</span>(){}
+                );
+            });
+        });
+    };
+    
+    Stream.prototype.concat = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.chain(<span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> Option.some(a.concat(b));
+        });
+    };
+    
+    Stream.prototype.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.chain(<span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> Option.some(squishy.empty(a));
+        });
+    };
+    
+    Stream.prototype.foreach = <span class="keyword">function</span>(f) {
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
+        <span class="keyword">return</span> <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+            env.fork.cont(
+                <span class="keyword">function</span>(data) {
+                    f(data);
+                    state(data);
+                },
+                <span class="keyword">function</span>(error) {}
+            );
+        });
+    };
+    
+    Stream.prototype.filter = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.chain(<span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> f(a) ? Option.some(a) : Option.none;
+        });
+    };
+    
+    Stream.prototype.map = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.chain(<span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> Option.some(f(a));
+        });
+    };
+    
+    Stream.prototype.reduce = <span class="keyword">function</span>(v, f) {
+        <span class="keyword">var</span> a = v;
+        <span class="keyword">return</span> <span class="keyword">this</span>.chain(<span class="keyword">function</span>(b) {
+            a = f(a, b);
+            <span class="keyword">return</span> Option.some(a);
+        });
+    };
+    
+    Stream.prototype.merge = <span class="keyword">function</span>(s) {
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
+    
+        <span class="keyword">var</span> resolver,
+            stream = <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+                resolver = state;
+            });
+    
+        <span class="keyword">this</span>.foreach(resolver);
+        s.foreach(resolver);
+    
+        <span class="keyword">return</span> stream;
+    };
+    
+    Stream.prototype.zip = <span class="keyword">function</span>(s) {
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
+    
+        <span class="keyword">var</span> resolver,
+            left = [],
+            right = [],
+            stream = <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+                resolver = state;
+            });
+    
+        <span class="keyword">this</span>.foreach(<span class="keyword">function</span>(a) {
+            <span class="keyword">if</span> (right.length)
+                resolver([a, right.shift()]);
+            <span class="keyword">else</span> left.push(a);
+        });
+        s.foreach(<span class="keyword">function</span>(a) {
+            <span class="keyword">if</span> (left.length)
+                resolver([left.shift(), a]);
+            <span class="keyword">else</span> right.push(a);
+        });
+    
+        <span class="keyword">return</span> stream;
+    };
+    
+    Stream.prototype.toArray = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> accum = [];
+        <span class="keyword">this</span>.foreach(<span class="keyword">function</span>(a) {
+            accum.push(a);
+        });
+        <span class="keyword">return</span> accum;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <h2>promise</h2>
+<pre><code> Stream.promise(promise).foreach(function (a) {
+   console.log(a);
+ });</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.promise = <span class="keyword">function</span>(p) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Stream(<span class="keyword">function</span>(state) {
+            setTimeout(<span class="keyword">function</span>() {
+                p.fork(
+                    <span class="keyword">function</span>(data) {
+                        state(Attempt.success(data));
+                    },
+                    <span class="keyword">function</span>(error) {
+                        state(Attempt.failure(error));
+                    }
+                );
+            }, <span class="number">0</span>);
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <h2>sequential</h2>
+<pre><code> Stream.sequential([1, 2, 3, 4]).foreach(function (a) {
+   console.log(a);
+ });</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.sequential = <span class="keyword">function</span>(v, d) {
+        <span class="keyword">var</span> index = <span class="number">0</span>;
+        <span class="keyword">return</span> Stream.poll(<span class="keyword">function</span>() {
+            <span class="keyword">if</span> (index &gt;= v.length - <span class="number">1</span>) <span class="keyword">return</span> done(v[index]);
+            <span class="keyword">return</span> cont(<span class="keyword">function</span>() {
+              <span class="keyword">return</span> v[index++];
+            });
+        }, d || <span class="number">0</span>);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <h2>poll</h2>
+<pre><code> Stream.poll(function() {
+   return cont(function() {
+       return squishy.method(&#39;arb&#39;, Number);
+   })
+ }, 0).foreach(function (a) {
+   console.log(a);
+ });</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.poll = <span class="keyword">function</span>(p, d) {
+        <span class="keyword">var</span> id;
+    
+        <span class="keyword">return</span> Stream.create(<span class="keyword">function</span>(handler) {
+            id = setInterval(handler, d);
+            <span class="keyword">return</span> <span class="keyword">function</span>() {
+                <span class="keyword">return</span> clearInterval(id);
+            };
+        }, p);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <h2>isStream(a)</h2>
+<p> Returns <code>true</code> if <code>a</code> is <code>Stream</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> isStream = isInstanceOf(Stream);
+    
+    squishy = squishy
+        .property(<span class="string">'Stream'</span>, Stream)
+        .property(<span class="string">'isStream'</span>, isStream)
+        .method(<span class="string">'zip'</span>, isStream, <span class="keyword">function</span>(b) {
+            <span class="keyword">return</span> a.zip(b);
+        })
+        .method(<span class="string">'map'</span>, isStream, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.map(b);
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <h1>QuickCheck</h1>
+<p> QuickCheck is a form of <em>automated specification testing</em>. Instead
+ of manually writing tests cases like so:</p>
+<pre><code>  assert(0 + 1 == 1);
+  assert(1 + 1 == 2);
+  assert(3 + 3 == 6);</code></pre>
+<p> We can just write the assertion algebraicly and tell QuickCheck to
+ automaticaly generate lots of inputs:</p>
+<pre><code>  squishy.forAll(
+      function(n) {
+          return n + n == 2 * n;
+      },
+      [Number]
+  ).fold(
+      function(fail) {
+          return &quot;Failed after &quot; + fail.tries + &quot; tries: &quot; + fail.inputs.toString();
+      },
+      &quot;All tests passed!&quot;,
+  )</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">generateInputs</span><span class="params">(env, args, size)</span> {</span>
+        <span class="keyword">return</span> env.map(args, <span class="keyword">function</span>(arg) {
+            <span class="keyword">return</span> env.arb(arg, size);
+        });
+    }
+    
+    <span class="function"><span class="keyword">function</span> <span class="title">findSmallest</span><span class="params">(env, property, inputs)</span> {</span>
+        <span class="keyword">var</span> shrunken = env.map(inputs, env.shrink),
+            smallest = [].concat(inputs),
+            args,
+            i,
+            j;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; shrunken.length; i++) {
+            args = [].concat(smallest);
+            <span class="keyword">for</span>(j = <span class="number">0</span>; j &lt; shrunken[i].length; j++) {
+                args[i] = shrunken[i][j];
+                <span class="keyword">if</span>(property.apply(<span class="keyword">this</span>, args))
+                    <span class="keyword">break</span>;
+                smallest[i] = shrunken[i][j];
+            }
+        }
+    
+        <span class="keyword">return</span> smallest;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <h3>failureReporter</h3>
+<ul>
+<li>inputs - the arguments to the property that failed</li>
+<li>tries - number of times inputs were tested before failure</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">failureReporter</span><span class="params">(inputs, tries)</span> {</span>
+        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, failureReporter);
+        self.inputs = inputs;
+        self.tries = tries;
+        <span class="keyword">return</span> self;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <h2>forAll(property, args)</h2>
+<p> Generates values for each type in <code>args</code> using <code>squishy.arb</code> and
+ then passes them to <code>property</code>, a function returning a
+ <code>Boolean</code>. Tries <code>goal</code> number of times or until failure.</p>
+<p> Returns an <code>Option</code> of a <code>failureReporter</code>:</p>
+<pre><code>  var reporter = squishy.forAll(
+      function(s) {
+          return isPalindrome(s + s.split(&#39;&#39;).reverse().join(&#39;&#39;));
+      },
+      [String]
+  );</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">forAll</span><span class="params">(property, args)</span> {</span>
+        <span class="keyword">var</span> inputs,
+            i;
+    
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="keyword">this</span>.goal; i++) {
+            inputs = generateInputs(<span class="keyword">this</span>, args, i);
+            <span class="keyword">if</span>(!property.apply(<span class="keyword">this</span>, inputs)) {
+                <span class="keyword">return</span> Option.some(failureReporter(
+                    findSmallest(<span class="keyword">this</span>, property, inputs),
+                    i + <span class="number">1</span>
+                ));
+            }
+        }
+    
+        <span class="keyword">return</span> Option.none;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <h2>goal</h2>
+<p> The number of successful inputs necessary to declare the whole
+ property a success:</p>
+<pre><code>  var _ = squishy.property(&#39;goal&#39;, 1000);</code></pre>
+<p> Default is <code>100</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> goal = <span class="number">10</span>;<span class="comment">//00;</span>
+    
+    squishy = squishy
+        .property(<span class="string">'failureReporter'</span>, failureReporter)
+        .property(<span class="string">'forAll'</span>, forAll)
+        .property(<span class="string">'goal'</span>, goal);
+
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> exports != <span class="string">'undefined'</span>) {
+        <span class="comment">/*jshint node: true*/</span>
+        exports = module.exports = squishy;
+    } <span class="keyword">else</span> {
+        global.squishy = squishy;
+    }
+})(<span class="keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
