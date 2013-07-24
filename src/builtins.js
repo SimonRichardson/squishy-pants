@@ -59,7 +59,9 @@ squishy = squishy
         }
 
         return true;
-    });
+    })
+    .method('equal', strictEquals(null), strictEquals)
+    .method('equal', strictEquals(undefined), strictEquals);
 
 //
 //  ### empty values
