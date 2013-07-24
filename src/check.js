@@ -107,10 +107,26 @@ function forAll(property, args) {
 //
 var goal = 10;//00;
 
+//
+//  ## AnyVal
+//
+//  Sentinel value for when any type of primitive value is needed.
+//
+var AnyVal = {};
+
+//
+//  ## Char
+//
+//  Sentinel value for when a single character string is needed.
+//
+var Char = {};
+
 squishy = squishy
     .property('failureReporter', failureReporter)
     .property('forAll', forAll)
-    .property('goal', goal);
+    .property('goal', goal)
+    .property('AnyVal', AnyVal)
+    .property('Char', Char);
 
 //
 //  ### arbitrary values

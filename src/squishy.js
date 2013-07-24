@@ -291,20 +291,6 @@ function error(s) {
 }
 
 //
-//  ## AnyVal
-//
-//  Sentinel value for when any type of primitive value is needed.
-//
-var AnyVal = {};
-
-//
-//  ## Char
-//
-//  Sentinel value for when a single character string is needed.
-//
-var Char = {};
-
-//
 //  ## oneOf
 //
 //  Selects one of the values at random.
@@ -363,8 +349,6 @@ squishy = squishy
     .property('add', add)
     .property('not', not)
     .property('error', error)
-    .property('AnyVal', AnyVal)
-    .property('Char', Char)
     .property('oneOf', oneOf)
     .property('randomRange', randomRange)
     .property('inc', inc)

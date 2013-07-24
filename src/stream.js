@@ -17,17 +17,14 @@
 //            }
 //        );
 //
-function Fork(cont) {
-    this.cont = cont;
-}
 
 function Stream(f) {
     var self = getInstance(this, Stream);
 
     var resolver;
-    self.fork = new Fork(function(resolve) {
+    self.fork = function(resolve) {
         resolver = resolve;
-    });
+    };
 
     f(function(a) {
         if (resolver) resolver(a);
@@ -82,7 +79,7 @@ Stream.prototype.empty = function() {
 Stream.prototype.foreach = function(f) {
     var env = this;
     return new Stream(function(state) {
-        env.fork.cont(
+        env.fork(
             function(data) {
                 f(data);
                 state(data);
