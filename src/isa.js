@@ -53,6 +53,16 @@ function isArray(a) {
 }
 
 //
+//  ## isNotNaN(a)
+//
+//  Returns `true` if `a` is not a `NaN`.
+//
+function isNotNaN(a) {
+    return !isNaN(a);
+}
+
+
+//
 //  ## isEven(a)
 //
 //  Returns `true` if `a` is even.
@@ -159,6 +169,37 @@ var isAnyInstanceOf = curry(function(a, b) {
 });
 
 //
+//  ### isEmpty(a)
+//
+//  Checks to see if a value is empty or not.
+//
+//       console.log(squishy.isEmpty([])); // Outputs `true`
+//
+squishy = squishy
+    .method('isEmpty', isBoolean, not)
+    .method('isEmpty', isFunction, not)
+    .method('isEmpty', isNumber, function(a) {
+        return isNaN(a) || a < 1;
+    })
+    .method('isEmpty', isString, function(a) {
+        return !/\S/.test(a);
+    })
+    .method('isEmpty', isArray, function(a) {
+        return a.length < 1;
+    })
+    .method('isEmpty', isObject, function(a) {
+        var i,
+            index;
+
+        for(i in o) {
+            index++;
+        }
+        return index < 1;
+    })
+    .method('isEmpty', strictEquals(null), constant(false))
+    .method('isEmpty', strictEquals(undefined), constant(false));
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -169,6 +210,7 @@ squishy = squishy
     .property('isObject', isObject)
     .property('isString', isString)
     .property('isArray', isArray)
+    .property('isNotNaN', isNotNaN)
     .property('isEven', isEven)
     .property('isOdd', isOdd)
     .property('isPalindrome', isPalindrome)

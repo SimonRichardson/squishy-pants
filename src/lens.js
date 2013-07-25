@@ -41,11 +41,19 @@ Lens.arrayLens = function(index) {
 
 Lens.parse = function(s) {
     return squishy.fold(s.split('.'), Lens.identityLens(), function(a, b) {
-        // TODO (Simon) - Add the ability to parse arrays
-        // consider 'a.b.c[0].a'
-        // Also add if a string is blank, use a identity lens
-        // consider 'a.b..c.d.e'
-        return a.andThen(Lens.objectLens(b));
+        var access = squishy.fold(b.split('['), Lens.identityLens(), function(a, b) {
+            var n = parseInt(b, 10);
+
+            return a.andThen(
+                (isNumber(n) && isNotNaN(n)) ?
+                Lens.arrayLens(n) :
+                   (isString(b) && squishy.isEmpty(b)) ?
+                   Lens.identityLens() :
+                   Lens.objectLens(b)
+            );
+        });
+
+        return a.andThen(access);
     });
 };
 

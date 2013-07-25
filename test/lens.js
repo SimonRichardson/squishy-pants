@@ -114,5 +114,28 @@ exports.lens = {
                 })
             })
         })]
+    ),
+    'when using parse over a complex object with array access, get should the correct value': _.check(
+        function(a) {
+            if (a.c.z.i.length < 1) return true;
+            return _.equal(_.Lens.parse('c.z..i[0].e').run(a).get(), a.c.z.i[0].e);
+        },
+        [_.objectLike({
+            a: String,
+            b: Number,
+            c: _.objectLike({
+                x: String,
+                y: Array,
+                z: _.objectLike({
+                    i: _.arrayOf(
+                        _.objectLike({
+                            e: Number,
+                            f: Boolean
+                        })
+                    ),
+                    j: Boolean
+                })
+            })
+        })]
     )
 };

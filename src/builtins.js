@@ -12,17 +12,17 @@ squishy = squishy
     });
 
 squishy = squishy
-    .method('map', isBoolean, function(a, b) {
-        return b(a);
-    })
     .method('concat', isBoolean, function(a, b) {
         return a & b;
     })
-    .method('map', squishy.liftA2(or, isNumber, isString), function(a, b) {
-        return b(a);
-    })
     .method('concat', squishy.liftA2(or, isNumber, isString), function(a, b) {
         return a + b;
+    })
+    .method('map', isBoolean, function(a, b) {
+        return b(a);
+    })
+    .method('map', squishy.liftA2(or, isNumber, isString), function(a, b) {
+        return b(a);
     });
 
 //
