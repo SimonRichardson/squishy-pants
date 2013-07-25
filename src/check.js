@@ -169,7 +169,7 @@ squishy = squishy
             i;
 
         for(i in a.props) {
-            o[i] = this.arb(a.props[i]);
+            o[i] = this.arb(a.props[i], s);
         }
 
         return o;
