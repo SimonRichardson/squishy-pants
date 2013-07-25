@@ -148,7 +148,7 @@ squishy = squishy
     })
     .method('arb', strictEquals(Char), function(a, s) {
         /* Should consider 127 (DEL) to be quite dangerous? */
-        return String.fromCharCode(Math.floor(this.randomRange(32, 127)));
+        return String.fromCharCode(Math.floor(this.randomRange(32, 255)));
     })
     .method('arb', strictEquals(Function), function(a, s) {
         return function(){};
