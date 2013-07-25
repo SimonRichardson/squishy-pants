@@ -80,5 +80,39 @@ exports.lens = {
             return _.equal(x, b);
         },
         [_.arrayOf(_.AnyVal), _.AnyVal]
+    ),
+    'when using object lens over a complex object, get should the correct value': _.check(
+        function(a) {
+            var c = _.Lens.objectLens('c'),
+                z = _.Lens.objectLens('z');
+
+            return _.equal(c.andThen(z).run(a).get(), a.c.z);
+        },
+        [_.objectLike({
+            a: String,
+            b: Number,
+            c: _.objectLike({
+                x: String,
+                y: Array,
+                z: Number
+            })
+        })]
+    ),
+    'when using parse over a complex object, get should the correct value': _.check(
+        function(a) {
+            return _.equal(_.Lens.parse('c.z.i').run(a).get(), a.c.z.i);
+        },
+        [_.objectLike({
+            a: String,
+            b: Number,
+            c: _.objectLike({
+                x: String,
+                y: Array,
+                z: _.objectLike({
+                    i: Number,
+                    j: Boolean
+                })
+            })
+        })]
     )
 };

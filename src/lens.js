@@ -39,8 +39,27 @@ Lens.arrayLens = function(index) {
     });
 };
 
+Lens.parse = function(s) {
+    return squishy.fold(s.split('.'), Lens.identityLens(), function(a, b) {
+        return a.andThen(Lens.objectLens(b));
+    });
+};
+
 Lens.prototype.andThen = function(b) {
     return b.compose(this);
+};
+
+Lens.prototype.compose = function(b) {
+    var a = this;
+    return Lens(function(target) {
+        var c = b.run(target),
+            d = a.run(c.get());
+
+        return Store(
+            compose(c.set, d.set),
+            d.get
+        );
+    });
 };
 
 //
