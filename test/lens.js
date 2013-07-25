@@ -1,4 +1,20 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
+    copy = function(o) {
+        // Note: This is really bad deep copy function.
+        var a = {},
+            i;
+
+        for (i in o) {
+            if (_.isObject(o[i])) {
+                a[i] = copy(o[i]);
+            } else if(_.isArray(o[i])) {
+                a[i] = o[i].slice();
+            } else {
+                a[i] = o[i];
+            }
+        }
+        return a;
+    };
 
 exports.lens = {
     'when using identity lens with get should get original object': _.check(
@@ -88,54 +104,165 @@ exports.lens = {
 
             return _.equal(c.andThen(z).run(a).get(), a.c.z);
         },
-        [_.objectLike({
-            a: String,
-            b: Number,
-            c: _.objectLike({
-                x: String,
-                y: Array,
-                z: Number
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: Number
+                })
             })
-        })]
+        ]
     ),
     'when using parse over a complex object, get should the correct value': _.check(
         function(a) {
             return _.equal(_.Lens.parse('c.z.i').run(a).get(), a.c.z.i);
         },
-        [_.objectLike({
-            a: String,
-            b: Number,
-            c: _.objectLike({
-                x: String,
-                y: Array,
-                z: _.objectLike({
-                    i: Number,
-                    j: Boolean
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: Number,
+                        j: Boolean
+                    })
                 })
             })
-        })]
+        ]
+    ),
+    'when using parse over a complex object, set should set the correct value': _.check(
+        function(a, b) {
+            var r = _.Lens.parse('c.z.i').run(a).set(b),
+                c = copy(a);
+
+            c.c.z.i = b;
+
+            return _.equal(r, c);
+        },
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: Number,
+                        j: Boolean
+                    })
+                })
+            }),
+            _.AnyVal
+        ]
+    ),
+    'when using parse over a complex object, set then get should get the correct value': _.check(
+        function(a, b) {
+            var s = _.Lens.parse('c.z.i');
+            return _.equal(s.run(s.run(a).set(b)).get(), b);
+        },
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: Number,
+                        j: Boolean
+                    })
+                })
+            }),
+            _.AnyVal
+        ]
     ),
     'when using parse over a complex object with array access, get should the correct value': _.check(
         function(a) {
             if (a.c.z.i.length < 1) return true;
             return _.equal(_.Lens.parse('c.z..i[0].e').run(a).get(), a.c.z.i[0].e);
         },
-        [_.objectLike({
-            a: String,
-            b: Number,
-            c: _.objectLike({
-                x: String,
-                y: Array,
-                z: _.objectLike({
-                    i: _.arrayOf(
-                        _.objectLike({
-                            e: Number,
-                            f: Boolean
-                        })
-                    ),
-                    j: Boolean
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: _.arrayOf(
+                            _.objectLike({
+                                e: Number,
+                                f: Boolean
+                            })
+                        ),
+                        j: Boolean
+                    })
                 })
             })
-        })]
+        ]
+    ),
+    'when using parse over a complex object with array access, set should set the correct value': _.check(
+        function(a, b) {
+            if (a.c.z.i.length < 1) return true;
+
+            var c = copy(a);
+
+            c.c.z.i[0].e = b;
+
+            return _.equal(_.Lens.parse('c.z..i[0].e').run(a).set(b), c);
+        },
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: _.arrayOf(
+                            _.objectLike({
+                                e: Number,
+                                f: Boolean
+                            })
+                        ),
+                        j: Boolean
+                    })
+                })
+            }),
+            _.AnyVal
+        ]
+    ),
+    'when using parse over a complex object with array access, set the get should get the correct value': _.check(
+        function(a, b) {
+            if (a.c.z.i.length < 1) return true;
+
+            var s = _.Lens.parse('c.z..i[0].e');
+            return _.equal(s.run(s.run(a).set(b)).get(), b);
+        },
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: _.arrayOf(
+                            _.objectLike({
+                                e: Number,
+                                f: Boolean
+                            })
+                        ),
+                        j: Boolean
+                    })
+                })
+            }),
+            _.AnyVal
+        ]
     )
 };
