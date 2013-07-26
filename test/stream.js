@@ -69,7 +69,7 @@ exports.streamPromiseSuccessTest = function(test) {
     var a = _.Stream.promise(_.Promise.of(41)).toArray();
 
     setTimeout(function() {
-        test.deepEqual(a, [_.success(41)]);
+        test.deepEqual(a, [_.Success(41)]);
         test.done();
     }, 50);
 };
@@ -78,7 +78,7 @@ exports.streamPromiseFailureTest = function(test) {
     var a = _.Stream.promise(_.Promise.error(41)).toArray();
 
     setTimeout(function() {
-        test.deepEqual(a, [_.failure(41)]);
+        test.deepEqual(a, [_.Failure(41)]);
         test.done();
     }, 50);
 };

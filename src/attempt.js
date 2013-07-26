@@ -3,57 +3,57 @@
 //
 //       Attempt e v = Failure e + Success v
 //
-//  The Attempt data type represents a "success" value or a
-//  semigroup of "failure" values. Attempt has an applicative
-//  functor which collects failures' errors or creates a new success
+//  The Attempt data type represents a "Success" value or a
+//  semigroup of "Failure" values. Attempt has an applicative
+//  functor which collects Failures' errors or creates a new Success
 //  value.
 //
 //  Here's an example function which validates a String:
 //
 //       function nonEmpty(field, string) {
 //           return string
-//               ? squishy.success(string)
-//               : squishy.failure([field + " must be non-empty"]);
+//               ? squishy.Success(string)
+//               : squishy.Failure([field + " must be non-empty"]);
 //       }
 //
-//  ## success(value)
+//  ## Success(value)
 //
-//  Represents a successful `value`.
+//  Represents a Successful `value`.
 //
-//  ## failure(errors)
+//  ## Failure(errors)
 //
-//  Represents a failure.
+//  Represents a Failure.
 //
 //  * `ap(b, concat)` - Applicative ap(ply)
 //  * `flatMap(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `left`, `b` if `right`
+//  * `fold(a, b)` - `a` applied to value if `Left`, `b` if `Right`
 //  * `map(f)` - Functor map
 //  * `swap()` - Swap values
-//  * `isSuccess` - `true` if `this` is `success`
-//  * `isFailure` - `true` if `this` is `failure`
-//  * `toOption(r)` - `Some(x)` if `success(x)`, `None` if `failure()`
-//  * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if None
-//  * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if None
+//  * `isSuccess` - `true` if `this` is `Success`
+//  * `isFailure` - `true` if `this` is `Failure`
+//  * `toOption(r)` - `Some(x)` if `Success(x)`, `None` if `Failure()`
+//  * `toLeft(r)` - `Left(x)` if `Some(x)`, `Right(r)` if None
+//  * `toRight(l)` - `Right(x)` if `Some(x)`, `Left(l)` if None
 //
 
 var Attempt = taggedSum('Attempt', {
-    success: ['value'],
-    failure: ['errors']
+    Success: ['value'],
+    Failure: ['errors']
 });
 
 Attempt.prototype.ap = function(b, concat) {
     var a = this;
     return a.match({
-        success: function(value) {
+        Success: function(value) {
             return b.map(value);
         },
-        failure: function(e) {
+        Failure: function(e) {
             return b.match({
-                success: function(value) {
+                Success: function(value) {
                     return a;
                 },
-                failure: function(errors) {
-                    return Attempt.failure(concat(e, errors));
+                Failure: function(errors) {
+                    return Attempt.Failure(concat(e, errors));
                 }
             });
         }
@@ -62,21 +62,21 @@ Attempt.prototype.ap = function(b, concat) {
 
 Attempt.prototype.flatMap = function(f) {
     return this.match({
-        success: function(a) {
+        Success: function(a) {
             return f(a);
         },
-        failure: function(e) {
-            return Attempt.failure(e);
+        Failure: function(e) {
+            return Attempt.Failure(e);
         }
     });
 };
 
 Attempt.prototype.fold = function(a, b) {
     return this.match({
-        success: function(x) {
+        Success: function(x) {
             return a(x);
         },
-        failure: function(x) {
+        Failure: function(x) {
             return b(x);
         }
     });
@@ -84,26 +84,26 @@ Attempt.prototype.fold = function(a, b) {
 
 Attempt.prototype.map = function(f) {
     return this.match({
-        success: function(a) {
-            return Attempt.success(f(a));
+        Success: function(a) {
+            return Attempt.Success(f(a));
         },
-        failure: function(e) {
-            return Attempt.failure(e);
+        Failure: function(e) {
+            return Attempt.Failure(e);
         }
     });
 };
 
 Attempt.prototype.swap = function() {
     return this.match({
-        success: Attempt.failure,
-        failure: Attempt.success
+        Success: Attempt.Failure,
+        Failure: Attempt.Success
     });
 };
 
 Attempt.prototype.toOption = function() {
     return this.match({
-        success: Option.Some,
-        failure: function() {
+        Success: Option.Some,
+        Failure: function() {
             return Option.None;
         }
     });
@@ -111,67 +111,67 @@ Attempt.prototype.toOption = function() {
 
 Attempt.prototype.toLeft = function() {
     return this.match({
-        success: Either.left,
-        failure: Either.right
+        Success: Either.Left,
+        Failure: Either.Right
     });
 };
 
 Attempt.prototype.toRight = function() {
     return this.match({
-        success: Either.left,
-        failure: Either.right
+        Success: Either.Left,
+        Failure: Either.Right
     });
 };
 
 Attempt.prototype.toArray = function() {
     return this.match({
-        success: function(x) {
+        Success: function(x) {
             return [x];
         },
-        failure: function(x) {
+        Failure: function(x) {
             return [];
         }
     });
 };
 
 //
-//  ## success(x)
+//  ## Success(x)
 //
 //  Constructor to represent the existance of a value, `x`.
 //
-Attempt.success.prototype.isSuccess = true;
-Attempt.success.prototype.isFailure = false;
+Attempt.Success.prototype.isSuccess = true;
+Attempt.Success.prototype.isFailure = false;
 
 //
 //  ## of(x)
 //
-//  Constructor `of` Monad creating `Attempt.success` with value of `x`.
+//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
 //
-Attempt.success.of = function(x) {
-    return Attempt.success(x);
+Attempt.Success.of = function(x) {
+    return Attempt.Success(x);
 };
 
 //
-//  ## failure(x)
+//  ## Failure(x)
 //
 //  Constructor to represent the existance of a value, `x`.
 //
-Attempt.failure.prototype.isSuccess = false;
-Attempt.failure.prototype.isFailure = true;
+Attempt.Failure.prototype.isSuccess = false;
+Attempt.Failure.prototype.isFailure = true;
 
 //
 //  ## of(x)
 //
-//  Constructor `of` Monad creating `Attempt.failure` with value of `x`.
+//  Constructor `of` Monad creating `Attempt.Failure` with value of `x`.
 //
-Attempt.failure.of = function(x) {
-    return Attempt.failure(x);
+Attempt.Failure.of = function(x) {
+    return Attempt.Failure(x);
 };
 
 //
 //  ## isAttempt(a)
 //
-//  Returns `true` iff `a` is a `success` or a `failure`.
+//  Returns `true` iff `a` is a `Success` or a `Failure`.
 //
 var isAttempt = isInstanceOf(Attempt);
 
@@ -179,8 +179,8 @@ var isAttempt = isInstanceOf(Attempt);
 //  append methods to the squishy environment.
 //
 squishy = squishy
-    .property('success', Attempt.success)
-    .property('failure', Attempt.failure)
+    .property('Success', Attempt.Success)
+    .property('Failure', Attempt.Failure)
     .property('isAttempt', isAttempt)
     .method('ap', isAttempt, function(a, b) {
         return a.ap(b, this.concat);

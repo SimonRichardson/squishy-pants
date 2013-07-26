@@ -11,7 +11,7 @@
 //  ### deferred(resolve)
 //
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
-//  either be a success or a failure.
+//  either be a Success or a Failure.
 //
 var Promise = function Promise(deferred) {
     var self = getInstance(this, Promise);
@@ -26,8 +26,8 @@ var Promise = function Promise(deferred) {
             for (var i = a.length - 1; i > -1; i--) {
                 var f = a.pop();
                 b.match({
-                    success: f[0],
-                    failure: f[1]
+                    Success: f[0],
+                    Failure: f[1]
                 });
             }
         },
@@ -35,11 +35,11 @@ var Promise = function Promise(deferred) {
             if (listeners.length - 1 < 1) {
                 deferred(
                     function(data) {
-                        attempt = Attempt.success(data);
+                        attempt = Attempt.Success(data);
                         removeAndInvoke(listeners, attempt);
                     },
                     function(errors) {
-                        attempt = Attempt.failure(errors);
+                        attempt = Attempt.Failure(errors);
                         removeAndInvoke(listeners, attempt);
                     }
                 );
@@ -49,8 +49,8 @@ var Promise = function Promise(deferred) {
     self.fork = function(resolve, reject) {
         if (attempt) {
             attempt.match({
-                success: resolve,
-                failure: reject
+                Success: resolve,
+                Failure: reject
             });
         } else {
             curriedDeferred(append([resolve, reject]));

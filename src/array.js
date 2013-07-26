@@ -16,12 +16,12 @@
 //  * `filterNot(a, f)` - Returns all the elements of this array that does not satisfy the predicate p.
 //  * `flatMap(a, f)` - Applies the given function f to each element of this array, then concatenates the results.
 //  * `flatten(a)` - Concatenate the elements of this array.
-//  * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from left to right, and starting with the value v.
-//  * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from right to left, and starting with the value v.
+//  * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.
+//  * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from Right to Left, and starting with the value v.
 //  * `map(a, f)` - Returns the array resulting from applying the given function f to each element of this array.
 //  * `partition(a, f)` - Partition the array in two sub-arrays according to a predicate.
-//  * `reduce(a, f)` - Combines the elements of this array together using the binary operator op, from left to right
-//  * `reduceRight(a, f)` - Combines the elements of this array together using the binary operator op, from right to left
+//  * `reduce(a, f)` - Combines the elements of this array together using the binary operator op, from Left to Right
+//  * `reduceRight(a, f)` - Combines the elements of this array together using the binary operator op, from Right to Left
 //  * `take(n)` - Returns the n first elements of this array.
 //  * `takeRight(n)` - Returns the rightmost n elements from this array.
 //  * `takeWhile(f)` - Returns the longest prefix of this array whose elements satisfy the predicate.

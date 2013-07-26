@@ -4,31 +4,31 @@
 //       Either a b = Left a + Right b
 //
 //  Represents a tagged disjunction between two sets of values; `a` or
-//  `b`. Methods are right-biased.
+//  `b`. Methods are Right-biased.
 //
 //  * `ap(e)` - Applicative ap(ply)
 //  * `concat(s, f)` - Semigroup concat
 //  * `flatMap(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `left`, `b` if `right`
+//  * `fold(a, b)` - `a` applied to value if `Left`, `b` if `Right`
 //  * `map(f)` - Functor map
-//  * `swap()` - If this is a Left, then return the left value in Right or vice versa.
-//  * `isLeft` - `true` iff `this` is `left`
-//  * `isRight` - `true` iff `this` is `right`
-//  * `toOption()` - `None` if `left`, `Some` value of `right`
-//  * `toArray()` - `[]` if `left`, singleton value if `right`
+//  * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
+//  * `isLeft` - `true` iff `this` is `Left`
+//  * `isRight` - `true` iff `this` is `Right`
+//  * `toOption()` - `None` if `Left`, `Some` value of `Right`
+//  * `toArray()` - `[]` if `Left`, singleton value if `Right`
 //
 
 var Either = taggedSum('Either', {
-    left: ['value'],
-    right: ['value']
+    Left: ['value'],
+    Right: ['value']
 });
 
 Either.prototype.ap = function(e) {
     return this.match({
-        left: function() {
+        Left: function() {
             return this;
         },
-        right: function(x) {
+        Right: function(x) {
             return e.map(x);
         }
     });
@@ -36,14 +36,14 @@ Either.prototype.ap = function(e) {
 
 Either.prototype.concat = function(s, f) {
     return this.match({
-        left: function() {
-            var left = this;
+        Left: function() {
+            var Left = this;
             return s.fold(
-              constant(left),
+              constant(Left),
               constant(s)
             );
         },
-        right: function(y) {
+        Right: function(y) {
             return s.map(function(x) {
                 return f(x, y);
             });
@@ -53,10 +53,10 @@ Either.prototype.concat = function(s, f) {
 
 Either.prototype.flatMap = function(f) {
     return this.match({
-        left: function() {
+        Left: function() {
             return this;
         },
-        right: function(x) {
+        Right: function(x) {
             return f(x);
         }
     });
@@ -64,86 +64,86 @@ Either.prototype.flatMap = function(f) {
 
 Either.prototype.fold = function(a, b) {
     return this.match({
-        left: a,
-        right: b
+        Left: a,
+        Right: b
     });
 };
 
 Either.prototype.map = function(f) {
     return this.match({
-        left: function() {
+        Left: function() {
             return this;
         },
-        right: function(x) {
-            return Either.right(f(x));
+        Right: function(x) {
+            return Either.Right(f(x));
         }
     });
 };
 
 Either.prototype.swap = function() {
     return this.match({
-        left: function(x) {
-            return Either.right(x);
+        Left: function(x) {
+            return Either.Right(x);
         },
-        right: function(x) {
-            return Either.left(x);
+        Right: function(x) {
+            return Either.Left(x);
         }
     });
 };
 
 Either.prototype.toOption = function() {
     return this.match({
-        left: function() {
+        Left: function() {
             return Option.None;
         },
-        right: Option.Some
+        Right: Option.Some
     });
 };
 
 Either.prototype.toAttempt = function() {
     return this.match({
-        left: Attempt.failure,
-        right: Attempt.success
+        Left: Attempt.Failure,
+        Right: Attempt.Success
     });
 };
 
 Either.prototype.toArray = function() {
     return this.match({
-        left: function(x) {
+        Left: function(x) {
             return [];
         },
-        right: function(x) {
+        Right: function(x) {
             return [x];
         }
     });
 };
 
 //
-//  ## left(x)
+//  ## Left(x)
 //
-//  Constructor to represent the left case.
+//  Constructor to represent the Left case.
 //
-Either.left.prototype.isLeft = true;
-Either.left.prototype.isRight = false;
+Either.Left.prototype.isLeft = true;
+Either.Left.prototype.isRight = false;
 
 //
-//  ## right(x)
+//  ## Right(x)
 //
-//  Constructor to represent the (biased) right case.
+//  Constructor to represent the (biased) Right case.
 //
-Either.right.prototype.isLeft = false;
-Either.right.prototype.isRight = true;
+Either.Right.prototype.isLeft = false;
+Either.Right.prototype.isRight = true;
 
 //
 //  ## isEither(a)
 //
-//  Returns `true` if `a` is a `left` or a `right`.
+//  Returns `true` if `a` is a `Left` or a `Right`.
 //
 var isEither = isInstanceOf(Either);
 
 squishy = squishy
-    .property('left', Either.left)
-    .property('right', Either.right)
+    .property('Left', Either.Left)
+    .property('Right', Either.Right)
     .property('isEither', isEither)
     .method('flatMap', isEither, function(a, b) {
         return a.flatMap(b);

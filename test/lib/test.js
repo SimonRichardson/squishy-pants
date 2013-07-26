@@ -14,7 +14,7 @@ _ = _
         ));
         test.done();
     }))
-    .property('badLeft', _.error("Got left side"))
-    .property('badRight', _.error("Got right side"));
+    .property('badLeft', _.error("Got Left side"))
+    .property('badRight', _.error("Got Right side"));
 
 exports = module.exports = _;

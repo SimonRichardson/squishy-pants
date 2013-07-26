@@ -127,21 +127,21 @@ Stream.prototype.zip = function(s) {
     var env = this;
 
     var resolver,
-        left = [],
-        right = [],
+        Left = [],
+        Right = [],
         stream = new Stream(function(state) {
             resolver = state;
         });
 
     this.foreach(function(a) {
-        if (right.length)
-            resolver([a, right.shift()]);
-        else left.push(a);
+        if (Right.length)
+            resolver([a, Right.shift()]);
+        else Left.push(a);
     });
     s.foreach(function(a) {
-        if (left.length)
-            resolver([left.shift(), a]);
-        else right.push(a);
+        if (Left.length)
+            resolver([Left.shift(), a]);
+        else Right.push(a);
     });
 
     return stream;
@@ -168,10 +168,10 @@ Stream.promise = function(p) {
         setTimeout(function() {
             p.fork(
                 function(data) {
-                    state(Attempt.success(data));
+                    state(Attempt.Success(data));
                 },
                 function(error) {
-                    state(Attempt.failure(error));
+                    state(Attempt.Failure(error));
                 }
             );
         }, 0);

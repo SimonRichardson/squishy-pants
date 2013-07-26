@@ -15,9 +15,9 @@
 //   * `map(f)` - Functor map
 //   * `isSome` - `true` if `this` is `Some`
 //   * `isNone` - `true` if `this` is `None`
-//   * `toAttempt(r)` - `success(x)` if `Some(x)`, `failure(r)` if None
-//   * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if None
-//   * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if None
+//   * `toAttempt(r)` - `Success(x)` if `Some(x)`, `Failure(r)` if None
+//   * `toLeft(r)` - `Left(x)` if `Some(x)`, `Right(r)` if None
+//   * `toRight(l)` - `Right(x)` if `Some(x)`, `Left(l)` if None
 //
 
 var Option = taggedSum('Option', {
@@ -87,24 +87,24 @@ Option.prototype.map = function(f) {
 
 Option.prototype.toAttempt = function() {
     return this.match({
-        Some: Attempt.success,
+        Some: Attempt.Success,
         None: function() {
-            return Attempt.failure(squishy.empty(Array));
+            return Attempt.Failure(squishy.empty(Array));
         }
     });
 };
 
 Option.prototype.toLeft = function(o) {
     return this.match({
-        Some: Either.left,
-        None: Either.right
+        Some: Either.Left,
+        None: Either.Right
     });
 };
 
 Option.prototype.toRight = function(o) {
     return this.match({
-        Some: Either.left,
-        None: Either.right
+        Some: Either.Left,
+        None: Either.Right
     });
 };
 
