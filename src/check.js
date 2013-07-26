@@ -92,7 +92,7 @@ function forAll(property, args) {
         }
     }
 
-    return Option.none;
+    return Option.None;
 }
 
 //

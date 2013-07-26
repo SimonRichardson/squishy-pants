@@ -91,7 +91,7 @@ Stream.prototype.foreach = function(f) {
 
 Stream.prototype.filter = function(f) {
     return this.chain(function(a) {
-        return f(a) ? Option.Some(a) : Option.none;
+        return f(a) ? Option.Some(a) : Option.None;
     });
 };
 

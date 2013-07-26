@@ -198,7 +198,7 @@ var reduce = curry(function(a, f) {
         i,
         v;
 
-    if (total < 1) return Option.none;
+    if (total < 1) return Option.None;
 
     for (i = 0; i < total; i++) {
         if (i === 0) v = a[i];
@@ -213,7 +213,7 @@ var reduceRight = curry(function(a, f) {
         i,
         v;
 
-    if (total < 1) return Option.none;
+    if (total < 1) return Option.None;
 
     for (i = total - 1; i >= 0; --i) {
         if (i === 0) v = a[i];

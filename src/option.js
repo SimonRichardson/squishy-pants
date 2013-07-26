@@ -4,25 +4,25 @@
 //       Option a = Some a + None
 //
 //   The option type encodes the presence and absence of a value. The
-//   `Some` constructor represents a value and `none` represents the
+//   `Some` constructor represents a value and `None` represents the
 //   absence.
 //
 //   * `ap(s)` - Applicative ap(ply)
 //   * `concat(s, plus)` - Semigroup concat
 //   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - Applies `a` to value if `Some` or defaults to `b`
-//   * `getOrElse(a)` - Default value for `none`
+//   * `getOrElse(a)` - Default value for `None`
 //   * `map(f)` - Functor map
 //   * `isSome` - `true` if `this` is `Some`
-//   * `isNone` - `true` if `this` is `none`
-//   * `toAttempt(r)` - `success(x)` if `Some(x)`, `failure(r)` if none
-//   * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if none
-//   * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if none
+//   * `isNone` - `true` if `this` is `None`
+//   * `toAttempt(r)` - `success(x)` if `Some(x)`, `failure(r)` if None
+//   * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if None
+//   * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if None
 //
 
 var Option = taggedSum('Option', {
     Some: ['value'],
-    none: []
+    None: []
 });
 
 Option.prototype.ap = function(b) {
@@ -30,7 +30,7 @@ Option.prototype.ap = function(b) {
         Some: function(x) {
             return b.map(x);
         },
-        none: function() {
+        None: function() {
             return this;
         }
     });
@@ -43,7 +43,7 @@ Option.prototype.concat = function(s, f) {
                 return f(x, y);
             });
         },
-        none: function() {
+        None: function() {
             return this;
         }
     });
@@ -52,7 +52,7 @@ Option.prototype.concat = function(s, f) {
 Option.prototype.flatMap = function(f) {
     return this.match({
         Some: f,
-        none: function() {
+        None: function() {
             return this;
         }
     });
@@ -61,14 +61,14 @@ Option.prototype.flatMap = function(f) {
 Option.prototype.fold = function(f, g) {
     return this.match({
         Some: f,
-        none: g
+        None: g
     });
 };
 
 Option.prototype.getOrElse = function(x) {
     return this.match({
         Some: identity,
-        none: function() {
+        None: function() {
             return x;
         }
     });
@@ -79,7 +79,7 @@ Option.prototype.map = function(f) {
         Some: function(x) {
             return Option.Some(f(x));
         },
-        none: function() {
+        None: function() {
             return this;
         }
     });
@@ -88,7 +88,7 @@ Option.prototype.map = function(f) {
 Option.prototype.toAttempt = function() {
     return this.match({
         Some: Attempt.success,
-        none: function() {
+        None: function() {
             return Attempt.failure(squishy.empty(Array));
         }
     });
@@ -97,14 +97,14 @@ Option.prototype.toAttempt = function() {
 Option.prototype.toLeft = function(o) {
     return this.match({
         Some: Either.left,
-        none: Either.right
+        None: Either.right
     });
 };
 
 Option.prototype.toRight = function(o) {
     return this.match({
         Some: Either.left,
-        none: Either.right
+        None: Either.right
     });
 };
 
@@ -113,7 +113,7 @@ Option.prototype.toArray = function() {
         Some: function(x) {
             return [x];
         },
-        none: function() {
+        None: function() {
             return [];
         }
     });
@@ -137,23 +137,23 @@ Option.Some.prototype.isSome = true;
 Option.Some.prototype.isNone = false;
 
 //
-//  ## none
+//  ## None
 //
 //  Represents the absence of a value.
 //
-Option.none.isSome = false;
-Option.none.isNone = true;
+Option.None.isSome = false;
+Option.None.isNone = true;
 
 //
 //  ## isOption(a)
 //
-//  Returns `true` if `a` is a `Some` or `none`.
+//  Returns `true` if `a` is a `Some` or `None`.
 //
 var isOption = isInstanceOf(Option);
 
 squishy = squishy
     .property('Some', Option.Some)
-    .property('none', Option.none)
+    .property('None', Option.None)
     .property('isOption', isOption)
     .method('ap', isOption, function(a, b) {
         return a.ap(b);

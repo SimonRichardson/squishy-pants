@@ -105,7 +105,7 @@ PartialLens.objectLens = function(property) {
     return PartialLens(function(target) {
         return property in target ?
                   Option.Some(lens.run(target)) :
-                  Option.none;
+                  Option.None;
     });
 };
 
@@ -114,7 +114,7 @@ PartialLens.arrayLens = function(index) {
     return PartialLens(function(target) {
         return index > 0 && index < target.length ?
                   Option.Some(lens.run(target)) :
-                  Option.none;
+                  Option.None;
     });
 };
 
