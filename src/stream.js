@@ -101,14 +101,6 @@ Stream.prototype.map = function(f) {
     });
 };
 
-Stream.prototype.reduce = function(v, f) {
-    var a = v;
-    return this.chain(function(b) {
-        a = f(a, b);
-        return Option.Some(a);
-    });
-};
-
 Stream.prototype.merge = function(s) {
     var env = this;
 
@@ -123,25 +115,51 @@ Stream.prototype.merge = function(s) {
     return stream;
 };
 
+Stream.prototype.reduce = function(v, f) {
+    var a = v;
+    return this.chain(function(b) {
+        a = f(a, b);
+        return Option.Some(a);
+    });
+};
+
+Stream.prototype.skip = function(n) {
+    var i = 0;
+    return this.chain(function(b) {
+        return ((++i % n) === 0) ?
+                  Option.Some(b) :
+                  Option.None;
+    });
+};
+
+Stream.prototype.window = function(n) {
+    var accum = [];
+    return this.chain(function(b) {
+        accum.push(b);
+        accum.splice(-n);
+        return Option.Some(accum);
+    });
+};
+
 Stream.prototype.zip = function(s) {
     var env = this;
 
     var resolver,
-        Left = [],
-        Right = [],
+        left = [],
+        right = [],
         stream = new Stream(function(state) {
             resolver = state;
         });
 
     this.foreach(function(a) {
-        if (Right.length)
-            resolver([a, Right.shift()]);
-        else Left.push(a);
+        if (right.length)
+            resolver([a, right.shift()]);
+        else left.push(a);
     });
     s.foreach(function(a) {
-        if (Left.length)
-            resolver([Left.shift(), a]);
-        else Right.push(a);
+        if (left.length)
+            resolver([left.shift(), a]);
+        else right.push(a);
     });
 
     return stream;
@@ -179,6 +197,39 @@ Stream.promise = function(p) {
 };
 
 //
+//  ## constant
+//
+//      Stream.constant(squishy.method('arb', Number)).foreach(function (a) {
+//        console.log(a);
+//      });
+//
+Stream.constant = function(c, d) {
+    return Stream.poll(function() {
+        return cont(function() {
+            return c;
+        });
+    }, d || 0);
+};
+
+//
+//  ## repeatedly
+//
+//      Stream.repeatedly(
+//          function() {
+//              return squishy.method('arb', Number);
+//          }
+//      ).foreach(function (a) {
+//        console.log(a);
+//      });
+//
+Stream.repeatedly = function(f, d) {
+    return Stream.poll(function() {
+        return cont(f);
+    }, d || 0);
+};
+
+
+//
 //  ## sequential
 //
 //      Stream.sequential([1, 2, 3, 4]).foreach(function (a) {
@@ -190,7 +241,7 @@ Stream.sequential = function(v, d) {
     return Stream.poll(function() {
         if (index >= v.length - 1) return done(v[index]);
         return cont(function() {
-          return v[index++];
+            return v[index++];
         });
     }, d || 0);
 };
