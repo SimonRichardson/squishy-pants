@@ -284,14 +284,17 @@ exports.partialLens = {
                 result = a.filter(function(d) {
                     return cx.run(d).fold(
                         function(store) {
-                            return store.get() == 2;
+                            return store.get() >= 0 ;
                         },
                         _.constant(false)
                     );
                 });
+
             return _.equal(
                 result,
-                result
+                a.filter(function(e) {
+                    return e.c.x >= 0;
+                })
             );
         },
         [
@@ -299,7 +302,8 @@ exports.partialLens = {
                 _.objectLike({
                     c: _.objectLike({
                         x: Number
-                    })
+                    }),
+                    d: _.OptionalVal
                 })
             )
         ]

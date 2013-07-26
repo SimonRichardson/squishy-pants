@@ -115,6 +115,13 @@ var goal = 10;//00;
 var AnyVal = {};
 
 //
+//  ## OptionalVal
+//
+//  Sentinel value for when any type of primitive value that is optionally needed.
+//
+var OptionalVal = {};
+
+//
 //  ## Char
 //
 //  Sentinel value for when a single character string is needed.
@@ -126,6 +133,7 @@ squishy = squishy
     .property('forAll', forAll)
     .property('goal', goal)
     .property('AnyVal', AnyVal)
+    .property('OptionalVal', OptionalVal)
     .property('Char', Char);
 
 //
@@ -165,11 +173,15 @@ squishy = squishy
         return accum;
     })
     .method('arb', isObjectLike, function(a, s) {
-        var o = {},
+        var isOptionalVal = strictEquals(OptionalVal),
+            o = {},
             i;
 
         for(i in a.props) {
-            o[i] = this.arb(a.props[i], s);
+            var opt = isOptionalVal(a.props[i]);
+            if (!opt || opt && this.randomRange(0, 1) <= 0.5) {
+                o[i] = this.arb(opt ? AnyVal : a.props[i], s);
+            }
         }
 
         return o;
