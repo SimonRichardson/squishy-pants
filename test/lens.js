@@ -86,11 +86,11 @@ exports.lens = {
         function(a, b) {
             var index = Math.floor(_.randomRange(0, a.length)),
                 x = _.Lens.arrayLens(index).run(a).set(b),
-                copy = a.slice();
+                expected = a.slice();
 
-            copy[index] = b;
+            expected[index] = b;
 
-            return _.equal(x, copy);
+            return _.equal(x, expected);
         },
         [_.arrayOf(_.AnyVal), _.AnyVal]
     ),
@@ -145,11 +145,11 @@ exports.lens = {
     'when using parse over a complex object, set should set the correct value': _.check(
         function(a, b) {
             var r = _.Lens.parse('c.z.i').run(a).set(b),
-                c = copy(a);
+                expected = copy(a);
 
-            c.c.z.i = b;
+            expected.c.z.i = b;
 
-            return _.equal(r, c);
+            return _.equal(r, expected);
         },
         [
             _.objectLike({
@@ -217,11 +217,11 @@ exports.lens = {
         function(a, b) {
             if (a.c.z.i.length < 1) return true;
 
-            var c = copy(a);
+            var expected = copy(a);
 
-            c.c.z.i[0].e = b;
+            expected.c.z.i[0].e = b;
 
-            return _.equal(_.Lens.parse('c.z..i[0].e').run(a).set(b), c);
+            return _.equal(_.Lens.parse('c.z..i[0].e').run(a).set(b), expected);
         },
         [
             _.objectLike({
@@ -274,9 +274,8 @@ exports.lens = {
     )
 };
 
-
 exports.partialLens = {
-    'test': _.check(
+    'when using PartialLens with get should only retrieve numbers over and including 0': _.check(
         function(a) {
             var c = _.PartialLens.objectLens('c'),
                 x = _.PartialLens.objectLens('x'),
@@ -306,6 +305,37 @@ exports.partialLens = {
                     d: _.OptionalVal
                 })
             )
+        ]
+    ),
+    'when using PartialLens with set should only set values that exist': _.check(
+        function(a, b) {
+            var c = _.PartialLens.objectLens('c'),
+                x = _.PartialLens.objectLens('x'),
+                cx = c.andThen(x),
+                result = cx.run(a).fold(
+                    function(store) {
+                        return store.set(b);
+                    },
+                    _.constant(a)
+                ),
+                expected = copy(a);
+
+            if ('x' in expected.c) {
+                expected.c.x = b;
+            }
+
+            return _.equal(
+                result,
+                expected
+            );
+        },
+        [
+            _.objectLike({
+                c: _.objectLike({
+                    x: _.OptionalVal
+                })
+            }),
+            _.AnyVal
         ]
     )
 };
