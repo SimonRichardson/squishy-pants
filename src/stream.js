@@ -66,13 +66,13 @@ Stream.prototype.chain = function(f) {
 
 Stream.prototype.concat = function(b) {
     return this.chain(function(a) {
-        return Option.some(a.concat(b));
+        return Option.Some(a.concat(b));
     });
 };
 
 Stream.prototype.empty = function() {
     return this.chain(function(a) {
-        return Option.some(squishy.empty(a));
+        return Option.Some(squishy.empty(a));
     });
 };
 
@@ -91,13 +91,13 @@ Stream.prototype.foreach = function(f) {
 
 Stream.prototype.filter = function(f) {
     return this.chain(function(a) {
-        return f(a) ? Option.some(a) : Option.none;
+        return f(a) ? Option.Some(a) : Option.none;
     });
 };
 
 Stream.prototype.map = function(f) {
     return this.chain(function(a) {
-        return Option.some(f(a));
+        return Option.Some(f(a));
     });
 };
 
@@ -105,7 +105,7 @@ Stream.prototype.reduce = function(v, f) {
     var a = v;
     return this.chain(function(b) {
         a = f(a, b);
-        return Option.some(a);
+        return Option.Some(a);
     });
 };
 

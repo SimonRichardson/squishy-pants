@@ -31,9 +31,9 @@
 //  * `swap()` - Swap values
 //  * `isSuccess` - `true` if `this` is `success`
 //  * `isFailure` - `true` if `this` is `failure`
-//  * `toOption(r)` - `some(x)` if `success(x)`, `none` if `failure()`
-//  * `toLeft(r)` - `left(x)` if `some(x)`, `right(r)` if none
-//  * `toRight(l)` - `right(x)` if `some(x)`, `left(l)` if none
+//  * `toOption(r)` - `Some(x)` if `success(x)`, `none` if `failure()`
+//  * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if none
+//  * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if none
 //
 
 var Attempt = taggedSum('Attempt', {
@@ -102,7 +102,7 @@ Attempt.prototype.swap = function() {
 
 Attempt.prototype.toOption = function() {
     return this.match({
-        success: Option.some,
+        success: Option.Some,
         failure: function() {
             return Option.none;
         }

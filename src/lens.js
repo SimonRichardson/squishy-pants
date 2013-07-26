@@ -85,7 +85,7 @@ Lens.prototype.compose = function(b) {
 Lens.prototype.toPartial = function() {
     var self = this;
     return PartialLens(function(target) {
-        return Option.some(self.run(target));
+        return Option.Some(self.run(target));
     });
 };
 
@@ -96,7 +96,7 @@ Lens.prototype.toPartial = function() {
 
 PartialLens.identityLens = function() {
     return PartialLens(function(target) {
-        return Option.some(Lens.id().run(target));
+        return Option.Some(Lens.id().run(target));
     });
 };
 
@@ -104,7 +104,7 @@ PartialLens.objectLens = function(property) {
     var lens = Lens.objectLens(property);
     return PartialLens(function(target) {
         return property in target ?
-                  Option.some(lens.run(target)) :
+                  Option.Some(lens.run(target)) :
                   Option.none;
     });
 };
@@ -113,7 +113,7 @@ PartialLens.arrayLens = function(index) {
     var lens = Lens.arrayLens(index);
     return PartialLens(function(target) {
         return index > 0 && index < target.length ?
-                  Option.some(lens.run(target)) :
+                  Option.Some(lens.run(target)) :
                   Option.none;
     });
 };

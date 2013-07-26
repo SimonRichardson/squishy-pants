@@ -29,7 +29,7 @@
 //
 //       env.negate(100) == -100;
 //
-//   We can now override the environment with some more implementations:
+//   We can now override the environment with Some more implementations:
 //
 //       var env2 = env
 //           .method(

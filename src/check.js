@@ -85,7 +85,7 @@ function forAll(property, args) {
     for(i = 0; i < this.goal; i++) {
         inputs = generateInputs(this, args, i);
         if(!property.apply(this, inputs)) {
-            return Option.some(failureReporter(
+            return Option.Some(failureReporter(
                 findSmallest(this, property, inputs),
                 i + 1
             ));

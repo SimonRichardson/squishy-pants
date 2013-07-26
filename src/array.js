@@ -205,7 +205,7 @@ var reduce = curry(function(a, f) {
         else v = f(v, a[i]);
     }
 
-    return Option.some(v);
+    return Option.Some(v);
 });
 
 var reduceRight = curry(function(a, f) {
@@ -220,7 +220,7 @@ var reduceRight = curry(function(a, f) {
         else v = f(v, a[i]);
     }
 
-    return Option.some(v);
+    return Option.Some(v);
 });
 
 var take = curry(function(a, m) {

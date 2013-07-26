@@ -14,7 +14,7 @@
 //  * `swap()` - If this is a Left, then return the left value in Right or vice versa.
 //  * `isLeft` - `true` iff `this` is `left`
 //  * `isRight` - `true` iff `this` is `right`
-//  * `toOption()` - `none` if `left`, `some` value of `right`
+//  * `toOption()` - `none` if `left`, `Some` value of `right`
 //  * `toArray()` - `[]` if `left`, singleton value if `right`
 //
 
@@ -96,7 +96,7 @@ Either.prototype.toOption = function() {
         left: function() {
             return Option.none;
         },
-        right: Option.some
+        right: Option.Some
     });
 };
 

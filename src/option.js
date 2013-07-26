@@ -4,30 +4,30 @@
 //       Option a = Some a + None
 //
 //   The option type encodes the presence and absence of a value. The
-//   `some` constructor represents a value and `none` represents the
+//   `Some` constructor represents a value and `none` represents the
 //   absence.
 //
 //   * `ap(s)` - Applicative ap(ply)
 //   * `concat(s, plus)` - Semigroup concat
 //   * `flatMap(f)` - Monadic flatMap/bind
-//   * `fold(a, b)` - Applies `a` to value if `some` or defaults to `b`
+//   * `fold(a, b)` - Applies `a` to value if `Some` or defaults to `b`
 //   * `getOrElse(a)` - Default value for `none`
 //   * `map(f)` - Functor map
-//   * `isSome` - `true` if `this` is `some`
+//   * `isSome` - `true` if `this` is `Some`
 //   * `isNone` - `true` if `this` is `none`
-//   * `toAttempt(r)` - `success(x)` if `some(x)`, `failure(r)` if none
-//   * `toLeft(r)` - `left(x)` if `some(x)`, `right(r)` if none
-//   * `toRight(l)` - `right(x)` if `some(x)`, `left(l)` if none
+//   * `toAttempt(r)` - `success(x)` if `Some(x)`, `failure(r)` if none
+//   * `toLeft(r)` - `left(x)` if `Some(x)`, `right(r)` if none
+//   * `toRight(l)` - `right(x)` if `Some(x)`, `left(l)` if none
 //
 
 var Option = taggedSum('Option', {
-    some: ['value'],
+    Some: ['value'],
     none: []
 });
 
 Option.prototype.ap = function(b) {
     return this.match({
-        some: function(x) {
+        Some: function(x) {
             return b.map(x);
         },
         none: function() {
@@ -38,7 +38,7 @@ Option.prototype.ap = function(b) {
 
 Option.prototype.concat = function(s, f) {
     return this.match({
-        some: function(x) {
+        Some: function(x) {
             return s.map(function(y) {
                 return f(x, y);
             });
@@ -51,7 +51,7 @@ Option.prototype.concat = function(s, f) {
 
 Option.prototype.flatMap = function(f) {
     return this.match({
-        some: f,
+        Some: f,
         none: function() {
             return this;
         }
@@ -60,14 +60,14 @@ Option.prototype.flatMap = function(f) {
 
 Option.prototype.fold = function(f, g) {
     return this.match({
-        some: f,
+        Some: f,
         none: g
     });
 };
 
 Option.prototype.getOrElse = function(x) {
     return this.match({
-        some: identity,
+        Some: identity,
         none: function() {
             return x;
         }
@@ -76,8 +76,8 @@ Option.prototype.getOrElse = function(x) {
 
 Option.prototype.map = function(f) {
     return this.match({
-        some: function(x) {
-            return Option.some(f(x));
+        Some: function(x) {
+            return Option.Some(f(x));
         },
         none: function() {
             return this;
@@ -87,7 +87,7 @@ Option.prototype.map = function(f) {
 
 Option.prototype.toAttempt = function() {
     return this.match({
-        some: Attempt.success,
+        Some: Attempt.success,
         none: function() {
             return Attempt.failure(squishy.empty(Array));
         }
@@ -96,21 +96,21 @@ Option.prototype.toAttempt = function() {
 
 Option.prototype.toLeft = function(o) {
     return this.match({
-        some: Either.left,
+        Some: Either.left,
         none: Either.right
     });
 };
 
 Option.prototype.toRight = function(o) {
     return this.match({
-        some: Either.left,
+        Some: Either.left,
         none: Either.right
     });
 };
 
 Option.prototype.toArray = function() {
     return this.match({
-        some: function(x) {
+        Some: function(x) {
             return [x];
         },
         none: function() {
@@ -125,16 +125,16 @@ Option.prototype.toArray = function() {
 //  Constructor `of` Monad creating `Option` with value of `x`.
 //
 Option.of = function(x) {
-    return Option.some(x);
+    return Option.Some(x);
 };
 
 //
-//  ## some(x)
+//  ## Some(x)
 //
 //  Constructor to represent the existence of a value, `x`.
 //
-Option.some.prototype.isSome = true;
-Option.some.prototype.isNone = false;
+Option.Some.prototype.isSome = true;
+Option.Some.prototype.isNone = false;
 
 //
 //  ## none
@@ -147,12 +147,12 @@ Option.none.isNone = true;
 //
 //  ## isOption(a)
 //
-//  Returns `true` if `a` is a `some` or `none`.
+//  Returns `true` if `a` is a `Some` or `none`.
 //
 var isOption = isInstanceOf(Option);
 
 squishy = squishy
-    .property('some', Option.some)
+    .property('Some', Option.Some)
     .property('none', Option.none)
     .property('isOption', isOption)
     .method('ap', isOption, function(a, b) {
