@@ -300,6 +300,31 @@ function oneOf(a) {
 }
 
 //
+//  ## fill(s)(t)
+//
+//  Curried function for filling array.
+//
+var fill = curry(function(s, t) {
+    return this.map(range(0, s), t);
+});
+
+//
+//  ## range(a, b)
+//
+//  Create an array with a given range (length).
+//
+function range(a, b) {
+    var total = b - a;
+    var rec = function(x, y) {
+        if (y - a >= total) return x;
+
+        x[y] = y++;
+        return rec(x, y);
+    };
+    return rec([], a);
+}
+
+//
 //  ## randomRange
 //
 //  Returns a random number between the range.
@@ -350,6 +375,8 @@ squishy = squishy
     .property('not', not)
     .property('error', error)
     .property('oneOf', oneOf)
+    .property('fill', fill)
+    .property('range', range)
     .property('randomRange', randomRange)
     .property('inc', inc)
     .property('dec', dec);
