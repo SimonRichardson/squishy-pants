@@ -1,4 +1,34 @@
+//
+//  ## Store(set, get)
+//
+//
 var Store = tagged('Store', ['set', 'get']);
+
+Store.prototype.extract = function() {
+    return this.set(this.get());
+};
+
+Store.prototype.extend = function(f) {
+    var self = this;
+    return Store(
+        function(k) {
+            return f(Store(
+                self.set,
+                function() {
+                    return k;
+                }
+            ));
+        },
+        this.get
+    );
+};
+
+Store.prototype.map = function(f) {
+    var self = this;
+    return this.extend(function(c) {
+        return f(c.extract());
+    });
+};
 
 //
 //  ## isStore(a)
@@ -12,4 +42,7 @@ var isStore = isInstanceOf(Store);
 //
 squishy = squishy
     .property('Store', Store)
-    .property('isStore', isStore);
+    .property('isStore', isStore)
+    .method('map', isStore, function(a, b) {
+        return a.map(b);
+    });
