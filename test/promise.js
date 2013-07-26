@@ -120,8 +120,8 @@ exports.promiseError = {
 };
 
 exports.promiseChain = {
-    testPromiseChainOf: function(test) {
-        var promise = _.Promise.of(41).chain(
+    'when using chaining promises together the promises should flatMap correctly': function(test) {
+        var promise = _.Promise.of(41).flatMap(
             function(a) {
                 return _.Promise.of(a + 1);
             }
@@ -137,8 +137,8 @@ exports.promiseChain = {
         test.expect(1);
         test.done();
     },
-    testPromiseChainError: function(test) {
-        var promise = _.Promise.of(41).chain(
+    'when using chaining promises together and one has an error the promises should flatMap correctly': function(test) {
+        var promise = _.Promise.of(41).flatMap(
             function(a) {
                 return _.Promise.error(a + 1);
             }

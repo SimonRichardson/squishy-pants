@@ -83,15 +83,15 @@ Promise.error = function(x) {
 };
 
 //
-//  ### chain(f)
+//  ### flatMap(f)
 //
 //  Returns a new promise that evaluates `f` when the current promise
 //  is successfully fulfilled. `f` must return a new promise.
 //
-Promise.prototype.chain = function(f) {
+Promise.prototype.flatMap = function(f) {
     var promise = this;
     return new Promise(function(resolve, reject) {
-        promise.fork(
+        return promise.fork(
             function(a) {
                 f(a).fork(resolve, reject);
             },
@@ -129,6 +129,9 @@ var isPromise = isInstanceOf(Promise);
 squishy = squishy
     .property('Promise', Promise)
     .property('isPromise', isPromise)
+    .method('flatMap', isPromise, function(a, b) {
+        return a.flatMap(b);
+    })
     .method('map', isPromise, function(a, b) {
         return a.map(b);
     });

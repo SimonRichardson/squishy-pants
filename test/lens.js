@@ -1,19 +1,26 @@
 var _ = require('./lib/test'),
     copy = function(o) {
-        // Note: This is really bad deep copy function.
-        var a = {},
+        var out,
+            total,
             i;
 
-        for (i in o) {
-            if (_.isObject(o[i])) {
-                a[i] = copy(o[i]);
-            } else if(_.isArray(o[i])) {
-                a[i] = o[i].slice();
-            } else {
-                a[i] = o[i];
+        if (_.isArray(o)) {
+            out = [];
+            for (i = 0, total = o.length; i < total; i++) {
+                out[i] = copy(o[i]);
             }
+            return out;
         }
-        return a;
+
+        if (_.isObject(o)) {
+            out = {};
+            for (i in o) {
+                out[i] = copy(o[i]);
+            }
+            return out;
+        }
+
+        return o;
     };
 
 exports.lens = {
@@ -263,6 +270,38 @@ exports.lens = {
                 })
             }),
             _.AnyVal
+        ]
+    )
+};
+
+
+exports.partialLens = {
+    'test': _.check(
+        function(a) {
+            var c = _.PartialLens.objectLens('c'),
+                x = _.PartialLens.objectLens('x'),
+                cx = c.andThen(x),
+                result = a.filter(function(d) {
+                    return cx.run(d).fold(
+                        function(store) {
+                            return store.get() == 2;
+                        },
+                        _.constant(false)
+                    );
+                });
+            return _.equal(
+                result,
+                result
+            );
+        },
+        [
+            _.arrayOf(
+                _.objectLike({
+                    c: _.objectLike({
+                        x: Number
+                    })
+                })
+            )
         ]
     )
 };

@@ -1,4 +1,14 @@
-var Lens = tagged('Lens', ['run']);
+//
+//  ## Lens
+//
+//
+
+var Lens = tagged('Lens', ['run']),
+    PartialLens = tagged('PartialLens', ['run']);
+
+function thisAndThen(b) {
+    return b.compose(this);
+}
 
 Lens.identityLens = function() {
     return Lens(function(target) {
@@ -57,9 +67,7 @@ Lens.parse = function(s) {
     });
 };
 
-Lens.prototype.andThen = function(b) {
-    return b.compose(this);
-};
+Lens.prototype.andThen = thisAndThen;
 
 Lens.prototype.compose = function(b) {
     var a = this;
@@ -74,6 +82,58 @@ Lens.prototype.compose = function(b) {
     });
 };
 
+Lens.prototype.toPartial = function() {
+    var self = this;
+    return PartialLens(function(target) {
+        return Option.some(self.run(target));
+    });
+};
+
+//
+//  ## PartialLens
+//
+//
+
+PartialLens.identityLens = function() {
+    return PartialLens(function(target) {
+        return Option.some(Lens.id().run(target));
+    });
+};
+
+PartialLens.objectLens = function(property) {
+    var lens = Lens.objectLens(property);
+    return PartialLens(function(target) {
+        return property in target ?
+                  Option.some(lens.run(target)) :
+                  Option.none;
+    });
+};
+
+PartialLens.arrayLens = function(index) {
+    var lens = Lens.arrayLens(index);
+    return PartialLens(function(target) {
+        return index > 0 && index < target.length ?
+                  Option.some(lens.run(target)) :
+                  Option.none;
+    });
+};
+
+PartialLens.prototype.andThen = thisAndThen;
+
+PartialLens.prototype.compose = function(b) {
+    var a = this;
+    return PartialLens(function(target) {
+        return b.run(target).flatMap(function(c) {
+            return a.run(c.get()).map(function(d) {
+                return Store(
+                    compose(c.set, d.set),
+                    d.get
+                );
+            });
+        });
+    });
+};
+
 //
 //  ## isLens(a)
 //
@@ -82,8 +142,17 @@ Lens.prototype.compose = function(b) {
 var isLens = isInstanceOf(Lens);
 
 //
+//  ## isPartialLens(a)
+//
+//  Returns `true` if `a` is `PartialLens`.
+//
+var isPartialLens = isInstanceOf(PartialLens);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Lens', Lens)
-    .property('isLens', isLens);
+    .property('isLens', isLens)
+    .property('PartialLens', PartialLens)
+    .property('isPartialLens', isPartialLens);
