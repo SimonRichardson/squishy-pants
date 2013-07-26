@@ -101,6 +101,21 @@ Promise.prototype.flatMap = function(f) {
 };
 
 //
+//  ### map(f)
+//
+//  Returns a new promise that evaluates `f` on a value and passes it
+//  through to the resolve function.
+//
+Promise.prototype.map = function(f) {
+    var promise = this;
+    return new Promise(function(resolve, reject) {
+        return promise.fork(function(a) {
+            resolve(f(a));
+        }, reject);
+    });
+};
+
+//
 //  ### `reject(f)`
 //
 //  Returns a new promise that evaluates `f` when the current promise
