@@ -95,6 +95,17 @@ Stream.prototype.filter = function(f) {
     });
 };
 
+Stream.prototype.flatMap = function(f) {
+    var env = this;
+    return new Stream(function(state) {
+        env.foreach(function(a) {
+            f(a).foreach(function(a) {
+                state(a);
+            });
+        });
+    });
+};
+
 Stream.prototype.map = function(f) {
     return this.chain(function(a) {
         return Option.Some(f(a));
