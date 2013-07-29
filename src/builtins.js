@@ -40,7 +40,7 @@ squishy = squishy
     .method('equal', isArray, function(a, b) {
         var env = this;
         /* We need to be sure that the lengths do actually match here. */
-        if (and(a, b) && strictEquals(a.length, b.length)) {
+        if (and(a, b) && isArray(b) && strictEquals(a.length, b.length)) {
             return env.fold(env.zip(a, b), true, function(v, t) {
                 return v && env.equal(t._1, t._2);
             });
@@ -49,7 +49,7 @@ squishy = squishy
     .method('equal', isObject, function(a, b) {
         var i;
         /* We need to be sure that the there is an `a` and a `b` here. */
-        if (and(a, b)) {
+        if (and(a, b) && isObject(b)) {
             /* This would be better if we turn objects into ordered 
                arrays so we can pass it through equal(a, b) */
             for (i in a) {
