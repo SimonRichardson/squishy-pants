@@ -39,26 +39,29 @@ squishy = squishy
     .method('equal', isString, strictEquals)
     .method('equal', isArray, function(a, b) {
         var env = this;
-        return env.fold(env.zip(a, b), true, function(v, t) {
-            return v && env.equal(t._1, t._2);
-        });
+        /* We need to be sure that the lengths do actually match here. */
+        if (and(a, b) && strictEquals(a.length, b.length)) {
+            return env.fold(env.zip(a, b), true, function(v, t) {
+                return v && env.equal(t._1, t._2);
+            });
+        } else return false;
     })
     .method('equal', isObject, function(a, b) {
         var i;
-
-        for (i in a) {
-            if (!this.equal(a[i], b[i])) {
-                return false;
+        /* We need to be sure that the there is an `a` and a `b` here. */
+        if (and(a, b)) {
+            /* This would be better if we turn objects into ordered 
+               arrays so we can pass it through equal(a, b) */
+            for (i in a) {
+                if (!this.equal(a[i], b[i]))
+                    return false;
             }
-        }
-
-        for (i in b) {
-            if (!this.equal(b[i], a[i])) {
-                return false;
+            for (i in b) {
+                if (!this.equal(b[i], a[i]))
+                    return false;
             }
-        }
-
-        return true;
+            return true;
+        } else return false;
     })
     .method('equal', strictEquals(null), strictEquals)
     .method('equal', strictEquals(undefined), strictEquals)
