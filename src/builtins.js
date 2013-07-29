@@ -61,7 +61,13 @@ squishy = squishy
         return true;
     })
     .method('equal', strictEquals(null), strictEquals)
-    .method('equal', strictEquals(undefined), strictEquals);
+    .method('equal', strictEquals(undefined), strictEquals)
+    .property('expect', function(a) {
+        var env = this;
+        return singleton('toBe', function (b) {
+            return env.equal(b, a);
+        });
+    });
 
 //
 //  ### empty values

@@ -5,7 +5,7 @@ exports.attempt = {
         function(a) {
             return _.Success(a).match({
                 Success: function(b) {
-                    return a === b;
+                    return _.expect(a).toBe(b);
                 },
                 Failure: _.badRight
             });
@@ -17,7 +17,7 @@ exports.attempt = {
             return _.Failure(a).match({
                 Success: _.badLeft,
                 Failure: function(b) {
-                    return a === b;
+                    return _.expect(a).toBe(b);
                 }
             });
         },
@@ -25,7 +25,7 @@ exports.attempt = {
     ),
     'when creating success with value should set value on success': _.check(
         function(a) {
-            return _.Success(a).value === a;
+            return _.expect(_.Success(a).value).toBe(a);
         },
         [_.AnyVal]
     ),
@@ -49,22 +49,22 @@ exports.attempt = {
     ),
     'when creating success and mapping value should map to correct value': _.check(
         function(a) {
-            return _.Success(a).map(_.inc).value === a + 1;
+            return _.expect(_.Success(a).map(_.inc).value).toBe(a + 1);
         },
         [Number]
     ),
     'when creating success and folding should map to correct value': _.check(
         function(a) {
-            return _.Success(a).fold(
+            return _.expect(_.Success(a).fold(
                 _.inc,
                 _.error('Failed if called')
-            ) === a + 1;
+            )).toBe(a + 1);
         },
         [Number]
     ),
     'when creating a failure with value should set errors on failure': _.check(
         function(a) {
-            return _.Failure(a).errors === a;
+            return _.expect(_.Failure(a).errors).toBe(a);
         },
         [_.AnyVal]
     ),
@@ -88,49 +88,49 @@ exports.attempt = {
     ),
     'when creating failure and mapping value should not call map': _.check(
         function(a) {
-            return _.Failure(a).map(
+            return _.expect(_.Failure(a).map(
                 _.error('Failed if called')
-            ).errors === a;
+            ).errors).toBe(a);
         },
         [_.AnyVal]
     ),
     'when creating failure and folding should map to correct value': _.check(
         function(a) {
-            return _.Failure(a).fold(
+            return _.expect(_.Failure(a).fold(
                 _.error('Failed if called'),
                 _.inc
-            ) === a + 1;
+            )).toBe(a + 1);
         },
         [Number]
     ),
     'when creating success and calling ap with a success should concat to correct value': _.check(
         function(a, b) {
-            return _.Success(
+            return _.expect(_.Success(
                 _.constant(a)
             ).ap(
                 _.Success(b),
                 _.concat
-            ).value === a;
+            ).value).toBe(a);
         },
         [_.AnyVal, _.AnyVal]
     ),
     'when creating success and calling ap with a failure should concat to correct value': _.check(
         function(a, b) {
-            return _.Success(
+            return _.expect(_.Success(
                 _.constant(a)
             ).ap(
                 _.Failure(b),
                 _.concat
-            ).errors.toString() === b.toString();
+            ).errors).toBe(b);
         },
         [_.AnyVal, _.arrayOf(_.AnyVal)]
     ),
     'when creating failure and calling ap with a success should concat to correct value': _.check(
         function(a, b) {
-            return _.Failure(a).ap(
+            return _.expect(_.Failure(a).ap(
                 _.Success(b),
                 _.concat
-            ).errors.toString() === a.toString();
+            ).errors).toBe(a);
         },
         [_.arrayOf(_.AnyVal), _.AnyVal]
     ),
@@ -140,8 +140,7 @@ exports.attempt = {
                 _.Failure(b),
                 _.concat
             ).errors;
-            // FIXME (Simon) : Implement equals.
-            return errors.toString() === a.concat(b).toString();
+            return _.expect(errors).toBe(a.concat(b));
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     )
