@@ -70,3 +70,42 @@ exports.equal = {
         [Object]
     )
 };
+
+exports.expect = {
+    'when testing expect with Boolean should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [Boolean]
+    ),
+    'when testing expect with Function should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [Function]
+    ),
+    'when testing expect with Number should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [Number]
+    ),
+    'when testing expect with String should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [String]
+    ),
+    'when testing expect with Array should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when testing expect with Object should return true': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [Object]
+    )
+};
