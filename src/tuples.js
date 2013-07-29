@@ -44,6 +44,10 @@ Tuple2.prototype.concat = function(b) {
     );
 };
 
+Tuple2.prototype.flatMap = function(f) {
+    return f(this);
+};
+
 Tuple2.prototype.toArray = function() {
     return [this._1, this._2];
 };
@@ -68,6 +72,10 @@ Tuple3.prototype.concat = function(b) {
         squishy.concat(this._2, b._2),
         squishy.concat(this._3, b._3)
     );
+};
+
+Tuple3.prototype.flatMap = function(f) {
+    return f(this);
 };
 
 Tuple3.prototype.toArray = function() {
@@ -95,6 +103,10 @@ Tuple4.prototype.concat = function(b) {
         squishy.concat(this._3, b._3),
         squishy.concat(this._4, b._4)
     );
+};
+
+Tuple4.prototype.flatMap = function(f) {
+    return f(this);
 };
 
 Tuple4.prototype.toArray = function() {
@@ -125,37 +137,72 @@ Tuple5.prototype.concat = function(b) {
     );
 };
 
+Tuple5.prototype.flatMap = function(f) {
+    return f(this);
+};
+
 Tuple5.prototype.toArray = function() {
     return [this._1, this._2, this._3, this._4, this._5];
 };
 
-/**
-   ## isTuple2(a)
-
-   Returns `true` if `a` is `Tuple2`.
-**/
+//
+//  ## isTuple2(a)
+//
+//  Returns `true` if `a` is `Tuple2`.
+//
 var isTuple2 = isInstanceOf(Tuple2);
 
-/**
-   ## isTuple4(a)
-
-   Returns `true` if `a` is `Tuple3`.
-**/
+//
+//  ## isTuple4(a)
+//
+//  Returns `true` if `a` is `Tuple3`.
+//
 var isTuple3 = isInstanceOf(Tuple3);
 
-/**
-   ## isTuple4(a)
-
-   Returns `true` if `a` is `Tuple4`.
-**/
+//
+//  ## isTuple4(a)
+//
+//  Returns `true` if `a` is `Tuple4`.
+//
 var isTuple4 = isInstanceOf(Tuple4);
 
-/**
-   ## isTuple5(a)
-
-   Returns `true` if `a` is `Tuple5`.
-**/
+//
+//  ## isTuple5(a)
+//
+//  Returns `true` if `a` is `Tuple5`.
+//
 var isTuple5 = isInstanceOf(Tuple5);
+
+//
+//  ## isTuple(a)
+//
+//  Returns `true` if `a` is `Tuple`.
+//
+var isTuple = function(a) {
+    return  isTuple2(a) ||
+            isTuple3(a) ||
+            isTuple4(a) ||
+            isTuple5(a);
+};
+
+//
+//  ## arbTuple(a)
+//
+//  Returns an arbitrary `Tuple` with the right set of values. 
+//
+var arbTuple = curry(function(t, n) {
+    return function(a, s) {
+        var env = this;
+        return t.of.apply(this, env.map(
+            env.fill(n)(function() {
+                return AnyVal;
+            }),
+            function(arg) {
+                return env.arb(arg, s);
+            }
+        ));
+    };
+});
 
 squishy = squishy
     .property('Tuple2', Tuple2)
@@ -165,4 +212,20 @@ squishy = squishy
     .property('isTuple2', isTuple2)
     .property('isTuple3', isTuple3)
     .property('isTuple4', isTuple4)
-    .property('isTuple5', isTuple5);
+    .property('isTuple5', isTuple5)
+    .method('arb', isTuple2, arbTuple(Tuple2, 2))
+    .method('arb', isTuple3, arbTuple(Tuple3, 3))
+    .method('arb', isTuple4, arbTuple(Tuple2, 4))
+    .method('arb', isTuple5, arbTuple(Tuple5, 5))
+    .method('concat', isTuple, function(a, b) {
+        return a.concat(b);
+    })
+    .method('equal', isTuple, function(a, b) {
+        return squishy.equal(a.toArray(), b.toArray());
+    })
+    .method('flatMap', isTuple, function(a, b) {
+        return a.flatMap(b);
+    })
+    .method('toArray', isTuple, function(a, b) {
+        return a.toArray();
+    });

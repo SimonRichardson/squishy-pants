@@ -297,4 +297,7 @@ squishy = squishy
     })
     .method('map', isStream, function(a, b) {
         return a.map(b);
+    })
+    .method('arb', isStream, function(a, b) {
+        return Stream.constant(this.arb(AnyVal, b - 1));
     });

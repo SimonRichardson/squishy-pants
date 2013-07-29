@@ -194,6 +194,9 @@ squishy = squishy
     .method('map', isAttempt, function(a, b) {
         return a.map(b);
     })
+    .method('arb', isAttempt, function(a, b) {
+        return Attempt.Success(this.arb(AnyVal, b - 1));
+    })
     .method('toArray', isAttempt, function(a) {
         return a.toArray();
     });

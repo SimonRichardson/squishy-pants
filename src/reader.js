@@ -51,4 +51,7 @@ squishy = squishy
     })
     .method('map', isReader, function(a, b) {
         return a.map(b);
+    })
+    .method('arb', isReader, function(a, b) {
+        return Reader.of(this.arb(AnyVal, b - 1));
     });

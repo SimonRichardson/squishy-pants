@@ -45,4 +45,11 @@ squishy = squishy
     .property('isStore', isStore)
     .method('map', isStore, function(a, b) {
         return a.map(b);
+    })
+    .method('arb', isStore, function(a, b) {
+        var value = this.arb(AnyVal, b - 1);
+        return Store(
+            identity,
+            constant(value)
+        );
     });

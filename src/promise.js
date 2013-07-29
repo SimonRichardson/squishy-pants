@@ -149,4 +149,7 @@ squishy = squishy
     })
     .method('map', isPromise, function(a, b) {
         return a.map(b);
+    })
+    .method('arb', isPromise, function(a, b) {
+        return Promise.of(this.arb(AnyVal, b - 1));
     });

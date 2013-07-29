@@ -157,6 +157,9 @@ squishy = squishy
     .method('concat', isEither, function(a, b) {
         return a.concat(b, this.concat);
     })
+    .method('arb', isEither, function(a, b) {
+        return Either.Right(this.arb(AnyVal, b - 1));
+    })
     .method('toArray', isEither, function(a) {
         return a.toArray();
     });

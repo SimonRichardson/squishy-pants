@@ -170,6 +170,9 @@ squishy = squishy
     .method('map', isOption, function(a, b) {
         return a.map(b);
     })
+    .method('arb', isOption, function(a, b) {
+        return Option.Some(this.arb(AnyVal, b - 1));
+    })
     .method('toArray', isOption, function(a) {
         return a.toArray();
     });
