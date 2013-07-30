@@ -44,13 +44,14 @@ squishy = squishy
             return env.fold(env.zip(a, b), true, function(v, t) {
                 return v && env.equal(t._1, t._2);
             });
-        } else return false;
+        }
+        return false;
     })
     .method('equal', isObject, function(a, b) {
         var i;
         /* We need to be sure that the there is an `a` and a `b` here. */
         if (and(a, b) && isObject(b)) {
-            /* This would be better if we turn objects into ordered 
+            /* This would be better if we turn objects into ordered
                arrays so we can pass it through equal(a, b) */
             for (i in a) {
                 if (!this.equal(a[i], b[i]))
@@ -61,7 +62,8 @@ squishy = squishy
                     return false;
             }
             return true;
-        } else return false;
+        }
+        return false;
     })
     .method('equal', strictEquals(null), strictEquals)
     .method('equal', strictEquals(undefined), strictEquals)

@@ -129,6 +129,7 @@ var OptionalVal = {};
 var Char = {};
 
 squishy = squishy
+    .property('generateInputs', generateInputs)
     .property('failureReporter', failureReporter)
     .property('forAll', forAll)
     .property('goal', goal)

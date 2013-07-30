@@ -60,6 +60,27 @@ Attempt.prototype.ap = function(b, concat) {
     });
 };
 
+Attempt.prototype.equal = function(a) {
+    return this.match({
+        Success: function(x) {
+            return a.match({
+                Success: function(y) {
+                    return squishy.equal(x, y);
+                },
+                Failure: constant(false)
+            });
+        },
+        Failure: function(x) {
+            return a.match({
+                Success: constant(false),
+                Failure: function(y) {
+                    return squishy.equal(x, y);
+                }
+            });
+        }
+    });
+};
+
 Attempt.prototype.flatMap = function(f) {
     return this.match({
         Success: function(a) {
@@ -185,6 +206,12 @@ squishy = squishy
     .method('ap', isAttempt, function(a, b) {
         return a.ap(b, this.concat);
     })
+    .method('arb', isAttempt, function(a, b) {
+        return Attempt.Success(this.arb(AnyVal, b - 1));
+    })
+    .method('equal', isAttempt, function(a, b) {
+        return a.equal(b);
+    })
     .method('flatMap', isAttempt, function(a, b) {
         return a.flatMap(b);
     })
@@ -193,9 +220,6 @@ squishy = squishy
     })
     .method('map', isAttempt, function(a, b) {
         return a.map(b);
-    })
-    .method('arb', isAttempt, function(a, b) {
-        return Attempt.Success(this.arb(AnyVal, b - 1));
     })
     .method('toArray', isAttempt, function(a) {
         return a.toArray();

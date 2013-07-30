@@ -51,6 +51,27 @@ Either.prototype.concat = function(s, f) {
     });
 };
 
+Either.prototype.equal = function(a) {
+    return this.match({
+        Left: function(x) {
+            return a.match({
+                Left: function(y) {
+                    return squishy.equal(x, y);
+                },
+                Right: constant(false)
+            });
+        },
+        Right: function(x) {
+            return a.match({
+                Left: constant(false),
+                Right: function(y) {
+                    return squishy.equal(x, y);
+                }
+            });
+        }
+    });
+};
+
 Either.prototype.flatMap = function(f) {
     return this.match({
         Left: function() {
@@ -145,20 +166,23 @@ squishy = squishy
     .property('Left', Either.Left)
     .property('Right', Either.Right)
     .property('isEither', isEither)
+    .method('ap', isEither, function(a, b) {
+        return a.ap(b);
+    })
+    .method('arb', isEither, function(a, b) {
+        return Either.Right(this.arb(AnyVal, b - 1));
+    })
+    .method('concat', isEither, function(a, b) {
+        return a.concat(b, this.concat);
+    })
+    .method('equal', isEither, function(a, b) {
+        return a.equal(b);
+    })
     .method('flatMap', isEither, function(a, b) {
         return a.flatMap(b);
     })
     .method('map', isEither, function(a, b) {
         return a.map(b);
-    })
-    .method('ap', isEither, function(a, b) {
-        return a.ap(b);
-    })
-    .method('concat', isEither, function(a, b) {
-        return a.concat(b, this.concat);
-    })
-    .method('arb', isEither, function(a, b) {
-        return Either.Right(this.arb(AnyVal, b - 1));
     })
     .method('toArray', isEither, function(a) {
         return a.toArray();

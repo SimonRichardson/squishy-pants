@@ -21,13 +21,18 @@
 function Stream(f) {
     var self = getInstance(this, Stream);
 
-    var resolver;
+    var resolvers = [];
     self.fork = function(resolve) {
-        resolver = resolve;
+        resolvers.push(resolve);
     };
 
     f(function(a) {
-        if (resolver) resolver(a);
+        var total,
+            i;
+
+        for (i = 0, total = resolvers.length; i < total; i++) {
+            resolvers[i](a);
+        }
     });
 
     return self;
@@ -76,6 +81,12 @@ Stream.prototype.empty = function() {
     });
 };
 
+Stream.prototype.equal = function(a) {
+    return this.zip(a).fold(true, function(v, t) {
+        return v && squishy.equal(t._1, t._2);
+    });
+};
+
 Stream.prototype.foreach = function(f) {
     var env = this;
     return new Stream(function(state) {
@@ -83,8 +94,7 @@ Stream.prototype.foreach = function(f) {
             function(data) {
                 f(data);
                 state(data);
-            },
-            function(error) {}
+            }
         );
     });
 };
@@ -92,6 +102,18 @@ Stream.prototype.foreach = function(f) {
 Stream.prototype.filter = function(f) {
     return this.chain(function(a) {
         return f(a) ? Option.Some(a) : Option.None;
+    });
+};
+
+Stream.prototype.filterNot = function(f) {
+    return this.chain(function(a) {
+        return !f(a) ? Option.Some(a) : Option.None;
+    });
+};
+
+Stream.prototype.flatten = function() {
+    return this.flatMap(function (x) {
+        return Stream.sequential(squishy.toArray(x));
     });
 };
 
@@ -103,6 +125,13 @@ Stream.prototype.flatMap = function(f) {
                 state(a);
             });
         });
+    });
+};
+
+Stream.prototype.fold = function(v, f) {
+    return this.chain(function(b) {
+        v = f(v, b);
+        return Option.Some(v);
     });
 };
 
@@ -126,11 +155,21 @@ Stream.prototype.merge = function(s) {
     return stream;
 };
 
-Stream.prototype.reduce = function(v, f) {
-    var a = v;
+Stream.prototype.partition = function(f) {
+    return this.chain(function(a) {
+        var b = f(a) ? Either.Right(a) : Either.Left(a);
+        return Option.some(b);
+    });
+};
+
+Stream.prototype.reduce = function(f) {
+    var a = Option.none;
     return this.chain(function(b) {
-        a = f(a, b);
-        return Option.Some(a);
+        if (a.isEmpty)
+            a = Option.some(b);
+
+        a = Option.some(f(a.get(), b));
+        return a;
     });
 };
 
@@ -164,18 +203,19 @@ Stream.prototype.zip = function(s) {
 
     this.foreach(function(a) {
         if (right.length)
-            resolver([a, right.shift()]);
+            resolver(Tuple2(a, right.shift()));
         else left.push(a);
     });
     s.foreach(function(a) {
         if (left.length)
-            resolver([left.shift(), a]);
+            resolver(Tuple2(left.shift(), a));
         else right.push(a);
     });
 
     return stream;
 };
 
+/* Deprecated */
 Stream.prototype.toArray = function() {
     var accum = [];
     this.foreach(function(a) {
@@ -250,7 +290,9 @@ Stream.repeatedly = function(f, d) {
 Stream.sequential = function(v, d) {
     var index = 0;
     return Stream.poll(function() {
-        if (index >= v.length - 1) return done(v[index]);
+        if (index >= v.length - 1) {
+            return done(v[index]);
+        }
         return cont(function() {
             return v[index++];
         });
@@ -292,12 +334,16 @@ var isStream = isInstanceOf(Stream);
 squishy = squishy
     .property('Stream', Stream)
     .property('isStream', isStream)
-    .method('zip', isStream, function(b) {
-        return a.zip(b);
+    .method('arb', strictEquals(Stream), function(a, b) {
+        var args = this.arb(this.arrayOf(AnyVal), b);
+        return Stream.sequential(args);
+    })
+    .method('equal', isStream, function(a, b) {
+        return a.equal(b);
     })
     .method('map', isStream, function(a, b) {
         return a.map(b);
     })
-    .method('arb', isStream, function(a, b) {
-        return Stream.constant(this.arb(AnyVal, b - 1));
+    .method('zip', isStream, function(b) {
+        return a.zip(b);
     });

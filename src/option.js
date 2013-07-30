@@ -49,6 +49,25 @@ Option.prototype.concat = function(s, f) {
     });
 };
 
+Option.prototype.equal = function(a) {
+    return this.match({
+        Some: function(x) {
+            return a.match({
+                Some: function(y) {
+                    return squishy.equal(x, y);
+                },
+                None: constant(false)
+            });
+        },
+        None: function() {
+            return a.match({
+                Some: constant(false),
+                None: constant(true)
+            });
+        }
+    });
+};
+
 Option.prototype.flatMap = function(f) {
     return this.match({
         Some: f,
@@ -62,6 +81,15 @@ Option.prototype.fold = function(f, g) {
     return this.match({
         Some: f,
         None: g
+    });
+};
+
+Option.prototype.get = function() {
+    return this.match({
+        Some: identity,
+        None: function() {
+            throw new Error('Unexpected value');
+        }
     });
 };
 
@@ -160,6 +188,9 @@ squishy = squishy
     })
     .method('concat', isOption, function(a, b) {
         return a.concat(b, this.concat);
+    })
+    .method('equal', isOption, function(a, b) {
+        return a.equal(b);
     })
     .method('flatMap', isOption, function(a, b) {
         return a.flatMap(b);

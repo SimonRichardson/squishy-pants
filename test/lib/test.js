@@ -36,6 +36,50 @@ _ = _
 
         test.done();
     }))
+    .property('checkStream', _.curry(function(property, args, delay, test) {
+        var env = this,
+            reported = 0,
+            check,
+            reporter,
+            applied,
+            inputs,
+            i;
+
+        check = env.curry(function(state, index, result) {
+            state(
+                !result ?
+                env.Some(failureReporter(
+                    inputs,
+                    index + 1
+                )) :
+                env.None
+            );
+        });
+
+        reporter = function(report) {
+            /* Fix this so we chain reported with reporter. */
+            reported += 1;
+            test.ok(report.isNone, report.fold(
+                function(fail) {
+                    return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
+                },
+                function() {
+                    return 'OK';
+                }
+            ));
+        };
+
+        for(i = 0; i < env.goal; i++) {
+            inputs = env.generateInputs(env, args, i);
+            applied = property.apply(this, inputs);
+            applied.foreach(check(reporter, i));
+        }
+
+        setTimeout(function() {
+            test.expect(Math.max(env.goal, reported));
+            test.done();
+        }, delay || 1);
+    }))
     .property('badLeft', _.error("Got Left side"))
     .property('badRight', _.error("Got Right side"));
 

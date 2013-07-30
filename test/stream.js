@@ -1,5 +1,15 @@
 var _ = require('./lib/test');
 
+exports.stream = {
+    'when testing equality with same stream should return true': _.checkStream(
+        function(a) {
+            return a.equal(a);
+        },
+        [_.Stream],
+        50
+    )
+};
+
 exports.streamForeachTest = function(test) {
     var result = [];
     var s = _.Stream.sequential([1, 2, 3, 4]).foreach(function(a) {
@@ -38,7 +48,7 @@ exports.streamZipTest = function(test) {
     var c = a.zip(b).toArray();
 
     setTimeout(function() {
-        test.deepEqual(c, [[1, 2], [3, 4], [5, 6], [7, 8]]);
+        test.deepEqual(c, [_.Tuple2(1, 2), _.Tuple2(3, 4), _.Tuple2(5, 6), _.Tuple2(7, 8)]);
         test.done();
     }, 50);
 };
@@ -49,7 +59,7 @@ exports.streamZipDelayedTest = function(test) {
     var c = a.zip(b).toArray();
 
     setTimeout(function() {
-        test.deepEqual(c, [[1, 2], [3, 4], [5, 6], [7, 8]]);
+        test.deepEqual(c, [_.Tuple2(1, 2), _.Tuple2(3, 4), _.Tuple2(5, 6), _.Tuple2(7, 8)]);
         test.done();
     }, 500);
 };
@@ -60,7 +70,7 @@ exports.streamZipDelayedWithMapTest = function(test) {
     var c = a.zip(b).map(_.identity).toArray();
 
     setTimeout(function() {
-        test.deepEqual(c, [[1, 2], [3, 4], [5, 6], [7, 8]]);
+        test.deepEqual(c, [_.Tuple2(1, 2), _.Tuple2(3, 4), _.Tuple2(5, 6), _.Tuple2(7, 8)]);
         test.done();
     }, 500);
 };
