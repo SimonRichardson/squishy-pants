@@ -1,15 +1,15 @@
 var _ = require('./lib/test');
 
-exports.FailureReporter = {
+exports.failureReporter = {
     testFailureReporterWithInput: _.check(
         function(a) {
-            return _.FailureReporter(a, 0).inputs === a;
+            return _.failureReporter(a, 0).inputs === a;
         },
         [_.arrayOf(String)]
     ),
     testFailureReporterWithTries: _.check(
         function(a) {
-            return _.FailureReporter([''], a).tries === a;
+            return _.failureReporter([''], a).tries === a;
         },
         [Number]
     )

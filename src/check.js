@@ -50,13 +50,13 @@ function findSmallest(env, property, inputs) {
 }
 
 //
-//  ### FailureReporter
+//  ### failureReporter
 //
 //  * inputs - the arguments to the property that failed
 //  * tries - number of times inputs were tested before Failure
 //
-function FailureReporter(inputs, tries) {
-    var self = getInstance(this, FailureReporter);
+function failureReporter(inputs, tries) {
+    var self = getInstance(this, failureReporter);
     self.inputs = inputs;
     self.tries = tries;
     return self;
@@ -69,7 +69,7 @@ function FailureReporter(inputs, tries) {
 //  then passes them to `property`, a function returning a
 //  `Boolean`. Tries `goal` number of times or until Failure.
 //
-//  Returns an `Option` of a `FailureReporter`:
+//  Returns an `Option` of a `failureReporter`:
 //
 //       var reporter = squishy.forAll(
 //           function(s) {
@@ -85,7 +85,7 @@ function forAll(property, args) {
     for(i = 0; i < this.goal; i++) {
         inputs = generateInputs(this, args, i);
         if(!property.apply(this, inputs)) {
-            return Option.Some(FailureReporter(
+            return Option.Some(failureReporter(
                 findSmallest(this, property, inputs),
                 i + 1
             ));
@@ -129,7 +129,7 @@ var OptionalVal = {};
 var Char = {};
 
 squishy = squishy
-    .property('FailureReporter', FailureReporter)
+    .property('failureReporter', failureReporter)
     .property('forAll', forAll)
     .property('goal', goal)
     .property('AnyVal', AnyVal)
