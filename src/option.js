@@ -125,14 +125,18 @@ Option.prototype.toAttempt = function() {
 Option.prototype.toLeft = function(o) {
     return this.match({
         Some: Either.Left,
-        None: Either.Right
+        None: function() {
+            return Either.Right(o);
+        }
     });
 };
 
 Option.prototype.toRight = function(o) {
     return this.match({
-        Some: Either.Left,
-        None: Either.Right
+        Some: Either.Right,
+        None: function() {
+            return Either.Left(o);
+        }
     });
 };
 
