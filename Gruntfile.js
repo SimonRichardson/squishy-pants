@@ -36,6 +36,32 @@ module.exports = function (grunt) {
                     'bin/squishy-pants.min.js': ['bin/squishy-pants.js']
                 }
             }
+        },
+        parallel: {
+            array: {
+                tasks: [{
+                    cmd: 'nodeunit',
+                    args: ['test/array.js']
+                }]
+            },
+            attempt: {
+                tasks: [{
+                    cmd: 'nodeunit',
+                    args: ['test/attempt.js']
+                }]
+            },
+            builtins: {
+                tasks: [{
+                    cmd: 'nodeunit',
+                    args: ['test/builtins.js']
+                }]
+            },
+            check: {
+                tasks: [{
+                    cmd: 'nodeunit',
+                    args: ['test/check.js']
+                }]
+            }
         }
     });
 
@@ -43,6 +69,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-parallel');
 
     grunt.registerTask('default', ['rig', 'jshint', 'nodeunit', 'uglify']);
 };
