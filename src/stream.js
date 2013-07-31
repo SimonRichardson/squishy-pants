@@ -75,6 +75,22 @@ Stream.prototype.concat = function(b) {
     });
 };
 
+Stream.prototype.delay = function(d) {
+    var env = this;
+    return new Stream(function(state) {
+        env.fork(
+            function(data) {
+                setTimeout(
+                    function() {
+                        state(data);
+                    },
+                    d || 0
+                );
+            }
+        );
+    });
+};
+
 Stream.prototype.empty = function() {
     return this.chain(function(a) {
         return Option.Some(squishy.empty(a));
@@ -149,7 +165,7 @@ Stream.prototype.merge = function(s) {
             resolver = state;
         });
 
-    this.foreach(resolver);
+    env.foreach(resolver);
     s.foreach(resolver);
 
     return stream;
@@ -201,7 +217,7 @@ Stream.prototype.zip = function(s) {
             resolver = state;
         });
 
-    this.foreach(function(a) {
+    env.foreach(function(a) {
         if (right.length)
             resolver(Tuple2(a, right.shift()));
         else left.push(a);
@@ -229,7 +245,7 @@ Stream.prototype.toArray = function() {
 //  ## promise
 //
 //      Stream.promise(promise).foreach(function (a) {
-//        console.log(a);
+//          console.log(a);
 //      });
 //
 Stream.promise = function(p) {
@@ -248,10 +264,23 @@ Stream.promise = function(p) {
 };
 
 //
+//  ## once
+//
+//      Stream.once(squishy.method('arb', Number)).foreach(function (a) {
+//          console.log(a);
+//      });
+//
+Stream.once = function(c, d) {
+    return Stream.poll(function() {
+        return done(c);
+    }, d || 0);
+};
+
+//
 //  ## constant
 //
 //      Stream.constant(squishy.method('arb', Number)).foreach(function (a) {
-//        console.log(a);
+//          console.log(a);
 //      });
 //
 Stream.constant = function(c, d) {
@@ -270,7 +299,7 @@ Stream.constant = function(c, d) {
 //              return squishy.method('arb', Number);
 //          }
 //      ).foreach(function (a) {
-//        console.log(a);
+//          console.log(a);
 //      });
 //
 Stream.repeatedly = function(f, d) {
@@ -284,7 +313,7 @@ Stream.repeatedly = function(f, d) {
 //  ## sequential
 //
 //      Stream.sequential([1, 2, 3, 4]).foreach(function (a) {
-//        console.log(a);
+//          console.log(a);
 //      });
 //
 Stream.sequential = function(v, d) {
@@ -303,11 +332,11 @@ Stream.sequential = function(v, d) {
 //  ## poll
 //
 //      Stream.poll(function() {
-//        return cont(function() {
-//            return squishy.method('arb', Number);
-//        })
+  //        return cont(function() {
+  //            return squishy.method('arb', Number);
+  //        })
 //      }, 0).foreach(function (a) {
-//        console.log(a);
+//          console.log(a);
 //      });
 //
 Stream.poll = function(p, d) {
@@ -329,13 +358,39 @@ Stream.poll = function(p, d) {
 var isStream = isInstanceOf(Stream);
 
 //
+//  ## streamOf(type)
+//
+//  Sentinel value for when an stream of a particular type is needed:
+//
+//       streamOf(Number)
+//
+function streamOf(type) {
+    var self = getInstance(this, streamOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStreamOf(a)
+//
+//  Returns `true` if `a` is `streamOf`.
+//
+var isStreamOf = isInstanceOf(streamOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Stream', Stream)
     .property('isStream', isStream)
+    .property('streamOf', streamOf)
+    .property('isStreamOf', isStreamOf)
     .method('arb', strictEquals(Stream), function(a, b) {
         var args = this.arb(this.arrayOf(AnyVal), b);
+        return Stream.sequential(args);
+    })
+    .method('arb', isStreamOf, function(a, b) {
+        var args = this.arb(a.type, b - 1);
         return Stream.sequential(args);
     })
     .method('equal', isStream, function(a, b) {

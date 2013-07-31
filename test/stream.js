@@ -1,4 +1,5 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
+    timeout = _.goal * 3;
 
 exports.stream = {
     'when testing equality with same stream should return true': _.checkStream(
@@ -6,40 +7,61 @@ exports.stream = {
             return a.equal(a);
         },
         [_.Stream],
-        50
+        timeout
+    ),
+    'when testing foreach with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var accum = [];
+            a.foreach(function(a) {
+                accum.push(a);
+            });
+            return a.equal(_.Stream.sequential(accum));
+        },
+        [_.streamOf(_.arrayOf(_.AnyVal))],
+        timeout
+    ),
+    'when testing filter with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var actual = _.Stream.sequential(a).filter(_.isEven),
+                expected = _.Stream.sequential(_.filter(a, _.isEven));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.Integer)],
+        timeout
+    ),
+    'when testing filterNot with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var actual = _.Stream.sequential(a).filterNot(_.isEven),
+                expected = _.Stream.sequential(_.filterNot(a, _.isEven));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.Integer)],
+        timeout
+    ),
+    'when testing map with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var actual = _.Stream.sequential(a).map(_.identity),
+                expected = _.Stream.sequential(_.map(a, _.identity));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.Integer)],
+        timeout
+    ),
+    'when testing merge with the stream should dispatch all items': _.checkStream(
+        function(a, b) {
+            var x = _.Stream.sequential(a),
+                y = _.Stream.sequential(b),
+                actual = x.merge(y),
+                expected = _.Stream.sequential(_.concat(a, b));
+
+            return actual.equal(actual);
+        },
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
+        timeout
     )
-};
-
-exports.streamForeachTest = function(test) {
-    var result = [];
-    var s = _.Stream.sequential([1, 2, 3, 4]).foreach(function(a) {
-        result.push(a);
-    });
-
-    setTimeout(function() {
-        test.deepEqual(result, [1, 2, 3, 4]);
-        test.done();
-    }, 50);
-};
-
-exports.streamFilterTest = function(test) {
-    var a = _.Stream.sequential([1, 2, 3, 4]).filter(_.isEven).toArray();
-
-    setTimeout(function() {
-        test.deepEqual(a, [2, 4]);
-        test.done();
-    }, 50);
-};
-
-exports.streamMapTest = function(test) {
-    var a = _.Stream.sequential([1, 2, 3, 4]).map(function(a) {
-        return a * 2;
-    }).toArray();
-
-    setTimeout(function() {
-        test.deepEqual(a, [2, 4, 6, 8]);
-        test.done();
-    }, 50);
 };
 
 exports.streamZipTest = function(test) {

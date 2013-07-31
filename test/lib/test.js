@@ -38,7 +38,6 @@ _ = _
     }))
     .property('checkStream', _.curry(function(property, args, delay, test) {
         var env = this,
-            reported = 0,
             check,
             reporter,
             applied,
@@ -48,7 +47,7 @@ _ = _
         check = env.curry(function(state, index, result) {
             state(
                 !result ?
-                env.Some(failureReporter(
+                env.Some(_.failureReporter(
                     inputs,
                     index + 1
                 )) :
@@ -57,8 +56,6 @@ _ = _
         });
 
         reporter = function(report) {
-            /* Fix this so we chain reported with reporter. */
-            reported += 1;
             test.ok(report.isNone, report.fold(
                 function(fail) {
                     return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
@@ -76,7 +73,6 @@ _ = _
         }
 
         setTimeout(function() {
-            test.expect(Math.max(env.goal, reported));
             test.done();
         }, delay || 1);
     }))

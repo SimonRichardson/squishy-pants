@@ -128,6 +128,13 @@ var OptionalVal = {};
 //
 var Char = {};
 
+//
+//  ## Integer
+//
+//  Sentinel value for when a integer is needed.
+//
+var Integer = {};
+
 squishy = squishy
     .property('generateInputs', generateInputs)
     .property('failureReporter', failureReporter)
@@ -135,7 +142,8 @@ squishy = squishy
     .property('goal', goal)
     .property('AnyVal', AnyVal)
     .property('OptionalVal', OptionalVal)
-    .property('Char', Char);
+    .property('Char', Char)
+    .property('Integer', Integer);
 
 //
 //  ### arbitrary values
@@ -158,6 +166,10 @@ squishy = squishy
     .method('arb', strictEquals(Char), function(a, s) {
         /* Should consider 127 (DEL) to be quite dangerous? */
         return String.fromCharCode(Math.floor(this.randomRange(32, 255)));
+    })
+    .method('arb', strictEquals(Integer), function(a, s) {
+        var variance = Math.pow(2, 32) - 1;
+        return Math.floor(this.randomRange(-variance, variance));
     })
     .method('arb', strictEquals(Function), function(a, s) {
         return function(){};
