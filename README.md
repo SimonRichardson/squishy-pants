@@ -7,6 +7,10 @@ Semi-serious functional programming library.
 
 [![Build Status](https://api.travis-ci.org/SimonRichardson/squishy-pants.png)](https://travis-ci.org/SimonRichardson/squishy-pants)
 
+## Documentation
+
+Alpha documentation is found [here](http://simonrichardson.github.io/squishy-pants/)
+
 ## Building
 
 Install the development dependencies with [npm](https://npmjs.org/):
