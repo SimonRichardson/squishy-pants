@@ -43,7 +43,10 @@ module.exports = function (grunt) {
                 }
             },
             par: {
-                dist: 'test'
+                all: {
+                    dest: 'test',
+                    numOfParallel: 2
+                }
             }
         };
 
@@ -58,12 +61,26 @@ module.exports = function (grunt) {
     grunt.registerMultiTask('par', 'Run parallel unit tests with nodeunit.', function() {
         var fs = require('fs'),
             path = require('path'),
-            files = fs.readdirSync(this.data);
+            options = this.data,
+            files = fs.readdirSync(options.dest),
+            optionalNumOfParallel = grunt.option('numOfParallel');
+
+        if (optionalNumOfParallel) {
+             options.numOfParallel = parseInt(optionalNumOfParallel, 10);
+        }
 
         // We should make a `par` task which does this and then calls parallel.
-        files.forEach(function(filename){
+        files.forEach(function(filename, index){
             if (path.extname(filename) === '.js') {
-                config.parallel.tests.tasks.push({
+                var i = (index % parseInt(options.numOfParallel, 10)),
+                    accessor = 'Parallel - ' + i;
+
+                if (!config.parallel[accessor]) {
+                    config.parallel[accessor] = {
+                        tasks: []
+                    };
+                }
+                config.parallel[accessor].tasks.push({
                     cmd: 'nodeunit',
                     args: ['test/' + filename]
                 });
