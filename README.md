@@ -47,3 +47,5 @@ Functional Reactive Programming approach.
 
 There is also [lemonad](https://github.com/fogus/lemonad) which is in the similar vein to bibly.js
 and squishy-pants, with the aid of it's very good companion book [Functional Javascript](http://shop.oreilly.com/product/0636920028857.do).
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/simonrichardson/squishy-pants/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
