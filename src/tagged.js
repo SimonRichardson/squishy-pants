@@ -92,7 +92,14 @@ function taggedSum(name, constructors) {
                     sub = accessor[name];
 
                 if (sub) {
-                    return accessor[name].apply(this, constructFields(first, first._constructors[name]));
+                    var opt = {},
+                        j;
+
+                    for (j in first._constructors) {
+                        opt[j] = accessor[j];
+                    }
+
+                    return first.match(opt);
                 } else {
                     throw new TypeError('Constructor not found: ' + key);
                 }
