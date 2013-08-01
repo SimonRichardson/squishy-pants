@@ -112,10 +112,13 @@ function taggedSum(name, constructors) {
     function makeProto(key, constructors) {
         var proto = create(definitions.prototype);
         proto.match = constructMatch(key);
-        proto._constructors = constructors;
-
-        /* Make sure the taggedSum are named */
+        
+        /* 
+            Make sure the taggedSum are named
+            Pass the constructors around so we can then do recursive matching.
+        */
         proto._name = key;
+        proto._constructors = constructors;
 
         return proto;
     }
