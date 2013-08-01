@@ -11,16 +11,18 @@
 function tagged(name, fields) {
     function wrapped() {
         var self = getInstance(this, wrapped),
+            total = fields.length,
             i;
-        if(arguments.length != fields.length) {
+        if(arguments.length != total) {
             throw new TypeError("Expected " + fields.length + " arguments, got " + arguments.length);
         }
-        for(i = 0; i < fields.length; i++) {
+        for(i = 0; i < total; i++) {
             self[fields[i]] = arguments[i];
         }
         return self;
     }
 
+    /* Make sure the tagged are named */
     wrapped._name = name;
     wrapped._length = fields.length;
 
@@ -55,38 +57,70 @@ function taggedSum(name, constructors) {
         throw new TypeError('Tagged sum was called instead of one of its properties.');
     }
 
+    function constructFields(o, fields) {
+        var args = [],
+            total,
+            i;
+
+        for(i = 0, total = fields.length; i < total; i++) {
+            args.push(o[fields[i]]);
+        }
+
+        return args;
+    }
+
     function constructMatch(key) {
         return function(dispatches) {
             var fields = constructors[key],
-                args = [],
+                accessor = dispatches[key],
+                args = constructFields(this, fields),
                 total,
                 i;
 
-            if(!dispatches[key])
+            if(!accessor)
                 throw new TypeError("Constructors given to match didn't include: " + key);
 
-            for(i = 0, total = fields.length; i < total; i++) {
-                args.push(this[fields[i]]);
-            }
+            /*
 
-            return dispatches[key].apply(this, args);
+
+              TODO (Simon) : Make this recursive so we actually use the match on the first constructor.
+
+            */
+            if (isObject(accessor)) {
+                var first = args[0],
+                    name = functionName(first),
+                    sub = accessor[name];
+
+                if (sub) {
+                    return accessor[name].apply(this, constructFields(first, first._constructors[name]));
+                } else {
+                    throw new TypeError('Constructor not found: ' + key);
+                }
+            } else {
+                return accessor.apply(this, args);
+            }
         };
     }
 
-    function makeProto(key) {
+    function makeProto(key, constructors) {
         var proto = create(definitions.prototype);
         proto.match = constructMatch(key);
+        proto._constructors = constructors;
+
+        /* Make sure the taggedSum are named */
+        proto._name = key;
+
         return proto;
     }
 
     for(key in constructors) {
         if(!constructors[key].length) {
-            definitions[key] = makeProto(key);
+            definitions[key] = makeProto(key, definitions);
             continue;
         }
 
         definitions[key] = tagged(key, constructors[key]);
-        definitions[key].prototype = makeProto(key);
+        definitions[key].prototype = makeProto(key, constructors);
     }
 
     definitions._name = name;

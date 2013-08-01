@@ -10,3 +10,29 @@ exports.tagged = {
         test.done();
     }
 };
+
+exports.gadt = {
+    testGadt: function(test) {
+        var Either = _.taggedSum('Either', {
+                Left: ['value'],
+                Right: ['value']
+            }),
+            Option = _.taggedSum('Option', {
+                Some: ['value'],
+                None: []
+            }),
+            value = Option.Some(Either.Left(1)),
+            result = value.match({
+                Some: {
+                    Right: _.identity,
+                    Left: _.constant(-1)
+                },
+                None: _.constant(-1)
+            });
+
+        console.log(result);
+
+        test.ok(true);
+        test.done();
+    }
+};
