@@ -9,13 +9,30 @@ Semi-serious functional programming library.
 
 ## Building
 
-Install the development dependencies with npm:
+Install the development dependencies with [npm](https://npmjs.org/):
 
     npm install
 
-Run the tests with grunt:
+Run the tests with [npm](https://npmjs.org/):
 
     npm test
+
+Run the tests with [grunt](http://gruntjs.com/):
+
+    grunt default
+
+Optionally you can also run the tests parallelized with [nodeunit](https://github.com/caolan/nodeunit)
+because we use [QuickCheck](http://en.wikipedia.org/wiki/QuickCheck) for testing it can take some time
+especially if the goal of QuickCheck is set at a high value.
+
+Set the number of tasks to run parallel, the `--numOfParallel` is optional, setting no value will set
+it to run `2` tasks in parallel.
+
+Obviously the number of tasks to be run in parallel depends on the type of CPU and the number of cores
+available.
+
+    grunt par --numOfParallel=4
+
 
 ## Alternatives
 
