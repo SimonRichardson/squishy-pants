@@ -1,8 +1,5 @@
 module.exports = function (grunt) {
-    var fs = require('fs'),
-        path = require('path'),
-        files = fs.readdirSync('test'),
-        config = {
+    var config = {
             pkg: grunt.file.readJSON('package.json'),
             rig: {
                 compile: {
@@ -44,18 +41,11 @@ module.exports = function (grunt) {
                 tests: {
                     tasks: []
                 }
+            },
+            par: {
+                dist: 'test'
             }
         };
-
-    // We should make a `par` task which does this and then calls parallel.
-    files.forEach(function(filename){
-        if (path.extname(filename) === '.js') {
-            config.parallel.tests.tasks.push({
-                cmd: 'nodeunit',
-                args: ['test/' + filename]
-            });
-        }
-    });
 
     grunt.initConfig(config);
 
@@ -65,6 +55,24 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-parallel');
 
+    grunt.registerMultiTask('par', 'Run parallel unit tests with nodeunit.', function() {
+        var fs = require('fs'),
+            path = require('path'),
+            files = fs.readdirSync(this.data);
+
+        // We should make a `par` task which does this and then calls parallel.
+        files.forEach(function(filename){
+            if (path.extname(filename) === '.js') {
+                config.parallel.tests.tasks.push({
+                    cmd: 'nodeunit',
+                    args: ['test/' + filename]
+                });
+            }
+        });
+
+        grunt.initConfig(config);
+        grunt.task.run(['rig', 'jshint', 'parallel']);
+    });
+
     grunt.registerTask('default', ['rig', 'jshint', 'nodeunit', 'uglify']);
-    grunt.registerTask('tests', ['rig', 'jshint', 'parallel', 'uglify']);
 };
