@@ -1,4 +1,8 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
+    List = _.taggedSum('List', {
+        Cons: ['head', 'tail'],
+        Nil: []
+    });
 
 exports.tagged = {
     testTagged: function(test) {
@@ -11,8 +15,8 @@ exports.tagged = {
     }
 };
 
-exports.gadt = {
-    testGadt: _.check(
+exports.match = {
+    'when using recursive object matching should return correct value': _.check(
         function(a) {
             var value = _.Some(_.Right(_.Some(a))),
                 result = value.match({
@@ -24,6 +28,33 @@ exports.gadt = {
                         Left: _.constant(-1)
                     },
                     None: _.constant(-1)
+                });
+
+            return _.equal(result, a);
+        },
+        [_.AnyVal]
+    ),
+    'when using recursive partial matching should return correct value': _.check(
+        function(a) {
+            var value = List.Cons(1, List.Cons(a, List.Nil)),
+                result = value.match({
+                    Cons:
+                        _.partial().method(
+                            function(a) {
+                                return a === 1;
+                            },
+                            function(a, b) {
+                                return b.match({
+                                    Cons:
+                                        _.partial().method(
+                                            _.constant(true),
+                                            _.identity
+                                        ),
+                                    Nil: _.constant(-1)
+                                });
+                            }
+                        ),
+                    Nil: _.constant(-1)
                 });
 
             return _.equal(result, a);

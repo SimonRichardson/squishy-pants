@@ -87,21 +87,25 @@ function taggedSum(name, constructors) {
 
             */
             if (isObject(accessor)) {
-                var first = args[0],
-                    name = functionName(first),
-                    sub = accessor[name];
-
-                if (sub) {
-                    var opt = {},
-                        j;
-
-                    for (j in first._constructors) {
-                        opt[j] = accessor[j];
-                    }
-
-                    return first.match(opt);
+                if (isPartial(accessor)) {
+                    return accessor.call.apply(this, args);
                 } else {
-                    throw new TypeError('Constructor not found: ' + key);
+                    var first = args[0],
+                        name = functionName(first),
+                        sub = accessor[name];
+
+                    if (sub) {
+                        var opt = {},
+                            j;
+
+                        for (j in first._constructors) {
+                            opt[j] = accessor[j];
+                        }
+
+                        return first.match(opt);
+                    } else {
+                        throw new TypeError('Constructor not found: ' + key);
+                    }
                 }
             } else {
                 return accessor.apply(this, args);

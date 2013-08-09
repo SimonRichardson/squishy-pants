@@ -169,6 +169,24 @@ var isAnyInstanceOf = curry(function(a, b) {
 });
 
 //
+//  ## isEnvironment(a)
+//
+//  Returns `true` if `a` is an instance of `environment`.
+//
+var isEnvironment = function(a) {
+    return isInstanceOf(environment, a);
+};
+
+//
+//  ## isPartial(a)
+//
+//  Returns `true` if `a` is an instance of `partial`.
+//
+var isPartial = function(a) {
+    return isInstanceOf(partial, a);
+};
+
+//
 //  ### isEmpty(a)
 //
 //  Checks to see if a value is empty or not.
