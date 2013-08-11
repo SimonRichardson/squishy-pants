@@ -43,8 +43,16 @@ available.
 If you're looking for a serious functional programming library one that derives a lot from Haskell
 and Category Theory then consider looking into [bilby.js](https://github.com/puffnfresh/bilby.js).
 A lot of the ideas in bilby.js are also found in squishy-pants, but differ in some implementation
-types. Either by keeping an internal state to make sure the path execution happens once (Promise)
-for example.
+types.
+
+> If a tree falls in the woods, does it make a sound?
+>
+> If a pure function mutates some local data in order to produce an immutable return value, is that ok?
+
+_Rich Hickey at http://clojure.org/transients_
+
+Squishy-pants assumes that it is ok to mutate local data as long as that local data is not exposed and
+if the result is immutable.
 
 There is also [lemonad](https://github.com/fogus/lemonad) which is in the similar vein to bibly.js
 and squishy-pants, with the aid of it's very good companion book [Functional Javascript](http://shop.oreilly.com/product/0636920028857.do).
