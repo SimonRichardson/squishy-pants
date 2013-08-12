@@ -75,38 +75,30 @@ function taggedSum(name, constructors) {
                 accessor = dispatches[key],
                 args = constructFields(this, fields),
                 total,
-                i;
+                first,
+                opt,
+                i, j;
 
             if(!accessor)
                 throw new TypeError("Constructors given to match didn't include: " + key);
 
-            /*
+            if (isObject(accessor) && args.length > 0) {
+                first = args[0];
 
-
-              TODO (Simon) : Make this recursive so we actually use the match on the first constructor.
-
-            */
-            if (isObject(accessor)) {
                 if (isPartial(accessor)) {
-                    return accessor.call.apply(this, args);
-                } else {
-                    var first = args[0],
-                        name = functionName(first),
-                        sub = accessor[name];
+                    return accessor.apply(this, args);
+                } else if (accessor[functionName(first)]) {
+                    opt = {};
 
-                    if (sub) {
-                        var opt = {},
-                            j;
-
-                        for (j in first._constructors) {
-                            opt[j] = accessor[j];
-                        }
-
-                        return first.match(opt);
-                    } else {
-                        throw new TypeError('Constructor not found: ' + key);
+                    for (j in first._constructors) {
+                        opt[j] = accessor[j];
                     }
+
+                    return first.match(opt);
+                } else {
+                    throw new TypeError('Constructor not found: ' + key);
                 }
+
             } else {
                 return accessor.apply(this, args);
             }

@@ -1,27 +1,35 @@
 function partial(methods) {
     var self = getInstance(this, partial),
-        name = 'call',
         i;
 
-    methods = methods || {};
+    methods = methods || [];
 
     self.method = function(predicate, f) {
-        var newMethods = extend(methods, singleton(name, (methods[name] || []).concat({
+        var newMethods = (methods || []).concat({
             predicate: predicate,
             f: f
-        })));
+        });
         return partial(newMethods);
     };
 
-    for(i in methods) {
-        if(self[i]) throw new Error("Method `" + i + "` already in partial.");
-        else {
-            /* Make sure the methods are names */
-            var method = makeMethod(methods[i]);
-            method._name = i;
-            self[i] = method;
+    self.isDefinedAt = function(value) {
+        return exists(methods, function(m) {
+            return m.predicate(value);
+        });
+    };
+
+    self.apply = function(scope, args) {
+        var total,
+            i;
+
+        for (i = 0, total = methods.length; i < total; i++) {
+            if (methods[i].predicate.apply(scope, args)) {
+                return methods[i].f.apply(scope, args);
+            }
         }
-    }
+
+        return null;
+    };
 
     return self;
 }
