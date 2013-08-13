@@ -17,23 +17,49 @@
 //            }
 //        );
 //
+var Propagation = taggedSum('Propagation', {
+    Propagate: ['value'],
+    Negate: []
+});
 
-function Stream(f) {
-    var self = getInstance(this, Stream);
+function Stream(pulse) {
+    var self = getInstance(this, Stream),
+        listeners = [];
 
-    var resolvers = [];
-    self.fork = function(resolve) {
-        resolvers.push(resolve);
-    };
-
-    f(function(a) {
-        var total,
+    pulse(function(value){
+        var total = listeners.length,
             i;
 
-        for (i = 0, total = resolvers.length; i < total; i++) {
-            resolvers[i](a);
+        for(i = 0; i < total; i++) {
+            listeners[i](value);
         }
     });
+    
+    self.fork = function(func) {
+        var binder;
+
+        listeners.push(function pulser(value) {
+            /* If the function doesn't return Propagation we'll do it for them */
+            var prop = func(value) || Propagation.Propagate(value);
+            prop.match({
+                Propagate: optional(binder),
+                Negate: function() {
+                    /* If the result is a negate remove the binder and listeners */
+                    binder = null;
+                    listeners = squishy.filterNot(
+                        listeners,
+                        function(v) {
+                            return v === pulser;
+                        }
+                    );
+                }
+            });
+        });
+
+        return Stream(function(pulse) {
+            binder = pulse;
+        });
+    };
 
     return self;
 }
@@ -42,13 +68,13 @@ Stream.create = function(a, b) {
     var unbinder,
         bounce;
 
-    return new Stream(function(state) {
+    return Stream(function(pulse) {
         unbinder = a(function() {
             bounce = b.apply(null, [].slice.call(arguments));
             if (!bounce.isDone) {
-                state(bounce.thunk());
+                pulse(bounce.thunk());
             } else {
-                state(bounce.result);
+                pulse(bounce.result);
                 unbinder();
             }
         });
@@ -57,14 +83,13 @@ Stream.create = function(a, b) {
 
 Stream.prototype.chain = function(f) {
     var env = this;
-    return new Stream(function(state) {
-        env.foreach(function(a) {
+    return Stream(function(pulse) {
+        env.fork(function(a) {
             f(a).fold(
-                function(a) {
-                    state(a);
-                },
-                function(){}
+                pulse,
+                nothing
             );
+            return Propagation.Negate;
         });
     });
 };
@@ -75,25 +100,9 @@ Stream.prototype.concat = function(b) {
     });
 };
 
-Stream.prototype.delay = function(d) {
-    var env = this;
-    return new Stream(function(state) {
-        env.fork(
-            function(data) {
-                setTimeout(
-                    function() {
-                        state(data);
-                    },
-                    d || 0
-                );
-            }
-        );
-    });
-};
-
-Stream.prototype.empty = function() {
-    return this.chain(function(a) {
-        return Option.Some(squishy.empty(a));
+Stream.prototype.empty = function(f) {
+    return this.fork(function(a) {
+        return Propagation.Propagate(squishy.empty(a));
     });
 };
 
@@ -104,15 +113,7 @@ Stream.prototype.equal = function(a) {
 };
 
 Stream.prototype.foreach = function(f) {
-    var env = this;
-    return new Stream(function(state) {
-        env.fork(
-            function(data) {
-                f(data);
-                state(data);
-            }
-        );
-    });
+    return this.fork(f);
 };
 
 Stream.prototype.filter = function(f) {
@@ -127,15 +128,9 @@ Stream.prototype.filterNot = function(f) {
     });
 };
 
-Stream.prototype.flatten = function() {
-    return this.flatMap(function (x) {
-        return Stream.sequential(squishy.toArray(x));
-    });
-};
-
 Stream.prototype.flatMap = function(f) {
     var env = this;
-    return new Stream(function(state) {
+    return Stream(function(state) {
         env.foreach(function(a) {
             f(a).foreach(function(a) {
                 state(a);
@@ -146,14 +141,13 @@ Stream.prototype.flatMap = function(f) {
 
 Stream.prototype.fold = function(v, f) {
     return this.chain(function(b) {
-        v = f(v, b);
-        return Option.Some(v);
+        return Option.Some(v = f(v, b));
     });
 };
 
 Stream.prototype.map = function(f) {
-    return this.chain(function(a) {
-        return Option.Some(f(a));
+    return this.fork(function(value) {
+        return Propagation.Propagate(f(value));
     });
 };
 
@@ -161,8 +155,8 @@ Stream.prototype.merge = function(s) {
     var env = this;
 
     var resolver,
-        stream = new Stream(function(state) {
-            resolver = state;
+        stream = Stream(function(pulse) {
+            resolver = pulse;
         });
 
     env.foreach(resolver);
@@ -189,40 +183,22 @@ Stream.prototype.reduce = function(f) {
     });
 };
 
-Stream.prototype.skip = function(n) {
-    var i = 0;
-    return this.chain(function(b) {
-        return ((++i % n) === 0) ?
-                  Option.Some(b) :
-                  Option.None;
-    });
-};
-
-Stream.prototype.window = function(n) {
-    var accum = [];
-    return this.chain(function(b) {
-        accum.push(b);
-        accum.splice(-n);
-        return Option.Some(accum);
-    });
-};
-
 Stream.prototype.zip = function(s) {
     var env = this;
 
     var resolver,
         left = [],
         right = [],
-        stream = new Stream(function(state) {
-            resolver = state;
+        stream = Stream(function(pulse) {
+            resolver = pulse;
         });
 
-    env.foreach(function(a) {
+    env.fork(function(a) {
         if (right.length)
             resolver(Tuple2(a, right.shift()));
         else left.push(a);
     });
-    s.foreach(function(a) {
+    s.fork(function(a) {
         if (left.length)
             resolver(Tuple2(left.shift(), a));
         else right.push(a);
@@ -238,29 +214,6 @@ Stream.prototype.toArray = function() {
         accum.push(a);
     });
     return accum;
-};
-
-//
-//
-//  ## promise
-//
-//      Stream.promise(promise).foreach(function (a) {
-//          console.log(a);
-//      });
-//
-Stream.promise = function(p) {
-    return new Stream(function(state) {
-        setTimeout(function() {
-            p.fork(
-                function(data) {
-                    state(Attempt.Success(data));
-                },
-                function(error) {
-                    state(Attempt.Failure(error));
-                }
-            );
-        }, 0);
-    });
 };
 
 //
@@ -292,24 +245,6 @@ Stream.constant = function(c, d) {
 };
 
 //
-//  ## repeatedly
-//
-//      Stream.repeatedly(
-//          function() {
-//              return squishy.method('arb', Number);
-//          }
-//      ).foreach(function (a) {
-//          console.log(a);
-//      });
-//
-Stream.repeatedly = function(f, d) {
-    return Stream.poll(function() {
-        return cont(f);
-    }, d || 0);
-};
-
-
-//
 //  ## sequential
 //
 //      Stream.sequential([1, 2, 3, 4]).foreach(function (a) {
@@ -319,9 +254,7 @@ Stream.repeatedly = function(f, d) {
 Stream.sequential = function(v, d) {
     var index = 0;
     return Stream.poll(function() {
-        if (index >= v.length - 1) {
-            return done(v[index]);
-        }
+        if (index >= v.length - 1) return done(v[index]);
         return cont(function() {
             return v[index++];
         });
@@ -332,9 +265,9 @@ Stream.sequential = function(v, d) {
 //  ## poll
 //
 //      Stream.poll(function() {
-  //        return cont(function() {
-  //            return squishy.method('arb', Number);
-  //        })
+//          return cont(function() {
+//              return squishy.method('arb', Number);
+//          })
 //      }, 0).foreach(function (a) {
 //          console.log(a);
 //      });

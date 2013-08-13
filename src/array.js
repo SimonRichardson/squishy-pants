@@ -163,6 +163,15 @@ var foldRight = curry(function(a, v, f) {
     return v;
 });
 
+var foreach = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        f(a[i]);
+    }
+});
+
 var get = curry(function(a, i) {
     return a[i];
 });
@@ -274,6 +283,7 @@ squishy = squishy
     .method('flatMap', isArray, flatMap)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
+    .method('foreach', isArray, foreach)
     .method('map', isArray, map)
     .method('partition', isArray, partition)
     .method('reduce', isArray, reduce)

@@ -352,6 +352,32 @@ function dec(x) {
 }
 
 //
+//  ## optional
+//
+//  Optionally calls the function passed if it's not null. This is glue
+//  for calling methods that might not be set yet. If you're looking at this
+//  you should seriously consider using Option, which is a lot better at handling
+//  these sorts of issues.
+//
+/* Internal use only - not exposed */
+function optional(f) {
+    return function() {
+        if (f) {
+            var args = [].slice.call(arguments);
+            return f.apply(this, args);
+        } else return null;
+    };
+}
+
+//
+//  ## nothing
+//
+//  Empty function that can be called with no side affects and does nothing.
+//
+/* Internal use only - not exposed */
+function nothing() {}
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
