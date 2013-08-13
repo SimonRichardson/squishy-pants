@@ -8,8 +8,7 @@ exports.stream = {
         },
         [_.Stream],
         timeout
-    )
-    /*,
+    ),
     'when testing foreach with the stream should dispatch all items': _.checkStream(
         function(a) {
             var accum = [];
@@ -62,10 +61,9 @@ exports.stream = {
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
         timeout
-    )*/
+    )
 };
 
-/*
 exports.streamZipTest = function(test) {
     var a = _.Stream.sequential([1, 3, 5, 7]);
     var b = _.Stream.sequential([2, 4, 6, 8]);
@@ -99,6 +97,7 @@ exports.streamZipDelayedWithMapTest = function(test) {
     }, 500);
 };
 
+/*
 exports.streamPromiseSuccessTest = function(test) {
     var a = _.Stream.promise(_.Promise.of(41)).toArray();
 
