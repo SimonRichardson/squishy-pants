@@ -26,10 +26,10 @@ _ = _
             var report = _.forAll(property, args);
             test.ok(report.isNone, report.fold(
                 function(fail) {
-                    return "Failed after " + fail.tries + " tries: " + fail.inputs.toString();
+                    return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
                 },
                 function() {
-                    return "OK";
+                    return 'OK';
                 }
             ));
         });
@@ -38,42 +38,51 @@ _ = _
     }))
     .property('checkStream', _.curry(function(property, args, delay, test) {
         var env = this,
-            check,
-            reporter,
-            applied,
+            failures = [],
             inputs,
-            i;
-
-        check = env.curry(function(state, index, result) {
-            state(
-                !result ?
-                env.Some(_.failureReporter(
-                    inputs,
-                    index + 1
-                )) :
-                env.None
-            );
-        });
-
-        reporter = function(report) {
-            test.ok(report.isNone, report.fold(
-                function(fail) {
-                    return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
-                },
-                function() {
-                    return 'OK';
-                }
-            ));
-        };
+            applied,
+            i,
+            check = env.curry(function(state, inputs, index, result) {
+                state(
+                    !result ?
+                    env.Some(_.failureReporter(
+                        inputs,
+                        index + 1
+                    )) :
+                    env.None
+                );
+            }),
+            reporter = function(report) {
+                failures.push({
+                    valid: report.isNone,
+                    msg: report.fold(
+                        function(fail) {
+                            return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
+                        },
+                        function() {
+                            return 'OK';
+                        }
+                    )
+                });
+            };
 
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.foreach(check(reporter, i));
+            applied.foreach(check(reporter, inputs, i));
         }
 
         setTimeout(function() {
+            var valid = _.fold(failures, true, function(a, b) {
+                    return a && b.valid;
+                }),
+                words = valid ? 'OK' : _.fold(failures, '', function(a, b) {
+                    return b.valid ? a : a + '\n' + b.msg;
+                });
+
+            test.ok(valid, words);
             test.done();
+
         }, delay || 1);
     }))
     .property('badLeft', _.error("Got Left side"))
