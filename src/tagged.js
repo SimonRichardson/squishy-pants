@@ -82,12 +82,16 @@ function taggedSum(name, constructors) {
             if(!accessor)
                 throw new TypeError("Constructors given to match didn't include: " + key);
 
-            if (isObject(accessor) && args.length > 0) {
+            /*
+                Work out if the accessor is an object then if it's a partial
+                definition call that, otherwise see if we can do a recursive pattern
+                match over the first argument.
+            */
+            if (args.length > 0 && isObject(accessor) && !isPartial(accessor)) {
+                /* Possible instance of a taggedSum */
                 first = args[0];
 
-                if (isPartial(accessor)) {
-                    return accessor.apply(this, args);
-                } else if (accessor[functionName(first)]) {
+                if (accessor[functionName(first)]) {
                     opt = {};
 
                     for (j in first._constructors) {
@@ -108,8 +112,8 @@ function taggedSum(name, constructors) {
     function makeProto(key, constructors) {
         var proto = create(definitions.prototype);
         proto.match = constructMatch(key);
-        
-        /* 
+
+        /*
             Make sure the taggedSum are named
             Pass the constructors around so we can then do recursive matching.
         */
