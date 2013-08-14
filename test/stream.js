@@ -97,6 +97,7 @@ exports.streamZipDelayedWithMapTest = function(test) {
     }, 500);
 };
 
+/*
 exports.streamPromiseSuccessTest = function(test) {
     var a = _.Stream.promise(_.Promise.of(41)).toArray();
 
@@ -114,3 +115,4 @@ exports.streamPromiseFailureTest = function(test) {
         test.done();
     }, 50);
 };
+*/

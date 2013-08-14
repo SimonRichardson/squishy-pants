@@ -172,7 +172,7 @@ squishy = squishy
         return Math.floor(this.randomRange(-variance, variance));
     })
     .method('arb', strictEquals(Function), function(a, s) {
-        return function(){};
+        return nothing;
     })
     .method('arb', isArrayOf, function(a, s) {
         var accum = [],
