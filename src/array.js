@@ -207,14 +207,12 @@ var reduce = curry(function(a, f) {
         i,
         v;
 
-    if (total < 1) return Option.None;
-
     for (i = 0; i < total; i++) {
         if (i === 0) v = a[i];
         else v = f(v, a[i]);
     }
 
-    return Option.Some(v);
+    return v;
 });
 
 var reduceRight = curry(function(a, f) {
@@ -222,14 +220,12 @@ var reduceRight = curry(function(a, f) {
         i,
         v;
 
-    if (total < 1) return Option.None;
-
     for (i = total - 1; i >= 0; --i) {
         if (i === 0) v = a[i];
         else v = f(v, a[i]);
     }
 
-    return Option.Some(v);
+    return v;
 });
 
 var take = curry(function(a, m) {
