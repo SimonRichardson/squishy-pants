@@ -11,9 +11,9 @@
 //                    return squishy.method('arb', Number);
 //                })
 //            },
-//        0).foreach(
+//        0).map(
 //            function (a) {
-//                console.log(a);
+//                return a + 1;
 //            }
 //        );
 //
@@ -26,14 +26,16 @@ function Stream(pulse) {
     var self = getInstance(this, Stream),
         listeners = [];
 
-    pulse(function(value){
-        var total = listeners.length,
-            i;
+    pulse(
+        function(value){
+            var total = listeners.length,
+                i;
 
-        for(i = 0; i < total; i++) {
-            listeners[i](value);
+            for(i = 0; i < total; i++) {
+                listeners[i](value);
+            }
         }
-    });
+    );
     
     self.fork = function(func) {
         var binder;
