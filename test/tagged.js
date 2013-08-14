@@ -5,14 +5,18 @@ var _ = require('./lib/test'),
     });
 
 exports.tagged = {
-    testTagged: function(test) {
-        var A = _.tagged('A', ['a', 'b']);
-        var a = A(1, 2);
-        test.equal(a.a, 1);
-        test.equal(a.b, 2);
-        test.expect(2);
-        test.done();
-    }
+    'when creating a tagged type, should return correct first value': _.check(
+        function(a, b) {
+            return _.equal(_.tagged('T', ['a', 'b'])(a, b).a, a);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when creating a tagged type, should return correct second value': _.check(
+        function(a, b) {
+            return _.equal(_.tagged('T', ['a', 'b'])(a, b).a, a);
+        },
+        [_.AnyVal, _.AnyVal]
+    )
 };
 
 exports.match = {
