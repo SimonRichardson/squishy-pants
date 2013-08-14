@@ -14,37 +14,39 @@
 //  either be a Success or a Failure.
 //
 var Promise = function Promise(deferred) {
-    var self = getInstance(this, Promise);
-
-    /* It would be nice to be able to remove the state */
-    var attempt,
-        append = curry(function(a, b) {
-            a.push(b);
-            return a;
-        })([]),
-        removeAndInvoke = function(a, b) {
-            for (var i = a.length - 1; i > -1; i--) {
-                var f = a.pop();
-                b.match({
-                    Success: f[0],
-                    Failure: f[1]
+    /* This should be pulled out of the constructor and it holds a horrible state dependency */
+    var self = getInstance(this, Promise),
+        attempt,
+        listeners = [],
+        invoke = function(a) {
+            return function(value) {
+                foreach(a(), function(f) {
+                    f(value);
                 });
-            }
+            };
         },
-        curriedDeferred = function(listeners) {
-            if (listeners.length - 1 < 1) {
-                deferred(
-                    function(data) {
-                        attempt = Attempt.Success(data);
-                        removeAndInvoke(listeners, attempt);
-                    },
-                    function(errors) {
-                        attempt = Attempt.Failure(errors);
-                        removeAndInvoke(listeners, attempt);
-                    }
-                );
-            }
+        invoker = function(f) {
+            return function(value) {
+                attempt = f(value);
+                attempt.match({
+                    Success: invoke(function() {
+                        return map(listeners, function(t) {
+                            return t._1;
+                        });
+                    }),
+                    Failure: invoke(function() {
+                        return map(listeners, function(t) {
+                            return t._2;
+                        });
+                    })
+                });
+            };
         };
+
+    deferred(
+        invoker(Attempt.Success),
+        invoker(Attempt.Failure)
+    );
 
     self.fork = function(resolve, reject) {
         if (attempt) {
@@ -53,7 +55,7 @@ var Promise = function Promise(deferred) {
                 Failure: reject
             });
         } else {
-            curriedDeferred(append([resolve, reject]));
+            listeners.push(Tuple2(resolve, reject));
         }
     };
 
@@ -66,7 +68,7 @@ var Promise = function Promise(deferred) {
 //  Creates a Promise that contains a successful value.
 //
 Promise.of = function(x) {
-    return new Promise(function(resolve, reject) {
+    return Promise(function(resolve, reject) {
         resolve(x);
     });
 };
@@ -77,7 +79,7 @@ Promise.of = function(x) {
 //  Creates a Promise that contains a failure value.
 //
 Promise.error = function(x) {
-    return new Promise(function(resolve, reject) {
+    return Promise(function(resolve, reject) {
         reject(x);
     });
 };
@@ -90,8 +92,8 @@ Promise.error = function(x) {
 //
 Promise.prototype.flatMap = function(f) {
     var promise = this;
-    return new Promise(function(resolve, reject) {
-        return promise.fork(
+    return Promise(function(resolve, reject) {
+        promise.fork(
             function(a) {
                 f(a).fork(resolve, reject);
             },
@@ -108,8 +110,8 @@ Promise.prototype.flatMap = function(f) {
 //
 Promise.prototype.map = function(f) {
     var promise = this;
-    return new Promise(function(resolve, reject) {
-        return promise.fork(function(a) {
+    return Promise(function(resolve, reject) {
+        promise.fork(function(a) {
             resolve(f(a));
         }, reject);
     });
@@ -123,7 +125,7 @@ Promise.prototype.map = function(f) {
 //
 Promise.prototype.reject = function(f) {
     var promise = this;
-    return new Promise(function(resolve, reject) {
+    return Promise(function(resolve, reject) {
         promise.fork(resolve, function(a) {
             f(a).fork(resolve, reject);
         });
