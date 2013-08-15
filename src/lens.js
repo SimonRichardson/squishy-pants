@@ -112,7 +112,7 @@ PartialLens.objectLens = function(property) {
 PartialLens.arrayLens = function(index) {
     var lens = Lens.arrayLens(index);
     return PartialLens(function(target) {
-        return index > 0 && index < target.length ?
+        return index >= 0 && index < target.length ?
                   Option.Some(lens.run(target)) :
                   Option.None;
     });
