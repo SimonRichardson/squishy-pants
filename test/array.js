@@ -110,7 +110,7 @@ exports.array = {
                 },
                 i;
 
-            for(i = 0; i < a.length; i++) {
+            for (i = a.length - 1; i >= 0; --i) {
                 accum = minus(accum, a[i]);
             }
 
