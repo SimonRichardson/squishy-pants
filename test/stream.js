@@ -30,16 +30,6 @@ exports.stream = {
         [_.arrayOf(_.Integer)],
         timeout
     ),
-    'when testing filterNot with the stream should dispatch all items': _.checkStream(
-        function(a) {
-            var actual = _.Stream.sequential(a).filterNot(_.isEven),
-                expected = _.Stream.sequential(_.filterNot(a, _.isEven));
-
-            return actual.equal(expected);
-        },
-        [_.arrayOf(_.Integer)],
-        timeout
-    ),
     'when testing map with the stream should dispatch all items': _.checkStream(
         function(a) {
             var actual = _.Stream.sequential(a).map(_.identity),

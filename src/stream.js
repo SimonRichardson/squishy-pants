@@ -36,7 +36,7 @@ function Stream(pulse) {
             }
         }
     );
-    
+
     self.fork = function(func) {
         var binder;
 
@@ -48,10 +48,10 @@ function Stream(pulse) {
                 Negate: function() {
                     /* If the result is a negate remove the binder and listeners */
                     binder = null;
-                    listeners = squishy.filterNot(
+                    listeners = squishy.filter(
                         listeners,
                         function(v) {
-                            return v === pulser;
+                            return v !== pulser;
                         }
                     );
                 }
@@ -121,12 +121,6 @@ Stream.prototype.foreach = function(f) {
 Stream.prototype.filter = function(f) {
     return this.chain(function(a) {
         return f(a) ? Option.Some(a) : Option.None;
-    });
-};
-
-Stream.prototype.filterNot = function(f) {
-    return this.chain(function(a) {
-        return !f(a) ? Option.Some(a) : Option.None;
     });
 };
 

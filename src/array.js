@@ -110,26 +110,6 @@ var filter = curry(function(a, f) {
     return accum;
 });
 
-var filterNot = curry(function(a, f) {
-    var accum = [],
-        total,
-        i;
-
-    for (i = 0, total = a.length; i < total; i++) {
-        if (!f(a[i])) {
-            accum.push(a[i]);
-        }
-    }
-
-    return accum;
-});
-
-function flatten(a) {
-    return flatMap(a, function(x) {
-        return squishy.toArray(x);
-    });
-}
-
 var flatMap = curry(function(a, f) {
     var accum = [],
         total,
@@ -170,10 +150,6 @@ var foreach = curry(function(a, f) {
     for (i = 0, total = a.length; i < total; i++) {
         f(a[i]);
     }
-});
-
-var get = curry(function(a, i) {
-    return a[i];
 });
 
 var map = curry(function(a, f) {
@@ -272,10 +248,7 @@ squishy = squishy
     .method('dropRight', isArray, dropRight)
     .method('dropWhile', isArray, dropWhile)
     .method('exists', isArray, exists)
-    .method('get', isArray, get)
     .method('filter', isArray, filter)
-    .method('filterNot', isArray, filterNot)
-    .method('flatten', isArray, flatten)
     .method('flatMap', isArray, flatMap)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
