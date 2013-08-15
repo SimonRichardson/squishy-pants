@@ -53,6 +53,15 @@ function isArray(a) {
 }
 
 //
+//  ## isNaN(a)
+//
+//  Returns `true` if `a` is a not a number including `NaN` and `Infinity`.
+//
+function isNaN(a) {
+    return typeof a === 'number' ? (a * 0) !== 0 : true;
+}
+
+//
 //  ## isNotNaN(a)
 //
 //  Returns `true` if `a` is not a `NaN`.
@@ -228,6 +237,7 @@ squishy = squishy
     .property('isObject', isObject)
     .property('isString', isString)
     .property('isArray', isArray)
+    .property('isNaN', isNaN)
     .property('isNotNaN', isNotNaN)
     .property('isEven', isEven)
     .property('isOdd', isOdd)
