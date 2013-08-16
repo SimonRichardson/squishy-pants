@@ -174,27 +174,27 @@ Stream.prototype.zip = function(a) {
             var left = [],
                 right = [];
 
-            env.map(
+            env.fork(
                 function(a) {
                     if (right.length > 0) {
                         next(Tuple2(a, right.shift()));
                     } else {
                         left.push(a);
                     }
-                    return a;
-                }
-            ).fork(nothing, nothing);
+                },
+                done
+            );
 
-            a.map(
+            a.fork(
                 function(a) {
                     if (left.length > 0) {
                         next(Tuple2(left.shift(), a));
                     } else {
                         right.push(a);
                     }
-                    return a;
-                }
-            ).fork(nothing, nothing);
+                },
+                done
+            );
         }
     );
 };
@@ -203,7 +203,7 @@ Stream.prototype.zipWithIndex = function() {
     var index = 0;
     return this.map(
         function(a) {
-            return [a, index++];
+            return Tuple2(a, index++);
         }
     );
 };

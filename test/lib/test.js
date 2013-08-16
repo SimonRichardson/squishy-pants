@@ -69,7 +69,9 @@ _ = _
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.fork(check(reporter, inputs, i), _.nothing);
+            applied.fork(check(reporter, inputs, i), function() {
+                // We should optionally check if done should be called.
+            });
         }
 
         var valid = _.fold(failures, true, function(a, b) {

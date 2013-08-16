@@ -8,7 +8,7 @@ exports.stream = {
                 actual = x.concat(y),
                 expected = _.Stream.fromArray(_.concat(a, b));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
@@ -19,7 +19,7 @@ exports.stream = {
                 actual = x.drop(rnd),
                 expected = _.Stream.fromArray(_.drop(a, rnd));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal)]
     ),
@@ -54,7 +54,7 @@ exports.stream = {
                 actual = x.merge(y),
                 expected = _.Stream.fromArray(_.concat(a, b));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
@@ -65,7 +65,7 @@ exports.stream = {
                 actual = x.take(rnd),
                 expected = _.Stream.fromArray(_.take(a, rnd));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal)]
     ),
@@ -76,17 +76,17 @@ exports.stream = {
                 actual = x.zip(y),
                 expected = _.Stream.fromArray(_.zip(a, b));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
     'when testing zipWithIndex with the stream should dispatch all items': _.checkStream(
-        function(a, b) {
+        function(a) {
             var x = _.Stream.fromArray(a),
                 actual = x.zipWithIndex(),
                 expected = _.Stream.fromArray(_.zipWithIndex(a));
 
-            return actual.equal(actual);
+            return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal)]
     )
