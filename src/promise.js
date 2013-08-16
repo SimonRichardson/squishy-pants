@@ -20,7 +20,7 @@ var Promise = function Promise(deferred) {
         listeners = [],
         invoke = function(a) {
             return function(value) {
-                foreach(a(), function(f) {
+                map(a(), function(f) {
                     f(value);
                 });
             };
