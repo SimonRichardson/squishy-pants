@@ -228,6 +228,18 @@ var zip = curry(function(a, b) {
     return accum;
 });
 
+var zipWithIndex = curry(function(a) {
+    var accum = [],
+        total = a.length,
+        i;
+
+    for (i = 0; i < total; i++) {
+        accum[i] = Tuple2(a[i], i);
+    }
+
+    return accum;
+});
+
 //
 //  append methods to the squishy environment.
 //
@@ -250,4 +262,5 @@ squishy = squishy
     .method('take', isArray, take)
     .method('takeRight', isArray, takeRight)
     .method('takeWhile', isArray, takeWhile)
-    .method('zip', isArray, zip);
+    .method('zip', isArray, zip)
+    .method('zipWithIndex', isArray, zipWithIndex);

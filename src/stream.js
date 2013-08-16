@@ -167,31 +167,34 @@ Stream.prototype.take = function(n) {
 };
 
 Stream.prototype.zip = function(a) {
-    var left = [],
-        right = [],
-        resolver;
+    var env = this;
 
-    this.map(
-        function(a) {
-            if (resolver && right.length > 0) {
-                resolver(Tuple2(a, right.shift()));
-            } else {
-                left.push(a);
-            }
-        }
-    );
-    a.map(
-        function(a) {
-            if (resolver && left.length > 0) {
-                resolver(Tuple2(left.shift(), a));
-            } else {
-                right.push(a);
-            }
-        }
-    );
     return Stream(
         function(next, done) {
-            resolver = next;
+            var left = [],
+                right = [];
+
+            env.map(
+                function(a) {
+                    if (right.length > 0) {
+                        next(Tuple2(a, right.shift()));
+                    } else {
+                        left.push(a);
+                    }
+                    return a;
+                }
+            ).fork(nothing, nothing);
+
+            a.map(
+                function(a) {
+                    if (left.length > 0) {
+                        next(Tuple2(left.shift(), a));
+                    } else {
+                        right.push(a);
+                    }
+                    return a;
+                }
+            ).fork(nothing, nothing);
         }
     );
 };

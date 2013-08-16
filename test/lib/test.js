@@ -69,7 +69,7 @@ _ = _
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.map(check(reporter, inputs, i));
+            applied.fork(check(reporter, inputs, i), _.nothing);
         }
 
         var valid = _.fold(failures, true, function(a, b) {
