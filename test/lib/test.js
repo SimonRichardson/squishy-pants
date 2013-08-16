@@ -36,7 +36,7 @@ _ = _
 
         test.done();
     }))
-    .property('checkStream', _.curry(function(property, args, delay, test) {
+    .property('checkStream', _.curry(function(property, args, test) {
         var env = this,
             failures = [],
             inputs,
@@ -72,18 +72,15 @@ _ = _
             applied.map(check(reporter, inputs, i));
         }
 
-        setTimeout(function() {
-            var valid = _.fold(failures, true, function(a, b) {
-                    return a && b.valid;
-                }),
-                words = valid ? 'OK' : _.fold(failures, '', function(a, b) {
-                    return b.valid ? a : a + '\n' + b.msg;
-                });
+        var valid = _.fold(failures, true, function(a, b) {
+                return a && b.valid;
+            }),
+            words = valid ? 'OK' : _.fold(failures, '', function(a, b) {
+                return b.valid ? a : a + '\n' + b.msg;
+            });
 
-            test.ok(valid, words);
-            test.done();
-
-        }, delay || 1);
+        test.ok(valid, words);
+        test.done();
     }))
     .property('badLeft', _.error("Got Left side"))
     .property('badRight', _.error("Got Right side"));
