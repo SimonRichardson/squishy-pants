@@ -9,21 +9,10 @@ exports.stream = {
         [_.Stream],
         timeout
     ),
-    'when testing foreach with the stream should dispatch all items': _.checkStream(
-        function(a) {
-            var accum = [];
-            a.foreach(function(a) {
-                accum.push(a);
-            });
-            return a.equal(_.Stream.sequential(accum));
-        },
-        [_.streamOf(_.arrayOf(_.AnyVal))],
-        timeout
-    ),
     'when testing filter with the stream should dispatch all items': _.checkStream(
         function(a) {
-            var actual = _.Stream.sequential(a).filter(_.isEven),
-                expected = _.Stream.sequential(_.filter(a, _.isEven));
+            var actual = _.Stream.fromArray(a).filter(_.isEven),
+                expected = _.Stream.fromArray(_.filter(a, _.isEven));
 
             return actual.equal(expected);
         },
@@ -32,8 +21,8 @@ exports.stream = {
     ),
     'when testing map with the stream should dispatch all items': _.checkStream(
         function(a) {
-            var actual = _.Stream.sequential(a).map(_.identity),
-                expected = _.Stream.sequential(_.map(a, _.identity));
+            var actual = _.Stream.fromArray(a).map(_.identity),
+                expected = _.Stream.fromArray(_.map(a, _.identity));
 
             return actual.equal(expected);
         },
@@ -42,10 +31,10 @@ exports.stream = {
     ),
     'when testing merge with the stream should dispatch all items': _.checkStream(
         function(a, b) {
-            var x = _.Stream.sequential(a),
-                y = _.Stream.sequential(b),
+            var x = _.Stream.fromArray(a),
+                y = _.Stream.fromArray(b),
                 actual = x.merge(y),
-                expected = _.Stream.sequential(_.concat(a, b));
+                expected = _.Stream.fromArray(_.concat(a, b));
 
             return actual.equal(actual);
         },
@@ -53,7 +42,7 @@ exports.stream = {
         timeout
     )
 };
-
+/*
 exports.streamZipTest = function(test) {
     var a = _.Stream.sequential([1, 3, 5, 7]);
     var b = _.Stream.sequential([2, 4, 6, 8]);
@@ -87,7 +76,6 @@ exports.streamZipDelayedWithMapTest = function(test) {
     }, 500);
 };
 
-/*
 exports.streamPromiseSuccessTest = function(test) {
     var a = _.Stream.promise(_.Promise.of(41)).toArray();
 

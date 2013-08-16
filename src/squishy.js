@@ -362,10 +362,7 @@ function dec(x) {
 /* Internal use only - not exposed */
 function optional(f) {
     return function() {
-        if (f) {
-            var args = [].slice.call(arguments);
-            return f.apply(this, args);
-        } else return null;
+        return f ? f.apply(null, [].slice.call(arguments)) : null;
     };
 }
 

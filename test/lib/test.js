@@ -69,7 +69,7 @@ _ = _
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.foreach(check(reporter, inputs, i));
+            applied.map(check(reporter, inputs, i));
         }
 
         setTimeout(function() {

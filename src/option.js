@@ -210,4 +210,7 @@ squishy = squishy
     })
     .method('toArray', isOption, function(a) {
         return a.toArray();
+    })
+    .property('toOption', function(a) {
+        return a !== null ? Option.Some(a) : Option.None;
     });
