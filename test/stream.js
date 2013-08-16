@@ -15,7 +15,7 @@ exports.stream = {
     'when testing drop with the stream should dispatch all items': _.checkStream(
         function(a) {
             var x = _.Stream.fromArray(a),
-                rnd = _.randomRange(0, a.length),
+                rnd = Math.floor(_.randomRange(0, a.length)),
                 actual = x.drop(rnd),
                 expected = _.Stream.fromArray(_.drop(a, rnd));
 
