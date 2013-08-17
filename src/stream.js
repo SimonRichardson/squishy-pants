@@ -69,7 +69,12 @@ Stream.prototype.drop = function(n) {
     var dropped = 0;
     return this.chain(
         function(a) {
-            return (++dropped < n) ? Stream.empty() : Stream.of(a);
+            if (dropped < n) {
+                dropped++;
+                return Stream.empty();
+            } else {
+                return Stream.of(a);
+            }
         }
     );
 };
@@ -84,11 +89,17 @@ Stream.prototype.equal = function(a) {
 };
 
 Stream.prototype.filter = function(f) {
-    return this.chain(
-        function(a) {
-            return f(a) ? Stream.of(a) : Stream.empty();
-        }
-    );
+    var env = this;
+    return Stream(function(next, done) {
+        return env.fork(
+            function(a) {
+                if (f(a)) {
+                    next(a);
+                }
+            },
+            done
+        );
+    });
 };
 
 Stream.prototype.fold = function(v, f) {
