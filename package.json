@@ -12,6 +12,7 @@
     "test": "grunt rig jshint nodeunit uglify"
   },
   "devDependencies": {
+    "grunt-cli": "0.1.9",
     "grunt": "0.4.x",
     "grunt-rigger": "0.5.x",
     "grunt-contrib-jshint": "0.6.x",
