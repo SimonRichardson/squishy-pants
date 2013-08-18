@@ -352,6 +352,28 @@ function dec(x) {
 }
 
 //
+//  ## lazy
+//
+//  Stateful function that guarantees that the function is evaluated
+//  only once. Executes a complex function with arguments once, even
+//  if called multiple times.
+//
+//       lazy(
+//           function(a) {
+//               return Math.sin(a);
+//           }, 1
+//       )();
+//
+function lazy(f) {
+    var args = [].slice.call(arguments),
+        val;
+
+    return function() {
+        return (val !== undefined) ? f.apply(null, args) : val;
+    };
+}
+
+//
 //  ## optional
 //
 //  Optionally calls the function passed if it's not null. This is glue
@@ -402,4 +424,5 @@ squishy = squishy
     .property('range', range)
     .property('randomRange', randomRange)
     .property('inc', inc)
-    .property('dec', dec);
+    .property('dec', dec)
+    .property('lazy', lazy);
