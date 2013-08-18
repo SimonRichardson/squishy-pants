@@ -72,11 +72,16 @@ Either.prototype.equal = function(a) {
     });
 };
 
+Either.prototype.extract = function() {
+    return this.match({
+        Left: identity,
+        Right: identity
+    });
+};
+
 Either.prototype.flatMap = function(f) {
     return this.match({
-        Left: function() {
-            return this;
-        },
+        Left: constant(this),
         Right: function(x) {
             return f(x);
         }
@@ -92,9 +97,7 @@ Either.prototype.fold = function(a, b) {
 
 Either.prototype.map = function(f) {
     return this.match({
-        Left: function() {
-            return this;
-        },
+        Left: constant(this),
         Right: function(x) {
             return Either.Right(f(x));
         }
@@ -130,9 +133,7 @@ Either.prototype.toAttempt = function() {
 
 Either.prototype.toArray = function() {
     return this.match({
-        Left: function(x) {
-            return [];
-        },
+        Left: constant([]),
         Right: function(x) {
             return [x];
         }
@@ -177,6 +178,9 @@ squishy = squishy
     })
     .method('equal', isEither, function(a, b) {
         return a.equal(b);
+    })
+    .method('extract', isEither, function(a) {
+        return a.extract();
     })
     .method('flatMap', isEither, function(a, b) {
         return a.flatMap(b);

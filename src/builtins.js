@@ -69,9 +69,11 @@ squishy = squishy
     .method('equal', strictEquals(undefined), strictEquals)
     .property('expect', function(a) {
         var env = this;
-        return singleton('toBe', function (b) {
-            return env.equal(b, a);
-        });
+        return singleton('toBe',
+            function (b) {
+                return env.equal(b, a);
+            }
+        );
     });
 
 //

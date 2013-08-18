@@ -43,6 +43,9 @@ var isStore = isInstanceOf(Store);
 squishy = squishy
     .property('Store', Store)
     .property('isStore', isStore)
+    .method('extract', isStore, function(a) {
+        return a.extract();
+    })
     .method('map', isStore, function(a, b) {
         return a.map(b);
     })

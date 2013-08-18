@@ -88,6 +88,13 @@ Stream.prototype.equal = function(a) {
     );
 };
 
+Stream.prototype.extract = function() {
+    return this.fork(
+        identity,
+        constant(null)
+    );
+};
+
 Stream.prototype.filter = function(f) {
     var env = this;
     return Stream(function(next, done) {
@@ -122,9 +129,7 @@ Stream.prototype.fold = function(v, f) {
 
 Stream.prototype.length = function() {
     return this.map(
-        function() {
-            return 1;
-        }
+        constant(1)
     ).fold(
         0,
         curry(function(x, y) {
@@ -282,6 +287,9 @@ squishy = squishy
     })
     .method('equal', isStream, function(a, b) {
         return a.equal(b);
+    })
+    .method('extract', isStream, function(a) {
+        return a.extract();
     })
     .method('fold', isStream, function(a, b) {
         return a.chain(b);

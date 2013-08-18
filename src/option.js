@@ -39,9 +39,11 @@ Option.prototype.ap = function(b) {
 Option.prototype.concat = function(s, f) {
     return this.match({
         Some: function(x) {
-            return s.map(function(y) {
-                return f(x, y);
-            });
+            return s.map(
+                function(y) {
+                    return f(x, y);
+                }
+            );
         },
         None: function() {
             return this;
@@ -87,18 +89,14 @@ Option.prototype.fold = function(f, g) {
 Option.prototype.get = function() {
     return this.match({
         Some: identity,
-        None: function() {
-            throw new Error('Unexpected value');
-        }
+        None: error('Unexpected value')
     });
 };
 
 Option.prototype.getOrElse = function(x) {
     return this.match({
         Some: identity,
-        None: function() {
-            return x;
-        }
+        None: constant(x)
     });
 };
 
@@ -193,11 +191,14 @@ squishy = squishy
     .method('concat', isOption, function(a, b) {
         return a.concat(b, this.concat);
     })
+    .method('chain', isOption, function(a, b) {
+        return a.chain(b);
+    })
     .method('equal', isOption, function(a, b) {
         return a.equal(b);
     })
-    .method('flatMap', isOption, function(a, b) {
-        return a.flatMap(b);
+    .method('extract', isOption, function(a) {
+        return a.extract();
     })
     .method('fold', isOption, function(a, b, c) {
         return a.fold(b, c);

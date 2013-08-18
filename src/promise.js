@@ -13,54 +13,11 @@
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
 //  either be a Success or a Failure.
 //
-var Promise = function Promise(deferred) {
-    /* This should be pulled out of the constructor and it holds a horrible state dependency */
-    var self = getInstance(this, Promise),
-        attempt,
-        listeners = [],
-        invoke = function(a) {
-            return function(value) {
-                map(a(), function(f) {
-                    f(value);
-                });
-            };
-        },
-        invoker = function(f) {
-            return function(value) {
-                attempt = f(value);
-                attempt.match({
-                    Success: invoke(function() {
-                        return map(listeners, function(t) {
-                            return t._1;
-                        });
-                    }),
-                    Failure: invoke(function() {
-                        return map(listeners, function(t) {
-                            return t._2;
-                        });
-                    })
-                });
-            };
-        };
-
-    deferred(
-        invoker(Attempt.Success),
-        invoker(Attempt.Failure)
-    );
-
-    self.fork = function(resolve, reject) {
-        if (attempt) {
-            attempt.match({
-                Success: resolve,
-                Failure: reject
-            });
-        } else {
-            listeners.push(Tuple2(resolve, reject));
-        }
-    };
-
+function Promise(fork) {
+    var self = getInstance(this, Promise);
+    self.fork = fork;
     return self;
-};
+}
 
 //
 //  ### Promise.of(x)
@@ -68,9 +25,11 @@ var Promise = function Promise(deferred) {
 //  Creates a Promise that contains a successful value.
 //
 Promise.of = function(x) {
-    return Promise(function(resolve, reject) {
-        resolve(x);
-    });
+    return Promise(
+        function(resolve, reject) {
+            resolve(x);
+        }
+    );
 };
 
 //
@@ -79,27 +38,47 @@ Promise.of = function(x) {
 //  Creates a Promise that contains a failure value.
 //
 Promise.error = function(x) {
-    return Promise(function(resolve, reject) {
-        reject(x);
-    });
+    return Promise(
+        function(resolve, reject) {
+            reject(x);
+        }
+    );
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Returns a new promise that evaluates `f` when the current promise
 //  is successfully fulfilled. `f` must return a new promise.
 //
-Promise.prototype.flatMap = function(f) {
+Promise.prototype.chain = function(f) {
     var promise = this;
-    return Promise(function(resolve, reject) {
-        promise.fork(
-            function(a) {
-                f(a).fork(resolve, reject);
-            },
-            reject
-        );
-    });
+    return Promise(
+        function(resolve, reject) {
+            promise.fork(
+                function(a) {
+                    f(a).fork(resolve, reject);
+                },
+                reject
+            );
+        }
+    );
+};
+
+//
+//  ### extract()
+//
+//  Executes a promise to get a value.
+//
+Promise.prototype.extract = function() {
+    return this.fork(
+        function(a) {
+            return a;
+        },
+        function(e) {
+            return e;
+        }
+    );
 };
 
 //
@@ -110,11 +89,16 @@ Promise.prototype.flatMap = function(f) {
 //
 Promise.prototype.map = function(f) {
     var promise = this;
-    return Promise(function(resolve, reject) {
-        promise.fork(function(a) {
-            resolve(f(a));
-        }, reject);
-    });
+    return Promise(
+        function(resolve, reject) {
+            promise.fork(
+                function(a) {
+                    resolve(f(a));
+                },
+                reject
+            );
+        }
+    );
 };
 
 //
@@ -125,13 +109,17 @@ Promise.prototype.map = function(f) {
 //
 Promise.prototype.reject = function(f) {
     var promise = this;
-    return Promise(function(resolve, reject) {
-        promise.fork(resolve, function(a) {
-            f(a).fork(resolve, reject);
-        });
-    });
+    return Promise(
+        function(resolve, reject) {
+            promise.fork(
+                resolve,
+                function(a) {
+                    f(a).fork(resolve, reject);
+                }
+            );
+        }
+    );
 };
-
 
 //
 //  ## isPromise(a)
@@ -146,8 +134,11 @@ var isPromise = isInstanceOf(Promise);
 squishy = squishy
     .property('Promise', Promise)
     .property('isPromise', isPromise)
-    .method('flatMap', isPromise, function(a, b) {
-        return a.flatMap(b);
+    .method('chain', isPromise, function(a, b) {
+        return a.chain(b);
+    })
+    .method('extract', isPromise, function(a) {
+        return a.extract();
     })
     .method('map', isPromise, function(a, b) {
         return a.map(b);

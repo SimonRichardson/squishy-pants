@@ -45,17 +45,17 @@ exports.promise = {
         test.expect(total);
         test.done();
     },
-    testDeferredCalledOnce: function(test) {
+    testDeferredCalledTwice: function(test) {
         var promise = _.Promise(function(resolve, reject) {
             test.ok(true);
             resolve(41);
         });
         promise.fork(function() {}, function() {});
         promise.fork(function() {}, function() {});
-        test.expect(1);
+        test.expect(2);
         test.done();
     },
-    testDeferredCalledOnceWithAsyncResolve: function(test) {
+    testDeferredCalledTwiceWithAsyncResolve: function(test) {
         var expected = 41,
             promise = _.Promise(function(resolve, reject) {
                 test.ok(true);
@@ -83,7 +83,7 @@ exports.promise = {
             testCase(promise);
         }, 80);
         setTimeout(function() {
-            test.expect(4);
+            test.expect(5);
             test.done();
         }, 100);
     }
@@ -120,8 +120,8 @@ exports.promiseError = {
 };
 
 exports.promiseChain = {
-    'when using chaining promises together the promises should flatMap correctly': function(test) {
-        var promise = _.Promise.of(41).flatMap(
+    'when using chaining promises together the promises should chain correctly': function(test) {
+        var promise = _.Promise.of(41).chain(
             function(a) {
                 return _.Promise.of(a + 1);
             }
@@ -137,8 +137,8 @@ exports.promiseChain = {
         test.expect(1);
         test.done();
     },
-    'when using chaining promises together and one has an error the promises should flatMap correctly': function(test) {
-        var promise = _.Promise.of(41).flatMap(
+    'when using chaining promises together and one has an error the promises should chain correctly': function(test) {
+        var promise = _.Promise.of(41).chain(
             function(a) {
                 return _.Promise.error(a + 1);
             }
