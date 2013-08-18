@@ -10,7 +10,8 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
+        true
     ),
     'when testing drop with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -22,13 +23,15 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal)],
+        true
     ),
     'when testing equality with same stream should return true': _.checkStream(
         function(a) {
             return a.equal(a);
         },
-        [_.Stream]
+        [_.Stream],
+        true
     ),
     'when testing filter with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -37,7 +40,18 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.Integer)]
+        [_.arrayOf(_.Integer)],
+        true
+    ),
+    'when testing length with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var actual = _.Stream.fromArray(a).length(),
+                expected = _.Stream.fromArray(a.length);
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.Integer)],
+        true
     ),
     'when testing map with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -46,7 +60,8 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.Integer)]
+        [_.arrayOf(_.Integer)],
+        true
     ),
     'when testing merge with the stream should dispatch all items': _.checkStream(
         function(a, b) {
@@ -57,7 +72,8 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
+        true
     ),
     'when testing take with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -68,7 +84,8 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal)],
+        true
     ),
     'when testing zip with the stream should dispatch all items': _.checkStream(
         function(a, b) {
@@ -79,7 +96,8 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
+        true
     ),
     'when testing zipWithIndex with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -89,6 +107,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)]
+        [_.arrayOf(_.AnyVal)],
+        true
     )
 };

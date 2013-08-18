@@ -36,7 +36,7 @@ _ = _
 
         test.done();
     }))
-    .property('checkStream', _.curry(function(property, args, test) {
+    .property('checkStream', _.curry(function(property, args, shouldComplete, test) {
         var env = this,
             failures = [],
             inputs,
@@ -64,14 +64,19 @@ _ = _
                         }
                     )
                 });
+            },
+            checkDone = function(shouldComplete) {
+                return function() {
+                    if (shouldComplete) {
+                        test.ok(true, 'OK');
+                    }
+                };
             };
 
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.fork(check(reporter, inputs, i), function() {
-                // We should optionally check if done should be called.
-            });
+            applied.fork(check(reporter, inputs, i), checkDone(shouldComplete));
         }
 
         var valid = _.fold(failures, true, function(a, b) {
@@ -81,6 +86,8 @@ _ = _
                 return b.valid ? a : a + '\n' + b.msg;
             });
 
+        // FIXME: This should only call checkDone once.
+        // test.expect(shouldComplete ? 2 : 1);
         test.ok(valid, words);
         test.done();
     }))
