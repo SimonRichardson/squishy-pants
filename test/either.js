@@ -1,7 +1,7 @@
 var _ = require('./lib/test');
 
-exports.eitherMatch = {
-    testLeftMatch: _.check(
+exports.either = {
+    'when testing left with match should call left function': _.check(
         function(a) {
             return _.Left(a).match({
                 Left: function(b) {
@@ -12,7 +12,7 @@ exports.eitherMatch = {
         },
         [_.AnyVal]
     ),
-    testRightMatch: _.check(
+    'when testing right with match should call right function': _.check(
         function(a) {
             return _.Right(a).match({
                 Left: _.badLeft,
@@ -22,151 +22,187 @@ exports.eitherMatch = {
             });
         },
         [_.AnyVal]
-    )
-};
-
-exports.either = {
-    testLeft: _.check(
+    ),
+    'when creating left with value should set value on left': _.check(
         function(a) {
-            return _.Left(a).value === a;
+            return _.expect(_.Left(a).value).toBe(a);
         },
         [_.AnyVal]
     ),
-    testRight: _.check(
+    'when creating right with value should set value on right': _.check(
         function(a) {
-            return _.Right(a).value === a;
+            return _.expect(_.Right(a).value).toBe(a);
         },
         [_.AnyVal]
     ),
-    testLeftIsEither: _.check(
+    'when creating left should be valid either': _.check(
         function(a) {
             return _.isEither(_.Left(a));
         },
         [_.AnyVal]
     ),
-    testRightIsEither: _.check(
+    'when creating right should be valid either': _.check(
         function(a) {
             return _.isEither(_.Right(a));
         },
         [_.AnyVal]
     ),
-    testLeftIsLeft: _.check(
+    'when creating left should be left': _.check(
         function(a) {
             return _.Left(a).isLeft;
         },
         [_.AnyVal]
     ),
-    testLeftIsNotRight: _.check(
+    'when creating left should not be right': _.check(
         function(a) {
             return !_.Left(a).isRight;
         },
         [_.AnyVal]
     ),
-    testRightIsRight: _.check(
+    'when creating right should be right': _.check(
         function(a) {
             return _.Right(a).isRight;
         },
         [_.AnyVal]
     ),
-    testRightIsNotLeft: _.check(
+    'when creating right should not be left': _.check(
         function(a) {
             return !_.Right(a).isLeft;
         },
         [_.AnyVal]
     ),
-    testLeftSwap: _.check(
+    'when creating left and calling swap should be right': _.check(
         function(a) {
             return _.Left(a).swap().isRight;
         },
         [_.AnyVal]
     ),
-    testRightSwap: _.check(
+    'when creating left and calling swap should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).swap().value).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating right and calling swap should be left': _.check(
         function(a) {
             return _.Right(a).swap().isLeft;
         },
         [_.AnyVal]
     ),
-    testLeftToOption: _.check(
+    'when creating right and calling swap should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).swap().value).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating left and calling toOption should be default value': _.check(
         function(a) {
             return _.Left(a).toOption().getOrElse(0) === 0;
         },
         [_.AnyVal]
     ),
-    testRightToOption: _.check(
+    'when creating right and calling toOption should be correct value': _.check(
         function(a) {
             return _.Right(a).toOption().getOrElse(0) === a;
         },
         [_.AnyVal]
     ),
-    testLeftToArray: _.check(
+    'when creating left and calling toArray should be correct value': _.check(
         function(a) {
-            return _.Left(a).toArray().length === 0;
+            return _.expect(_.Left(a).toArray()).toBe([]);
         },
         [_.AnyVal]
     ),
-    testRightToArray: _.check(
+    'when creating right and calling toArray should be correct value': _.check(
         function(a) {
-            return _.Right(a).toArray()[0] === a;
+            return _.expect(_.Right(a).toArray()).toBe([a]);
         },
         [_.AnyVal]
     ),
-    testLeftMap: _.check(
+    'when creating left and calling map with fold should be correct value': _.check(
         function(a) {
-            return _.Left(a).map(_.inc).fold(_.identity, _.badRight) === a;
+            return _.expect(_.Left(a).map(_.inc).fold(_.identity, _.badRight)).toBe(a);
         },
         [Number]
     ),
-    testRightMap: _.check(
+    'when creating right and calling map with fold should be correct value': _.check(
         function(a) {
-            return _.Right(a).map(_.inc).fold(_.badLeft, _.identity) === a + 1;
+            return _.expect(_.Right(a).map(_.inc).fold(_.badRight, _.identity)).toBe(a + 1);
         },
         [Number]
     ),
-    testLeftFlatMap: _.check(
+    'when creating left and calling flatMap with right should be correct value': _.check(
         function(a) {
-            return _.Left(a).flatMap(function(x) {
-                return _.Right(x + 1);
-            }).flatMap(function(x) {
-                return _.Right(x + 1);
-            }).fold(_.identity, _.badRight) === a;
+            return _.expect(
+                _.Left(a).flatMap(
+                    function(x) {
+                        return _.Right(x + 1);
+                    }
+                ).flatMap(
+                    function(x) {
+                        return _.Right(x + 1);
+                    }
+                ).fold(
+                    _.identity,
+                    _.badRight
+                )
+            ).toBe(a);
         },
         [Number]
     ),
-    testRightFlatMap: _.check(
+    'when creating right and calling flatMap with right should be correct value': _.check(
         function(a) {
-            return _.Right(a).flatMap(function(x) {
-                return _.Right(x + 1);
-            }).flatMap(function(x) {
-                return _.Right(x + 1);
-            }).fold(_.badLeft, _.identity) === a + 2;
+            return _.expect(
+                _.Right(a).flatMap(
+                    function(x) {
+                        return _.Right(x + 1);
+                    }
+                ).flatMap(
+                    function(x) {
+                        return _.Right(x + 1);
+                    }
+                ).fold(
+                    _.badRight,
+                    _.identity
+                )
+            ).toBe(a + 2);
         },
         [Number]
     ),
-    testRightLeftFlatMap: _.check(
+    'when creating right and calling flatMap with left should be correct value': _.check(
         function(a) {
-            return _.Right(a).flatMap(function(x) {
-                return _.Left(x + 1);
-            }).flatMap(function(x) {
-                return _.Right(x + 1);
-            }).fold(_.identity, _.badRight) === a + 1;
+            return _.expect(
+                _.Right(a).flatMap(
+                    function(x) {
+                        return _.Left(x + 1);
+                    }
+                ).flatMap(
+                    function(x) {
+                        return _.Right(x + 1);
+                    }
+                ).fold(
+                    _.identity,
+                    _.badRight
+                )
+            ).toBe(a + 1);
         },
         [Number]
     ),
-    testRightAp: _.check(
+    'when creating right and calling ap with right should be correct value': _.check(
         function(a) {
-            return _.Right(_.inc).ap(_.Right(a)).fold(_.badLeft, _.identity) === a + 1;
+            return _.expect(_.Right(_.inc).ap(_.Right(a)).fold(_.badLeft, _.identity)).toBe(a + 1);
         },
         [Number]
     ),
-    testRightLeftAp: _.check(
+    'when creating right and calling ap with left should be correct value': _.check(
         function(a) {
-            return _.Right(_.inc).ap(_.Left(a)).fold(_.identity, _.badRight) === a;
+            return _.expect(_.Right(_.inc).ap(_.Left(a)).fold(_.identity, _.badRight)).toBe(a);
         },
         [Number]
     ),
-    testLeftAp: _.check(
+    'when creating left and calling ap with right should be correct value': _.check(
         function(a) {
-            return _.Left(_.inc).ap(_.Right(a)).fold(_.identity, _.badRight) === _.inc;
+            return _.expect(_.Left(_.inc).ap(_.Right(a)).fold(_.identity, _.badRight)).toBe(_.inc);
         },
         [Number]
     )
