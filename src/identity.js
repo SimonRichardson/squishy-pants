@@ -14,6 +14,10 @@ var Identity = tagged('Identity', ['x']);
 
 Identity.of = Identity;
 
+Identity.empty = function() {
+    return Identity.of();
+};
+
 Identity.prototype.chain = function(f) {
     return f(this.x);
 };
@@ -54,6 +58,10 @@ Identity.IdentityT = function(M) {
         return IdentityT(M.of(a));
     };
 
+    Identity.empty = function() {
+        return Identity.of(M.empty());
+    };
+
     IdentityT.lift = IdentityT;
 
     IdentityT.prototype.chain = function(f) {
@@ -84,6 +92,12 @@ squishy = squishy
     .property('Identity', Identity)
     .property('isIdentity', isIdentity)
     .property('IdentityT', Identity.IdentityT)
+    .method('of', strictEquals(Identity), function(x) {
+        return Identity.of(x);
+    })
+    .method('empty', strictEquals(Identity), function() {
+        return Identity.empty();
+    })
     .method('map', isIdentity, function(a, b) {
         return a.map(b);
     })

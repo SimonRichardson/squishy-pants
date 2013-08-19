@@ -77,7 +77,31 @@ squishy = squishy
     });
 
 //
-//  ### empty values
+//  ### of
+//
+//  Creates a value from the type.
+//
+//  The left identity of `squishy.of(m, a).chain(f)` is equivalent to
+//  `f(squishy.of(m, a))` and then equivalent of `f(a)` without using `squishy.of`.
+//  Similarly the right identity of `squishy.chain(m, m.of)` is equivalent to
+//  `m` or `m.chain(m.of)` without using `squishy.of`.
+//
+//       console.log(squishy.of(Array, [1, 2, 3])); // Outputs `[1, 2, 3]`
+//
+squishy = squishy
+    .method('of', strictEquals(AnyVal), function() {
+        var types = [Boolean, Number, String];
+        return this.of(this.oneOf(types));
+    })
+    .method('of', strictEquals(Array), identity)
+    .method('of', strictEquals(Boolean), identity)
+    .method('of', strictEquals(Function), identity)
+    .method('of', strictEquals(Number), identity)
+    .method('of', strictEquals(Object), identity)
+    .method('of', strictEquals(String), identity);
+
+//
+//  ### empty
 //
 //  Creates an empty value depending on the type. Each resulting value
 //  will be classified as falsy for the type. Boolean will be

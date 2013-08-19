@@ -13,11 +13,7 @@
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
 //  either be a Success or a Failure.
 //
-function Promise(fork) {
-    var self = getInstance(this, Promise);
-    self.fork = fork;
-    return self;
-}
+var Promise = tagged('Promise', ['fork']);
 
 //
 //  ### Promise.of(x)
@@ -30,6 +26,15 @@ Promise.of = function(x) {
             resolve(x);
         }
     );
+};
+
+//
+//  ### empty()
+//
+//  Creates a Empty Promise that contains no value.
+//
+Promise.empty = function() {
+    return Promise.of();
 };
 
 //
@@ -134,6 +139,12 @@ var isPromise = isInstanceOf(Promise);
 squishy = squishy
     .property('Promise', Promise)
     .property('isPromise', isPromise)
+    .method('empty', strictEquals(Promise), function() {
+        return Promise.empty();
+    })
+    .method('of', strictEquals(Promise), function(x) {
+        return Promise.of(x);
+    })
     .method('chain', isPromise, function(a, b) {
         return a.chain(b);
     })

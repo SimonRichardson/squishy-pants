@@ -134,6 +134,9 @@ var isState = isInstanceOf(State);
 squishy = squishy
     .property('State', State)
     .property('isState', isState)
+    .method('of', strictEquals(State), function(x) {
+        return State.of(x);
+    })
     .method('ap', isState, function(a, b) {
         return a.ap(b);
     })

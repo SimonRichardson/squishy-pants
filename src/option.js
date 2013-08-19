@@ -185,6 +185,12 @@ squishy = squishy
     .property('Some', Option.Some)
     .property('None', Option.None)
     .property('isOption', isOption)
+    .method('of', strictEquals(Option.Some), function(x) {
+        return Option.Some.of(x);
+    })
+    .method('empty', strictEquals(Option.Some), function(x) {
+        return Option.None;
+    })
     .method('ap', isOption, function(a, b) {
         return a.ap(b);
     })

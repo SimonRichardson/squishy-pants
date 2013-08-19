@@ -180,6 +180,15 @@ Attempt.Success.of = function(x) {
 };
 
 //
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Attempt.Success`.
+//
+Attempt.Success.empty = function() {
+    return Attempt.Success.of();
+};
+
+//
 //  ## Failure(x)
 //
 //  Constructor to represent the existance of a value, `x`.
@@ -197,6 +206,15 @@ Attempt.Failure.of = function(x) {
 };
 
 //
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Attempt.Failure`.
+//
+Attempt.Failure.empty = function(x) {
+    return Attempt.Failure.of();
+};
+
+//
 //  ## isAttempt(a)
 //
 //  Returns `true` iff `a` is a `Success` or a `Failure`.
@@ -210,6 +228,18 @@ squishy = squishy
     .property('Success', Attempt.Success)
     .property('Failure', Attempt.Failure)
     .property('isAttempt', isAttempt)
+    .method('of', strictEquals(Attempt.Success), function(x) {
+        return Attempt.Success.of(x);
+    })
+    .method('of', strictEquals(Attempt.Failure), function(x) {
+        return Attempt.Failure.of(x);
+    })
+    .method('empty', strictEquals(Attempt.Success), function() {
+        return Attempt.Success.empty();
+    })
+    .method('empty', strictEquals(Attempt.Failure), function() {
+        return Attempt.Failure.empty();
+    })
     .method('ap', isAttempt, function(a, b) {
         return a.ap(b, this.concat);
     })

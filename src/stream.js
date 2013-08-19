@@ -11,11 +11,7 @@
 //            }
 //        );
 //
-function Stream(fork) {
-    var self = getInstance(this, Stream);
-    self.fork = fork;
-    return self;
-}
+var Stream = tagged('Stream', ['fork']);
 
 Stream.empty = function() {
     return Stream.of();

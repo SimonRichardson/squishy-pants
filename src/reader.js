@@ -14,6 +14,10 @@ Reader.of = function(a) {
     });
 };
 
+Reader.empty = function() {
+    return Reader(nothing);
+};
+
 Reader.prototype.ap = function(a) {
     return this.flatMap(function(f) {
         return a.map(f);
@@ -46,6 +50,12 @@ var isReader = isInstanceOf(Reader);
 squishy = squishy
     .property('Reader', Reader)
     .property('isReader', isReader)
+    .method('of', strictEquals(Reader), function(x) {
+        return Reader.of(x);
+    })
+    .method('empty', strictEquals(Reader), function() {
+        return Reader.empty();
+    })
     .method('flatMap', isReader, function(a, b) {
         return a.flatMap(b);
     })

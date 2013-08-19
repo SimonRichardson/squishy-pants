@@ -149,12 +149,49 @@ Either.Left.prototype.isLeft = true;
 Either.Left.prototype.isRight = false;
 
 //
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Either.Left` with value of `x`.
+//
+Either.Left.of = function(x) {
+    return Either.Left(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Either.Left`.
+//
+Either.Left.empty = function(x) {
+    return Either.Left.of();
+};
+
+//
 //  ## Right(x)
 //
 //  Constructor to represent the (biased) Right case.
 //
 Either.Right.prototype.isLeft = false;
 Either.Right.prototype.isRight = true;
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Either.Right` with value of `x`.
+//
+Either.Right.of = function(x) {
+    return Either.Right(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Either.Right`.
+//
+Either.Right.empty = function(x) {
+    return Either.Right.of();
+};
+
 
 //
 //  ## isEither(a)
@@ -167,6 +204,18 @@ squishy = squishy
     .property('Left', Either.Left)
     .property('Right', Either.Right)
     .property('isEither', isEither)
+    .method('of', strictEquals(Either.Left), function(x) {
+        return Either.Left.of(x);
+    })
+    .method('of', strictEquals(Either.Right), function(x) {
+        return Either.Right.of(x);
+    })
+    .method('empty', strictEquals(Either.Left), function(x) {
+        return Either.Left.empty();
+    })
+    .method('empty', strictEquals(Either.Right), function(x) {
+        return Either.Right.empty();
+    })
     .method('ap', isEither, function(a, b) {
         return a.ap(b);
     })
