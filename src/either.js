@@ -6,23 +6,19 @@
 //  Represents a tagged disjunction between two sets of values; `a` or
 //  `b`. Methods are Right-biased.
 //
-//  * `ap(e)` - Applicative ap(ply)
-//  * `concat(s, f)` - Semigroup concat
-//  * `flatMap(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `Left`, `b` if `Right`
-//  * `map(f)` - Functor map
-//  * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
-//  * `isLeft` - `true` iff `this` is `Left`
-//  * `isRight` - `true` iff `this` is `Right`
-//  * `toOption()` - `None` if `Left`, `Some` value of `Right`
-//  * `toArray()` - `[]` if `Left`, singleton value if `Right`
 //
-
 var Either = taggedSum('Either', {
     Left: ['value'],
     Right: ['value']
 });
 
+//
+//  ### ap(b, concat)
+//
+//  Apply a function in the environment of the right of this either,
+//  accumulating errors
+//  Applicative ap(ply)
+//
 Either.prototype.ap = function(e) {
     return this.match({
         Left: function() {
@@ -34,6 +30,12 @@ Either.prototype.ap = function(e) {
     });
 };
 
+//
+//  ### concat(s, f)
+//
+//  Concatenate two eithers associatively together.
+//  Semigroup concat
+//
 Either.prototype.concat = function(s, f) {
     return this.match({
         Left: function() {
@@ -51,6 +53,11 @@ Either.prototype.concat = function(s, f) {
     });
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two attempt values for equality
+//
 Either.prototype.equal = function(a) {
     return this.match({
         Left: function(x) {
@@ -72,6 +79,11 @@ Either.prototype.equal = function(a) {
     });
 };
 
+//
+//  ### extract(a)
+//
+//  Extract the value from the either.
+//
 Either.prototype.extract = function() {
     return this.match({
         Left: identity,
@@ -79,6 +91,12 @@ Either.prototype.extract = function() {
     });
 };
 
+//
+//  ### flatMap(f)
+//
+//  Bind through the success of the either
+//  Monadic flatMap/bind
+//
 Either.prototype.flatMap = function(f) {
     return this.match({
         Left: constant(this),
@@ -88,6 +106,13 @@ Either.prototype.flatMap = function(f) {
     });
 };
 
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Left`, `b` if `Right`
+//
 Either.prototype.fold = function(a, b) {
     return this.match({
         Left: a,
@@ -95,6 +120,12 @@ Either.prototype.fold = function(a, b) {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Map on the right of this either.
+//  Functor map
+//
 Either.prototype.map = function(f) {
     return this.match({
         Left: constant(this),
@@ -104,6 +135,11 @@ Either.prototype.map = function(f) {
     });
 };
 
+//
+//  ### swap()
+//
+//  Flip the left/right values in this either.
+//
 Either.prototype.swap = function() {
     return this.match({
         Left: function(x) {
@@ -115,6 +151,13 @@ Either.prototype.swap = function() {
     });
 };
 
+//
+//  ### toOption()
+//
+//  Return an empty option or option with one element on the right
+//  of this either.
+//  `Some(x)` if `Success(x)`, `None` if `Failure()`
+//
 Either.prototype.toOption = function() {
     return this.match({
         Left: function() {
@@ -124,6 +167,12 @@ Either.prototype.toOption = function() {
     });
 };
 
+//
+//  ### toAttempt()
+//
+//  Return failure if either is a left and success if either is right.
+//  `Left(x)` if `Failure(x)`, `Right` if `Success(e)`
+//
 Either.prototype.toAttempt = function() {
     return this.match({
         Left: Attempt.Failure,
@@ -131,6 +180,12 @@ Either.prototype.toAttempt = function() {
     });
 };
 
+//
+//  ### toArray()
+//
+//  Return an empty array or array with one element on the right
+//  of this either.
+//
 Either.prototype.toArray = function() {
     return this.match({
         Left: constant([]),
@@ -141,30 +196,25 @@ Either.prototype.toArray = function() {
 };
 
 //
+//  ### toStream()
+//
+//  Return an empty stream or stream with one element on the right
+//  of this either.
+//
+Attempt.prototype.toStream = function() {
+    return this.match({
+        Left: Stream.empty,
+        Right: Stream.of
+    });
+};
+
+//
 //  ## Left(x)
 //
 //  Constructor to represent the Left case.
 //
 Either.Left.prototype.isLeft = true;
 Either.Left.prototype.isRight = false;
-
-//
-//  ## of(x)
-//
-//  Constructor `of` Monad creating `Either.Left` with value of `x`.
-//
-Either.Left.of = function(x) {
-    return Either.Left(x);
-};
-
-//
-//  ## empty()
-//
-//  Constructor `empty` Monad creating `Either.Left`.
-//
-Either.Left.empty = function(x) {
-    return Either.Left.of();
-};
 
 //
 //  ## Right(x)
@@ -179,17 +229,17 @@ Either.Right.prototype.isRight = true;
 //
 //  Constructor `of` Monad creating `Either.Right` with value of `x`.
 //
-Either.Right.of = function(x) {
+Either.of = function(x) {
     return Either.Right(x);
 };
 
 //
 //  ## empty()
 //
-//  Constructor `empty` Monad creating `Either.Right`.
+//  Constructor `empty` Monad creating `Either.Left`.
 //
-Either.Right.empty = function(x) {
-    return Either.Right.of();
+Either.Right.empty = function() {
+    return Either.Left();
 };
 
 
@@ -204,22 +254,19 @@ squishy = squishy
     .property('Left', Either.Left)
     .property('Right', Either.Right)
     .property('isEither', isEither)
-    .method('of', strictEquals(Either.Left), function(x) {
-        return Either.Left.of(x);
+    .method('of', strictEquals(Either), function(x) {
+        return Either.of(x);
     })
-    .method('of', strictEquals(Either.Right), function(x) {
-        return Either.Right.of(x);
-    })
-    .method('empty', strictEquals(Either.Left), function(x) {
+    .method('empty', strictEquals(Either), function(x) {
         return Either.Left.empty();
-    })
-    .method('empty', strictEquals(Either.Right), function(x) {
-        return Either.Right.empty();
     })
     .method('ap', isEither, function(a, b) {
         return a.ap(b);
     })
-    .method('arb', isEither, function(a, b) {
+    .method('arb', strictEquals(Either.Left), function(a, b) {
+        return Either.Left(this.arb(AnyVal, b - 1));
+    })
+    .method('arb', strictEquals(Either.Right), function(a, b) {
         return Either.Right(this.arb(AnyVal, b - 1));
     })
     .method('concat', isEither, function(a, b) {
@@ -239,4 +286,7 @@ squishy = squishy
     })
     .method('toArray', isEither, function(a) {
         return a.toArray();
+    })
+    .method('toStream', isAttempt, function(a) {
+        return a.toStream();
     });

@@ -33,7 +33,7 @@ var Attempt = taggedSum('Attempt', {
 //
 //  ### ap(b, concat)
 //
-//  Apply a function in the environment of the success of this `Attempt`,
+//  Apply a function in the environment of the success of this attempt,
 //  accumulating errors
 //  Applicative ap(ply)
 //
@@ -53,21 +53,6 @@ Attempt.prototype.ap = function(b, concat) {
                 }
             });
         }
-    });
-};
-
-//
-//  ### flatMap(f)
-//
-//  Bind through the success of the Attempt
-//  Monadic flatMap/bind
-//
-Attempt.prototype.flatMap = function(f) {
-    return this.match({
-        Success: function(a) {
-            return f(a);
-        },
-        Failure: identity
     });
 };
 
@@ -110,20 +95,31 @@ Attempt.prototype.extract = function() {
 };
 
 //
+//  ### flatMap(f)
+//
+//  Bind through the success of the attempt
+//  Monadic flatMap/bind
+//
+Attempt.prototype.flatMap = function(f) {
+    return this.match({
+        Success: function(a) {
+            return f(a);
+        },
+        Failure: identity
+    });
+};
+
+//
 //  ### fold(a, b)
 //
 //  Catamorphism. Run the first given function if failure, otherwise,
 //  the second given function.
-//   `a` applied to value if `Left`, `b` if `Right`
+//   `a` applied to value if `Success`, `b` if `Failure`
 //
 Attempt.prototype.fold = function(a, b) {
     return this.match({
-        Success: function(x) {
-            return a(x);
-        },
-        Failure: function(x) {
-            return b(x);
-        }
+        Success: a,
+        Failure: b
     });
 };
 
