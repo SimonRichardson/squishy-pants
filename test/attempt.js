@@ -143,5 +143,71 @@ exports.attempt = {
             return _.expect(errors).toBe(a.concat(b));
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+    ),
+    'when creating success and calling flatMap with function should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).flatMap(_.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating failure and calling flatMap with function should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).flatMap(_.constant(false))).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating success and checking equality should be true': _.check(
+        function(a) {
+            return a.equal(a);
+        },
+        [_.Success]
+    ),
+    'when creating failure and checking equality should be true': _.check(
+        function(a) {
+            return a.equal(a);
+        },
+        [_.Failure]
+    ),
+    'when creating failure with success and checking equality should be false': _.check(
+        function(a, b) {
+            return !a.equal(b);
+        },
+        [_.Success, _.Failure]
+    ),
+    'when creating success and extracting value should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating failure and extracting value should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).extract()).toBe(a);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when creating success and swapping value should be true': _.check(
+        function(a) {
+            return a.swap().isFailure;
+        },
+        [_.Success]
+    ),
+    'when creating success and swapping value should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).swap().extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating failure and swapping value should be true': _.check(
+        function(a) {
+            return a.swap().isSuccess;
+        },
+        [_.Failure]
+    ),
+    'when creating failure and swapping value should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).swap().extract()).toBe(a);
+        },
+        [_.AnyVal]
     )
 };

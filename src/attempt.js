@@ -24,23 +24,19 @@
 //
 //  Represents a Failure.
 //
-//  * `ap(b, concat)` - Applicative ap(ply)
-//  * `chain(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `Left`, `b` if `Right`
-//  * `map(f)` - Functor map
-//  * `swap()` - Swap values
-//  * `isSuccess` - `true` if `this` is `Success`
-//  * `isFailure` - `true` if `this` is `Failure`
-//  * `toOption(r)` - `Some(x)` if `Success(x)`, `None` if `Failure()`
-//  * `toLeft(r)` - `Left(x)` if `Some(x)`, `Right(r)` if None
-//  * `toRight(l)` - `Right(x)` if `Some(x)`, `Left(l)` if None
-//
 
 var Attempt = taggedSum('Attempt', {
     Success: ['value'],
     Failure: ['errors']
 });
 
+//
+//  ### ap(b, concat)
+//
+//  Apply a function in the environment of the success of this `Attempt`,
+//  accumulating errors
+//  Applicative ap(ply)
+//
 Attempt.prototype.ap = function(b, concat) {
     var a = this;
     return a.match({
@@ -60,17 +56,26 @@ Attempt.prototype.ap = function(b, concat) {
     });
 };
 
-Attempt.prototype.chain = function(f) {
+//
+//  ### flatMap(f)
+//
+//  Bind through the success of the Attempt
+//  Monadic flatMap/bind
+//
+Attempt.prototype.flatMap = function(f) {
     return this.match({
         Success: function(a) {
             return f(a);
         },
-        Failure: function(e) {
-            return Attempt.Failure(e);
-        }
+        Failure: identity
     });
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two attempt values for equality
+//
 Attempt.prototype.equal = function(a) {
     return this.match({
         Success: function(x) {
@@ -92,6 +97,11 @@ Attempt.prototype.equal = function(a) {
     });
 };
 
+//
+//  ### extract(a)
+//
+//  Extract the value from the attempt.
+//
 Attempt.prototype.extract = function() {
     return this.match({
         Success: identity,
@@ -99,6 +109,13 @@ Attempt.prototype.extract = function() {
     });
 };
 
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Left`, `b` if `Right`
+//
 Attempt.prototype.fold = function(a, b) {
     return this.match({
         Success: function(x) {
@@ -110,6 +127,12 @@ Attempt.prototype.fold = function(a, b) {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Map on the success of this attempt.
+//  Functor map
+//
 Attempt.prototype.map = function(f) {
     return this.match({
         Success: function(a) {
@@ -121,6 +144,11 @@ Attempt.prototype.map = function(f) {
     });
 };
 
+//
+//  ### swap()
+//
+//  Flip the failure/success values in this attempt.
+//
 Attempt.prototype.swap = function() {
     return this.match({
         Success: Attempt.Failure,
@@ -128,6 +156,13 @@ Attempt.prototype.swap = function() {
     });
 };
 
+//
+//  ### toOption()
+//
+//  Return an empty option or option with one element on the success
+//  of this attempt.
+//  `Some(x)` if `Success(x)`, `None` if `Failure()`
+//
 Attempt.prototype.toOption = function() {
     return this.match({
         Success: Option.Some,
@@ -137,6 +172,12 @@ Attempt.prototype.toOption = function() {
     });
 };
 
+//
+//  ### toLeft()
+//
+//  Return an left either bias if attempt is a success.
+//  `Left(x)` if `Success(x)`, `Right` if `Failure(e)`
+//
 Attempt.prototype.toLeft = function() {
     return this.match({
         Success: Either.Left,
@@ -144,6 +185,12 @@ Attempt.prototype.toLeft = function() {
     });
 };
 
+//
+//  ### toRight()
+//
+//  Return an right either bias if attempt is a success.
+//  `Right(x)` if `Success(x)`, `Left` if `Failure(e)`
+//
 Attempt.prototype.toRight = function() {
     return this.match({
         Success: Either.Left,
@@ -151,6 +198,12 @@ Attempt.prototype.toRight = function() {
     });
 };
 
+//
+//  ### toArray()
+//
+//  Return an empty array or array with one element on the success
+//  of this attempt.
+//
 Attempt.prototype.toArray = function() {
     return this.match({
         Success: function(x) {
@@ -163,30 +216,25 @@ Attempt.prototype.toArray = function() {
 };
 
 //
+//  ### toStream()
+//
+//  Return an empty stream or stream with one element on the success
+//  of this attempt.
+//
+Attempt.prototype.toStream = function() {
+    return this.match({
+        Success: Stream.of,
+        Failure: Stream.empty
+    });
+};
+
+//
 //  ## Success(x)
 //
 //  Constructor to represent the existance of a value, `x`.
 //
 Attempt.Success.prototype.isSuccess = true;
 Attempt.Success.prototype.isFailure = false;
-
-//
-//  ## of(x)
-//
-//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
-//
-Attempt.Success.of = function(x) {
-    return Attempt.Success(x);
-};
-
-//
-//  ## empty()
-//
-//  Constructor `empty` Monad creating `Attempt.Success`.
-//
-Attempt.Success.empty = function() {
-    return Attempt.Success.of();
-};
 
 //
 //  ## Failure(x)
@@ -199,10 +247,10 @@ Attempt.Failure.prototype.isFailure = true;
 //
 //  ## of(x)
 //
-//  Constructor `of` Monad creating `Attempt.Failure` with value of `x`.
+//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
 //
-Attempt.Failure.of = function(x) {
-    return Attempt.Failure(x);
+Attempt.of = function(x) {
+    return Attempt.Success(x);
 };
 
 //
@@ -210,8 +258,8 @@ Attempt.Failure.of = function(x) {
 //
 //  Constructor `empty` Monad creating `Attempt.Failure`.
 //
-Attempt.Failure.empty = function(x) {
-    return Attempt.Failure.of();
+Attempt.empty = function() {
+    return Attempt.Failure();
 };
 
 //
@@ -228,26 +276,23 @@ squishy = squishy
     .property('Success', Attempt.Success)
     .property('Failure', Attempt.Failure)
     .property('isAttempt', isAttempt)
-    .method('of', strictEquals(Attempt.Success), function(x) {
-        return Attempt.Success.of(x);
+    .method('of', strictEquals(Attempt), function(x) {
+        return Attempt.of(x);
     })
-    .method('of', strictEquals(Attempt.Failure), function(x) {
-        return Attempt.Failure.of(x);
-    })
-    .method('empty', strictEquals(Attempt.Success), function() {
-        return Attempt.Success.empty();
-    })
-    .method('empty', strictEquals(Attempt.Failure), function() {
-        return Attempt.Failure.empty();
+    .method('empty', strictEquals(Attempt), function() {
+        return Attempt.empty();
     })
     .method('ap', isAttempt, function(a, b) {
         return a.ap(b, this.concat);
     })
-    .method('arb', isAttempt, function(a, b) {
+    .method('arb', strictEquals(Attempt.Success), function(a, b) {
         return Attempt.Success(this.arb(AnyVal, b - 1));
     })
-    .method('chain', isAttempt, function(a, b) {
-        return a.chain(b);
+    .method('arb', strictEquals(Attempt.Failure), function(a, b) {
+        return Attempt.Failure(this.arb(arrayOf(AnyVal), b - 1));
+    })
+    .method('flatMap', isAttempt, function(a, b) {
+        return a.flatMap(b);
     })
     .method('equal', isAttempt, function(a, b) {
         return a.equal(b);
@@ -263,4 +308,7 @@ squishy = squishy
     })
     .method('toArray', isAttempt, function(a) {
         return a.toArray();
+    })
+    .method('toStream', isAttempt, function(a) {
+        return a.toStream();
     });
