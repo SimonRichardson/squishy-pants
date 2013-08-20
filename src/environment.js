@@ -81,9 +81,9 @@ function makeMethod(registrations) {
 //
 //   ## environment(methods, properties)
 //
-//   * method(name, predicate, f) - adds an multimethod implementation
-//   * property(name, value) - sets a property to value
-//   * isDefined(name) - is a multimethod implement defined
+//   * `method(name, predicate, f)` - adds an multimethod implementation
+//   * `property(name, value)` - sets a property to value
+//   * `isDefined(name)` - is a multimethod implement defined
 //
 function environment(methods, properties) {
     var self = getInstance(this, environment),
