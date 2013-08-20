@@ -24,7 +24,21 @@
 //
 //  Represents a Failure.
 //
-
+//  * `ap(b, concat)` - Applicative ap(ply)
+//  * `equal(a)` -  `true` if `a` is equal to `this`
+//  * `extract()` -  extract the value from attempt
+//  * `flatMap(f)` - Monadic flatMap/bind
+//  * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
+//  * `map(f)` - Functor map
+//  * `swap()` - Swap values
+//  * `isSuccess` - `true` if `this` is `Success(x)`
+//  * `isFailure` - `true` if `this` is `Failure(x)`
+//  * `toArray()` - `[x]` if `Success(x)`, `[]` if `Failure(x)`
+//  * `toOption()` - `Some(x)` if `Success(x)`, `None` if `Failure(x)`
+//  * `toStream()` - `Stream.of(x)` if `Success(x)`, `Stream.empty()` if `Failure(x)`
+//  * `toLeft(r)` - `Left(x)` if `Success(x)`, `Right(r)` if `Failure(x)`
+//  * `toRight(l)` - `Right(x)` if `Success(x)`, `Left(l)` if `Failure(x)`
+//
 var Attempt = taggedSum('Attempt', {
     Success: ['value'],
     Failure: ['errors']

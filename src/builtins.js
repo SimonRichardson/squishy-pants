@@ -26,8 +26,7 @@ squishy = squishy
     });
 
 //
-//
-//  ### equal
+//  ### equal(a, b)
 //
 //  Checks to see if a type equals another type. This is a uses deep equality for
 //  complex structures like `object` and `array`s.
@@ -77,7 +76,7 @@ squishy = squishy
     });
 
 //
-//  ### of
+//  ### of(a)
 //
 //  Creates a value from the type.
 //
@@ -101,7 +100,7 @@ squishy = squishy
     .method('of', strictEquals(String), identity);
 
 //
-//  ### empty
+//  ### empty()
 //
 //  Creates an empty value depending on the type. Each resulting value
 //  will be classified as falsy for the type. Boolean will be
