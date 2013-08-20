@@ -1,43 +1,43 @@
 //
-//  # Attempt
+//   # Attempt
 //
-//       Attempt e v = Failure e + Success v
+//        Attempt e v = Failure e + Success v
 //
-//  The Attempt data type represents a "Success" value or a
-//  semigroup of "Failure" values. Attempt has an applicative
-//  functor which collects Failures' errors or creates a new Success
-//  value.
+//   The Attempt data type represents a "Success" value or a
+//   semigroup of "Failure" values. Attempt has an applicative
+//   functor which collects Failures' errors or creates a new Success
+//   value.
 //
-//  Here's an example function which validates a String:
+//   Here's an example function which validates a String:
 //
-//       function nonEmpty(field, string) {
-//           return string
-//               ? squishy.Success(string)
-//               : squishy.Failure([field + " must be non-empty"]);
-//       }
+//        function nonEmpty(field, string) {
+//            return string
+//                ? squishy.Success(string)
+//                : squishy.Failure([field + " must be non-empty"]);
+//        }
 //
-//  ## Success(value)
+//   ## Success(value)
 //
-//  Represents a Successful `value`.
+//   Represents a Successful `value`.
 //
-//  ## Failure(errors)
+//   ## Failure(errors)
 //
-//  Represents a Failure.
+//   Represents a Failure.
 //
-//  * `ap(b, concat)` - Applicative ap(ply)
-//  * `equal(a)` -  `true` if `a` is equal to `this`
-//  * `extract()` -  extract the value from attempt
-//  * `flatMap(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
-//  * `map(f)` - Functor map
-//  * `swap()` - Swap values
-//  * `isSuccess` - `true` if `this` is `Success(x)`
-//  * `isFailure` - `true` if `this` is `Failure(x)`
-//  * `toArray()` - `[x]` if `Success(x)`, `[]` if `Failure(x)`
-//  * `toOption()` - `Some(x)` if `Success(x)`, `None` if `Failure(x)`
-//  * `toStream()` - `Stream.of(x)` if `Success(x)`, `Stream.empty()` if `Failure(x)`
-//  * `toLeft(r)` - `Left(x)` if `Success(x)`, `Right(r)` if `Failure(x)`
-//  * `toRight(l)` - `Right(x)` if `Success(x)`, `Left(l)` if `Failure(x)`
+//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `extract()` -  extract the value from attempt
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
+//   * `map(f)` - Functor map
+//   * `swap()` - Swap values
+//   * `isSuccess` - `true` if `this` is `Success(x)`
+//   * `isFailure` - `true` if `this` is `Failure(x)`
+//   * `toArray()` - `[x]` if `Success(x)`, `[]` if `Failure(x)`
+//   * `toOption()` - `Some(x)` if `Success(x)`, `None` if `Failure(x)`
+//   * `toStream()` - `Stream.of(x)` if `Success(x)`, `Stream.empty()` if `Failure(x)`
+//   * `toLeft(r)` - `Left(x)` if `Success(x)`, `Right(r)` if `Failure(x)`
+//   * `toRight(l)` - `Right(x)` if `Success(x)`, `Left(l)` if `Failure(x)`
 //
 var Attempt = taggedSum('Attempt', {
     Success: ['value'],
@@ -97,7 +97,7 @@ Attempt.prototype.equal = function(a) {
 };
 
 //
-//  ### extract(a)
+//  ### extract()
 //
 //  Extract the value from the attempt.
 //
@@ -186,7 +186,7 @@ Attempt.prototype.toOption = function() {
 //  ### toLeft()
 //
 //  Return an left either bias if attempt is a success.
-//  `Left(x)` if `Success(x)`, `Right` if `Failure(e)`
+//  `Left(x)` if `Success(x)`, `Right(x)` if `Failure(x)`
 //
 Attempt.prototype.toLeft = function() {
     return this.match({
@@ -199,7 +199,7 @@ Attempt.prototype.toLeft = function() {
 //  ### toRight()
 //
 //  Return an right either bias if attempt is a success.
-//  `Right(x)` if `Success(x)`, `Left` if `Failure(e)`
+//  `Right(x)` if `Success(x)`, `Left(x)` if `Failure(x)`
 //
 Attempt.prototype.toRight = function() {
     return this.match({

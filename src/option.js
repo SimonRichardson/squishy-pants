@@ -8,34 +8,59 @@
 //   absence.
 //
 //   * `ap(s)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `concat(s, plus)` - Semigroup concat
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `extract()` -  extract the value from option
 //   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - Applies `a` to value if `Some` or defaults to `b`
+//   * `get()` - get the value from option
 //   * `getOrElse(a)` - Default value for `None`
 //   * `map(f)` - Functor map
 //   * `isSome` - `true` if `this` is `Some`
 //   * `isNone` - `true` if `this` is `None`
-//   * `toAttempt(r)` - `Success(x)` if `Some(x)`, `Failure(r)` if None
+//   * `toAttempt(r)` - `Success(x)` if `Some(x)`, `Failure(r)` if `None`
+//   * `toArray()` - `[x]` if `Some(x)`, `[]` if `None`
+//   * `toStream()` - `Stream.of(x)` if `Some(x)`, `Stream.empty()` if `None`
 //   * `toLeft(r)` - `Left(x)` if `Some(x)`, `Right(r)` if None
 //   * `toRight(l)` - `Right(x)` if `Some(x)`, `Left(l)` if None
 //
-
 var Option = taggedSum('Option', {
     Some: ['value'],
     None: []
 });
 
-Option.prototype.ap = function(b) {
-    return this.match({
-        Some: function(x) {
-            return b.map(x);
-        },
-        None: function() {
-            return this;
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the some of this option,
+//  accumulating errors
+//  Applicative ap(ply)
+//
+Option.prototype.ap = function(a) {
+    return this.flatMap(
+        function(f) {
+            return squishy.map(a, f);
         }
-    });
+    );
 };
 
+//
+//  ### chain(f)
+//
+//  Bind through the success of the option
+//  Monadic flatMap/bind
+//
+Option.prototype.chain = function(f) {
+    return this.flatMap(f);
+};
+
+//
+//  ### concat(s, f)
+//
+//  Concatenate two options associatively together.
+//  Semigroup concat
+//
 Option.prototype.concat = function(s, f) {
     return this.match({
         Some: function(x) {
@@ -45,12 +70,15 @@ Option.prototype.concat = function(s, f) {
                 }
             );
         },
-        None: function() {
-            return this;
-        }
+        None: constant(this)
     });
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
 Option.prototype.equal = function(a) {
     return this.match({
         Some: function(x) {
@@ -70,15 +98,38 @@ Option.prototype.equal = function(a) {
     });
 };
 
-Option.prototype.flatMap = function(f) {
+//
+//  ### extract()
+//
+//  Extract the value from the option.
+//
+Option.prototype.extract = function() {
     return this.match({
-        Some: f,
-        None: function() {
-            return this;
-        }
+        Some: identity,
+        None: constant(null)
     });
 };
 
+//
+//  ### flatMap(f)
+//
+//  Bind through the success of the option
+//  Monadic flatMap/bind
+//
+Option.prototype.flatMap = function(f) {
+    return this.match({
+        Some: f,
+        None: constant(this)
+    });
+};
+
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Some`, `b` if `None`
+//
 Option.prototype.fold = function(f, g) {
     return this.match({
         Some: f,
@@ -86,6 +137,11 @@ Option.prototype.fold = function(f, g) {
     });
 };
 
+//
+//  ### get()
+//
+//  Get the value from the option.
+//
 Option.prototype.get = function() {
     return this.match({
         Some: identity,
@@ -93,6 +149,11 @@ Option.prototype.get = function() {
     });
 };
 
+//
+//  ### get()
+//
+//  Get the value from the option or else
+//
 Option.prototype.getOrElse = function(x) {
     return this.match({
         Some: identity,
@@ -100,17 +161,26 @@ Option.prototype.getOrElse = function(x) {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Map on the some of this option.
+//  Functor map
+//
 Option.prototype.map = function(f) {
-    return this.match({
-        Some: function(x) {
-            return Option.Some(f(x));
-        },
-        None: function() {
-            return this;
+    return this.flatMap(
+        function(a) {
+            return Option.of(f(a));
         }
-    });
+    );
 };
 
+//
+//  ### toAttempt()
+//
+//  Return failure if option is a some and success if option is none.
+//  `None` if `Failure(x)`, `Some(x)` if `Success(e)`
+//
 Option.prototype.toAttempt = function() {
     return this.match({
         Some: Attempt.Success,
@@ -120,6 +190,12 @@ Option.prototype.toAttempt = function() {
     });
 };
 
+//
+//  ### toLeft()
+//
+//  Return an left either bias if option is a some.
+//  `Left(x)` if `Some(x)`, `Right(x)` if `None`
+//
 Option.prototype.toLeft = function(o) {
     return this.match({
         Some: Either.Left,
@@ -129,6 +205,12 @@ Option.prototype.toLeft = function(o) {
     });
 };
 
+//
+//  ### toRight()
+//
+//  Return an right either bias if option is a some.
+//  `Right(x)` if `Some(x)`, `Left(x)` if `None`
+//
 Option.prototype.toRight = function(o) {
     return this.match({
         Some: Either.Right,
@@ -138,14 +220,18 @@ Option.prototype.toRight = function(o) {
     });
 };
 
+//
+//  ### toArray()
+//
+//  Return an empty array or array with one element on the some
+//  of this option.
+//
 Option.prototype.toArray = function() {
     return this.match({
         Some: function(x) {
             return [x];
         },
-        None: function() {
-            return [];
-        }
+        None: constant([])
     });
 };
 

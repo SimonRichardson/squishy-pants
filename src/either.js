@@ -1,23 +1,23 @@
 //
-//  # Either
+//   # Either
 //
-//       Either a b = Left a + Right b
+//        Either a b = Left a + Right b
 //
-//  Represents a tagged disjunction between two sets of values; `a` or
-//  `b`. Methods are Right-biased.
+//   Represents a tagged disjunction between two sets of values; `a` or
+//   `b`. Methods are Right-biased.
 //
-//  * `ap(e)` - Applicative ap(ply)
-//  * `concat(s, f)` - Semigroup concat
-//  * `flatMap(f)` - Monadic flatMap/bind
-//  * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
-//  * `map(f)` - Functor map
-//  * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
-//  * `isLeft` - `true` iff `this` is `Left(x)`
-//  * `isRight` - `true` iff `this` is `Right(x)`
-//  * `toOption()` - `None` if `Left(x)`, `Some(x)` value of `Right(x)`
-//  * `toArray()` - `[]` if `Left(x)`, `[x]` value if `Right(x)`
-//  * `toAttempt()` - `Failure(x)` if `Left(x)`, `Success(x)` value if `Right(x)`
-//  * `toStream()` - `Stream.empty()` if `Left(x)`, `Stream.of(x)` value if `Right(x)`
+//   * `ap(e)` - Applicative ap(ply)
+//   * `concat(s, f)` - Semigroup concat
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
+//   * `map(f)` - Functor map
+//   * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
+//   * `isLeft` - `true` iff `this` is `Left(x)`
+//   * `isRight` - `true` iff `this` is `Right(x)`
+//   * `toOption()` - `None` if `Left(x)`, `Some(x)` value of `Right(x)`
+//   * `toArray()` - `[]` if `Left(x)`, `[x]` value if `Right(x)`
+//   * `toAttempt()` - `Failure(x)` if `Left(x)`, `Success(x)` value if `Right(x)`
+//   * `toStream()` - `Stream.empty()` if `Left(x)`, `Stream.of(x)` value if `Right(x)`
 //
 var Either = taggedSum('Either', {
     Left: ['value'],
@@ -181,7 +181,7 @@ Either.prototype.toOption = function() {
 //  ### toAttempt()
 //
 //  Return failure if either is a left and success if either is right.
-//  `Left(x)` if `Failure(x)`, `Right` if `Success(e)`
+//  `Left(x)` if `Failure(x)`, `Right(x)` if `Success(x)`
 //
 Either.prototype.toAttempt = function() {
     return this.match({
