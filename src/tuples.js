@@ -19,6 +19,16 @@ var Tuple2 = tagged('Tuple2', ['_1', '_2']),
     Tuple5 = tagged('Tuple5', ['_1', '_2', '_3', '_4', '_5']);
 
 //
+//   ## Tuple2
+//
+//   * `flip()` - flip values
+//   * `concat()` - Semigroup (value must also be a Semigroup)
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `toArray()` - `[_1, _2]` of the tuple
+//
+
+//
 //  ## of(x)
 //
 //  Constructor `of` Monad creating `Tuple2`.
@@ -28,15 +38,20 @@ Tuple2.of = function(a, b) {
 };
 
 //
-//  ## Tuple2
+//   ### flip()
 //
-//  * flip() - flip values
-//  * concat() - Semigroup (value must also be a Semigroup)
+//   Flip the values of the first and second.
 //
 Tuple2.prototype.flip = function() {
     return Tuple2.of(this._2, this._1);
 };
 
+//
+//  ### concat(s, f)
+//
+//  Concatenate two tuples associatively together.
+//  Semigroup concat
+//
 Tuple2.prototype.concat = function(b) {
     return Tuple2.of(
         squishy.concat(this._1, b._1),
@@ -44,13 +59,42 @@ Tuple2.prototype.concat = function(b) {
     );
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Tuple2.prototype.equal = function(b) {
+    return squishy.equal(this.toArray(), b.toArray());
+};
+
+//
+//  ### flatMap(f)
+//
+//  Bind through the tuple of the tuples
+//  Monadic flatMap/bind
+//
 Tuple2.prototype.flatMap = function(f) {
     return f(this);
 };
 
+//
+//  ### toArray()
+//
+//  Return an array with each element of the tuple.
+//
 Tuple2.prototype.toArray = function() {
     return [this._1, this._2];
 };
+
+//
+//   ## Tuple3
+//
+//   * `concat()` - Semigroup (value must also be a Semigroup)
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `toArray()` - `[_1, _2, _3]` of the tuple
+//
 
 //
 //  ## of(x)
@@ -62,9 +106,10 @@ Tuple3.of = function(a, b, c) {
 };
 
 //
-//  ## Tuple3
+//  ### concat(s, f)
 //
-//  * concat() - Semigroup (value must also be a Semigroup)
+//  Concatenate two tuples associatively together.
+//  Semigroup concat
 //
 Tuple3.prototype.concat = function(b) {
     return Tuple3.of(
@@ -74,13 +119,42 @@ Tuple3.prototype.concat = function(b) {
     );
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Tuple3.prototype.equal = function(b) {
+    return squishy.equal(this.toArray(), b.toArray());
+};
+
+//
+//  ### flatMap(f)
+//
+//  Bind through the tuple of the tuples
+//  Monadic flatMap/bind
+//
 Tuple3.prototype.flatMap = function(f) {
     return f(this);
 };
 
+//
+//  ### toArray()
+//
+//  Return an array with each element of the tuple.
+//
 Tuple3.prototype.toArray = function() {
     return [this._1, this._2, this._3];
 };
+
+//
+//   ## Tuple4
+//
+//   * `concat()` - Semigroup (value must also be a Semigroup)
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `toArray()` - `[_1, _2, _3, _4]` of the tuple
+//
 
 //
 //  ## of(x)
@@ -92,9 +166,10 @@ Tuple4.of = function(a, b, c, d) {
 };
 
 //
-//  ## Tuple4
+//  ### concat(s, f)
 //
-//  * concat() - Semigroup (value must also be a Semigroup)
+//  Concatenate two tuples associatively together.
+//  Semigroup concat
 //
 Tuple4.prototype.concat = function(b) {
     return Tuple4.of(
@@ -105,13 +180,42 @@ Tuple4.prototype.concat = function(b) {
     );
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Tuple4.prototype.equal = function(b) {
+    return squishy.equal(this.toArray(), b.toArray());
+};
+
+//
+//  ### flatMap(f)
+//
+//  Bind through the tuple of the tuples
+//  Monadic flatMap/bind
+//
 Tuple4.prototype.flatMap = function(f) {
     return f(this);
 };
 
+//
+//  ### toArray()
+//
+//  Return an array with each element of the tuple.
+//
 Tuple4.prototype.toArray = function() {
     return [this._1, this._2, this._3, this._4];
 };
+
+//
+//   ## Tuple5
+//
+//   * `concat()` - Semigroup (value must also be a Semigroup)
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `toArray()` - `[_1, _2, _3, _4, _5]` of the tuple
+//
 
 //
 //  ## of(x)
@@ -123,9 +227,10 @@ Tuple5.of = function(a, b, c, d, e) {
 };
 
 //
-//  ## Tuple5
+//  ### concat(s, f)
 //
-//  * concat() - Semigroup (value must also be a Semigroup)
+//  Concatenate two tuples associatively together.
+//  Semigroup concat
 //
 Tuple5.prototype.concat = function(b) {
     return Tuple5.of(
@@ -137,10 +242,30 @@ Tuple5.prototype.concat = function(b) {
     );
 };
 
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Tuple5.prototype.equal = function(b) {
+    return squishy.equal(this.toArray(), b.toArray());
+};
+
+//
+//  ### flatMap(f)
+//
+//  Bind through the tuple of the tuples
+//  Monadic flatMap/bind
+//
 Tuple5.prototype.flatMap = function(f) {
     return f(this);
 };
 
+//
+//  ### toArray()
+//
+//  Return an array with each element of the tuple.
+//
 Tuple5.prototype.toArray = function() {
     return [this._1, this._2, this._3, this._4, this._5];
 };
@@ -188,7 +313,7 @@ var isTuple = function(a) {
 //
 //  ## arbTuple(a)
 //
-//  Returns an arbitrary `Tuple` with the right set of values. 
+//  Returns an arbitrary `Tuple` with the right set of values.
 //
 var arbTuple = curry(function(t, n) {
     return function(a, s) {
@@ -221,7 +346,7 @@ squishy = squishy
         return a.concat(b);
     })
     .method('equal', isTuple, function(a, b) {
-        return squishy.equal(a.toArray(), b.toArray());
+        return a.equal(b);
     })
     .method('flatMap', isTuple, function(a, b) {
         return a.flatMap(b);
