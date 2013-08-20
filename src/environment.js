@@ -59,7 +59,6 @@
 //
 //       env.name === 'Squishy';
 //
-
 function findRegistered(registrations, args) {
     var i,
         total;
