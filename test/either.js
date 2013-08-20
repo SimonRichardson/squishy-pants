@@ -205,5 +205,53 @@ exports.either = {
             return _.expect(_.Left(_.inc).ap(_.Right(a)).fold(_.identity, _.badRight)).toBe(_.inc);
         },
         [Number]
+    ),
+    'when creating left and calling equal with same value in left should return true': _.check(
+        function(a) {
+            return a.equal(a);
+        },
+        [_.Left]
+    ),
+    'when creating right and calling equal with same value in right should return true': _.check(
+        function(a) {
+            return a.equal(a);
+        },
+        [_.Right]
+    ),
+    'when creating left and calling equal with right should return false': _.check(
+        function(a, b) {
+            return !a.equal(b);
+        },
+        [_.Left, _.Right]
+    ),
+    'when creating left and calling equal with same value in right should return false': _.check(
+        function(a) {
+            return !_.Left(a).equal(_.Right(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating left and calling concat with right should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).concat(_.Right(a), _.concat).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating left and calling concat with left should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).concat(_.Left(a), _.concat).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating right and calling concat with left should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).concat(_.Left(a), _.concat).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when creating right and calling concat with right should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).concat(_.Right(a), _.concat).extract()).toBe(a.concat(a));
+        },
+        [_.arrayOf(_.AnyVal)]
     )
 };

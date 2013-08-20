@@ -37,12 +37,12 @@ Either.prototype.ap = function(e) {
 //  Semigroup concat
 //
 Either.prototype.concat = function(s, f) {
+    var env = this;
     return this.match({
         Left: function() {
-            var Left = this;
             return s.fold(
-              constant(Left),
-              constant(s)
+                constant(env),
+                constant(s)
             );
         },
         Right: function(y) {
@@ -100,9 +100,7 @@ Either.prototype.extract = function() {
 Either.prototype.flatMap = function(f) {
     return this.match({
         Left: constant(this),
-        Right: function(x) {
-            return f(x);
-        }
+        Right: f
     });
 };
 
