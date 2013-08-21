@@ -30,12 +30,38 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-08-18 20:23 */</span>
+            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-08-21 17:37 */</span>
 (<span class="keyword">function</span>(global) {
 
-    <span class="string">'use strict'</span>;
+    <span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h3>Description</h3>
+<p>  squishy-pants.js is a semi-serious functional programming library.</p>
+<h3>Usage</h3>
+<p>  node.js:</p>
+<pre><code>  var squishy = require(&#39;squishy-pants&#39;);</code></pre>
+<p>  Browser:</p>
+<pre><code>  &lt;script src=&quot;squishy-pants.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+<h3>Development</h3>
+<p>  Download the code with git:</p>
+<pre><code>  git clone https://github.com/SimonRichardson/squishy-pants.git</code></pre>
+<p>  Install the development dependencies with npm:</p>
+<pre><code>  npm install</code></pre>
+<p>  Run the tests with grunt:</p>
+<pre><code>  npm test</code></pre>
 
-    <span class="comment">/* squishy pant's environment means `this` is special */</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="comment">/* squishy pant's environment means `this` is special */</span>
     <span class="comment">/*jshint validthis: true*/</span>
 
     <span class="comment">/* squishy pants uses the !(this instanceof c) trick to remove `new` */</span>
@@ -46,11 +72,11 @@
         </li>
         
         
-        <li id="section-2">
+        <li id="section-3">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-2">&#182;</a>
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
               <h1>Environment</h1>
 <p>  Environments are very important in squishy-pants. The library itself is
@@ -105,8 +131,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    
-    <span class="function"><span class="keyword">function</span> <span class="title">findRegistered</span><span class="params">(registrations, args)</span> {</span>
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">findRegistered</span><span class="params">(registrations, args)</span> {</span>
         <span class="keyword">var</span> i,
             total;
     
@@ -128,17 +153,17 @@
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <h2>environment(methods, properties)</h2>
 <ul>
-<li>method(name, predicate, f) - adds an multimethod implementation</li>
-<li>property(name, value) - sets a property to value</li>
-<li>isDefined(name) - is a multimethod implement defined</li>
+<li><code>method(name, predicate, f)</code> - adds an multimethod implementation</li>
+<li><code>property(name, value)</code> - sets a property to value</li>
+<li><code>isDefined(name)</code> - is a multimethod implement defined</li>
 </ul>
 
             </div>
@@ -191,11 +216,11 @@
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <h1>Helpers</h1>
 <p> The helpers module is a collection of functions used often inside
@@ -206,11 +231,11 @@
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <h2>functionName(f)</h2>
 <p> Returns the name of function <code>f</code>.</p>
@@ -224,11 +249,11 @@
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <h2>functionLength(f)</h2>
 <p> Returns the arity of function <code>f</code>.</p>
@@ -242,11 +267,11 @@
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <h2>create(proto)</h2>
 <p> Partial polyfill for Object.create - creates a new instance of the
@@ -263,11 +288,11 @@
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <h2>getInstance(self, constructor)</h2>
 <p> Always returns an instance of constructor.</p>
@@ -283,11 +308,11 @@
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <h2>singleton(k, v)</h2>
 <p> Creates a new single object using <code>k</code> as the key and <code>v</code> as the
@@ -306,11 +331,11 @@
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <h2>extend(a, b)</h2>
 <p> Right-biased key-value concat of objects <code>a</code> and <code>b</code>:</p>
@@ -332,11 +357,11 @@
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <h2>bind(f)(o)</h2>
 <p> Makes <code>this</code> inside of <code>f</code> equal to <code>o</code>:</p>
@@ -377,11 +402,11 @@
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <h2>curry(f)</h2>
 <p> Takes a normal function <code>f</code> and allows partial application of its
@@ -419,11 +444,11 @@
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <h2>compose(f, g)</h2>
 <p> Creates a new function that applies <code>f</code> to the result of <code>g</code> of the
@@ -441,11 +466,11 @@
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <h2>identity(o)</h2>
 <p> Identity function. Returns <code>o</code>:</p>
@@ -460,11 +485,11 @@
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <h2>constant(c)</h2>
 <p> Constant function. Creates a function that always returns <code>c</code>, no
@@ -482,11 +507,11 @@
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <h2>liftA2(f, a, b)</h2>
 <p> Lifts a curried, binary function <code>f</code> into the applicative passes
@@ -501,11 +526,11 @@
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h2>arrayOf(type)</h2>
 <p> Sentinel value for when an array of a particular type is needed:</p>
@@ -522,11 +547,11 @@
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <h2>objectLike(props)</h2>
 <p> Sentinel value for when an object with specified properties is
@@ -547,11 +572,11 @@
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <h2>or(a)(b)</h2>
 <p> Curried function for <code>||</code>.</p>
@@ -565,11 +590,11 @@
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <h2>and(a)(b)</h2>
 <p> Curried function for <code>&amp;&amp;</code>.</p>
@@ -583,11 +608,11 @@
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <h2>add(a)(b)</h2>
 <p> Curried function for <code>+</code>.</p>
@@ -601,11 +626,11 @@
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <h2>strictEquals(a)(b)</h2>
 <p> Curried function for <code>===</code>.</p>
@@ -619,11 +644,11 @@
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <h2>not(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is not a valid value.</p>
@@ -637,11 +662,11 @@
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <h2>error(s)</h2>
 <p> Turns the <code>throw new Error(s)</code> statement into an expression.</p>
@@ -657,11 +682,11 @@
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <h2>oneOf</h2>
 <p> Selects one of the values at random.</p>
@@ -675,11 +700,11 @@
         </li>
         
         
-        <li id="section-26">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <h2>fill(s)(t)</h2>
 <p> Curried function for filling array.</p>
@@ -693,11 +718,11 @@
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <h2>range(a, b)</h2>
 <p> Create an array with a given range (length).</p>
@@ -718,11 +743,11 @@
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <h2>randomRange</h2>
 <p> Returns a random number between the range.</p>
@@ -736,11 +761,11 @@
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <h2>inc</h2>
 <p> Increments the number by 1</p>
@@ -754,11 +779,11 @@
         </li>
         
         
-        <li id="section-30">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <h2>dec</h2>
 <p> Decrement the number by 1</p>
@@ -772,11 +797,11 @@
         </li>
         
         
-        <li id="section-31">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <h2>lazy</h2>
 <p> Stateful function that guarantees that the function is evaluated
@@ -802,11 +827,11 @@
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <h2>optional</h2>
 <p> Optionally calls the function passed if it&#39;s not null. This is glue
@@ -826,11 +851,11 @@
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <h2>nothing</h2>
 <p> Empty function that can be called with no side affects and does nothing.</p>
@@ -843,11 +868,11 @@
         </li>
         
         
-        <li id="section-34">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -879,9 +904,39 @@
         .property(<span class="string">'randomRange'</span>, randomRange)
         .property(<span class="string">'inc'</span>, inc)
         .property(<span class="string">'dec'</span>, dec)
-        .property(<span class="string">'lazy'</span>, lazy);
+        .property(<span class="string">'lazy'</span>, lazy);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <h1>partial</h1>
+<p>  Methods are implemented as multi-methods, which allow a form of
+  <em>ad-hoc polymorphism</em>. Duck typing is another example of ad-hoc
+  polymorphism, but only allows a single implementation at a time, via
+  prototype mutation.</p>
+<p>  A method instance is a predicate and a implementation:</p>
+<pre><code>  var partial = squishy.partial()
+      .method(squishy.isEven, squishy.identity)
+      .method(squishy.isOdd, squishy.negate),
+      result = partial.call(null, 3);
 
-    <span class="function"><span class="keyword">function</span> <span class="title">partial</span><span class="params">(methods)</span> {</span>
+  result === -3;</code></pre>
+<ul>
+<li><code>method(predicate, f)</code> - add a method with a predicate guard.</li>
+<li><code>isDefinedAt()</code> - find if a method conforms to the predicate or not.</li>
+<li><code>call(scope)</code> - call the method with a scope and series of arguments.</li>
+<li><code>apply(scope, [])</code> - call the method with a scope and array of arguments.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">partial</span><span class="params">(methods)</span> {</span>
         <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, partial),
             i;
     
@@ -895,12 +950,19 @@
             <span class="keyword">return</span> partial(newMethods);
         };
     
-        self.isDefinedAt = <span class="keyword">function</span>(value) {
+        self.isDefinedAt = <span class="keyword">function</span>() {
+            <span class="keyword">var</span> args = [].slice.call(arguments);
             <span class="keyword">return</span> exists(methods, <span class="keyword">function</span>(m) {
-                <span class="keyword">return</span> m.predicate(value);
+                <span class="keyword">return</span> m.predicate.apply(<span class="literal">null</span>, args);
             });
         };
     
+        <span class="comment">/* Override function call to mask as a real function */</span>
+        self.call = <span class="keyword">function</span>(scope) {
+            <span class="keyword">return</span> self.apply(scope, [].slice.call(arguments).slice(<span class="number">1</span>));
+        };
+    
+        <span class="comment">/* Override function apply to mask as a real function */</span>
         self.apply = <span class="keyword">function</span>(scope, args) {
             <span class="keyword">var</span> total,
                 i;
@@ -911,8 +973,13 @@
                 }
             }
     
+            <span class="comment">/* Show we warn about the non-exhaustive check for arguments */</span>
             <span class="keyword">return</span> <span class="literal">null</span>;
         };
+    
+        <span class="comment">/* Override function length to mask as a real function */</span>
+        self.length = <span class="number">1</span>;
+        self._functionName = <span class="string">'partial'</span>;
     
         <span class="keyword">return</span> self;
     }</pre></div></div>
@@ -920,11 +987,11 @@
         </li>
         
         
-        <li id="section-35">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p> append methods to the squishy partial.</p>
 
@@ -936,11 +1003,11 @@
         </li>
         
         
-        <li id="section-36">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <h2>isTypeOf(a)(b)</h2>
 <p> Returns <code>true</code> if <code>b</code> has <code>typeof a</code>.</p>
@@ -954,11 +1021,11 @@
         </li>
         
         
-        <li id="section-37">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <h2>isBoolean(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Boolean</code>.</p>
@@ -970,11 +1037,11 @@
         </li>
         
         
-        <li id="section-38">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <h2>isFunction(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Function</code>.</p>
@@ -986,11 +1053,11 @@
         </li>
         
         
-        <li id="section-39">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <h2>isNumber(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Number</code>.</p>
@@ -1002,11 +1069,11 @@
         </li>
         
         
-        <li id="section-40">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <h2>isObject(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Object</code>.</p>
@@ -1018,11 +1085,11 @@
         </li>
         
         
-        <li id="section-41">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <h2>isString(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>String</code>.</p>
@@ -1034,11 +1101,11 @@
         </li>
         
         
-        <li id="section-42">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <h2>isArray(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an <code>Array</code>.</p>
@@ -1053,11 +1120,11 @@
         </li>
         
         
-        <li id="section-43">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <h2>isNaN(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a not a number including <code>NaN</code> and <code>Infinity</code>.</p>
@@ -1071,11 +1138,11 @@
         </li>
         
         
-        <li id="section-44">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <h2>isNotNaN(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is not a <code>NaN</code>.</p>
@@ -1089,11 +1156,11 @@
         </li>
         
         
-        <li id="section-45">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <h2>isEven(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is even.</p>
@@ -1107,11 +1174,11 @@
         </li>
         
         
-        <li id="section-46">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <h2>isOdd(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is odd.</p>
@@ -1125,11 +1192,11 @@
         </li>
         
         
-        <li id="section-47">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <h2>isPalindrome(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a valid palindrome.</p>
@@ -1147,11 +1214,11 @@
         </li>
         
         
-        <li id="section-48">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <h2>isInstanceOf(a)(b)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an instance of <code>b</code>.</p>
@@ -1165,11 +1232,11 @@
         </li>
         
         
-        <li id="section-49">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <h2>isArrayOf(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an instance of <code>arrayOf</code>.</p>
@@ -1181,11 +1248,11 @@
         </li>
         
         
-        <li id="section-50">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <h2>isObjectLike(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an instance of <code>objectLike</code>.</p>
@@ -1197,11 +1264,11 @@
         </li>
         
         
-        <li id="section-51">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <h2>isAnyOf(a)(b)</h2>
 <p> Returns <code>true</code> if <code>b</code> is any <code>strictEquals [a]</code>.</p>
@@ -1223,11 +1290,11 @@
         </li>
         
         
-        <li id="section-52">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <h2>isAnyTypeOf(a)(b)</h2>
 <p> Returns <code>true</code> if <code>b</code> is any <code>typeof [a]</code>.</p>
@@ -1249,11 +1316,11 @@
         </li>
         
         
-        <li id="section-53">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-55">&#182;</a>
               </div>
               <h2>isAnyInstanceOf(a)(b)</h2>
 <p> Returns <code>true</code> if <code>b</code> is any <code>instanceof [a]</code>.</p>
@@ -1275,11 +1342,11 @@
         </li>
         
         
-        <li id="section-54">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <h2>isEnvironment(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an instance of <code>environment</code>.</p>
@@ -1293,11 +1360,11 @@
         </li>
         
         
-        <li id="section-55">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <h2>isPartial(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an instance of <code>partial</code>.</p>
@@ -1311,11 +1378,11 @@
         </li>
         
         
-        <li id="section-56">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <h3>isEmpty(a)</h3>
 <p> Checks to see if a value is empty or not.</p>
@@ -1350,11 +1417,11 @@
         </li>
         
         
-        <li id="section-57">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -1383,11 +1450,11 @@
         </li>
         
         
-        <li id="section-58">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-58">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <h1>QuickCheck</h1>
 <p> QuickCheck is a form of <em>automated specification testing</em>. Instead
@@ -1440,11 +1507,11 @@
         </li>
         
         
-        <li id="section-59">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-59">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <h3>failureReporter</h3>
 <ul>
@@ -1464,11 +1531,11 @@
         </li>
         
         
-        <li id="section-60">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-60">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <h2>forAll(property, args)</h2>
 <p> Generates values for each type in <code>args</code> using <code>squishy.arb</code> and
@@ -1504,11 +1571,11 @@
         </li>
         
         
-        <li id="section-61">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-61">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <h2>goal</h2>
 <p> The number of Successful inputs necessary to declare the whole
@@ -1523,11 +1590,11 @@
         </li>
         
         
-        <li id="section-62">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <h2>AnyVal</h2>
 <p> Sentinel value for when any type of primitive value is needed.</p>
@@ -1539,11 +1606,11 @@
         </li>
         
         
-        <li id="section-63">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <h2>OptionalVal</h2>
 <p> Sentinel value for when any type of primitive value that is optionally needed.</p>
@@ -1555,11 +1622,11 @@
         </li>
         
         
-        <li id="section-64">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <h2>Char</h2>
 <p> Sentinel value for when a single character string is needed.</p>
@@ -1571,11 +1638,11 @@
         </li>
         
         
-        <li id="section-65">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <h2>Integer</h2>
 <p> Sentinel value for when a integer is needed.</p>
@@ -1597,11 +1664,11 @@
         </li>
         
         
-        <li id="section-66">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <h3>arbitrary values</h3>
 <p> Creates an arbitrary value depending on the type.</p>
@@ -1662,7 +1729,7 @@
               a Number overflow (worst case Infinity), meaning we can
               add multiple arb(Number) together without issues.
             */</span>
-            <span class="keyword">var</span> variance = Number.MAX_VALUE / <span class="keyword">this</span>.goal;
+            <span class="keyword">var</span> variance = Math.pow(<span class="number">2</span>, <span class="number">53</span>) / <span class="keyword">this</span>.goal;
             <span class="keyword">return</span> <span class="keyword">this</span>.randomRange(-variance, variance);
         })
         .method(<span class="string">'arb'</span>, strictEquals(Object), <span class="keyword">function</span>(a, s) {
@@ -1683,11 +1750,11 @@
         </li>
         
         
-        <li id="section-67">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <h3>shrink values</h3>
 <p> Shrinks values for utilizing against checking values.</p>
@@ -1769,13 +1836,13 @@
         </li>
         
         
-        <li id="section-68">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
-              <h3>equal</h3>
+              <h3>equal(a, b)</h3>
 <p> Checks to see if a type equals another type. This is a uses deep equality for
  complex structures like <code>object</code> and <code>array</code>s.</p>
 
@@ -1828,13 +1895,44 @@
         </li>
         
         
-        <li id="section-69">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
-              <h3>empty values</h3>
+              <h3>of(a)</h3>
+<p> Creates a value from the type.</p>
+<p> The left identity of <code>squishy.of(m, a).chain(f)</code> is equivalent to
+ <code>f(squishy.of(m, a))</code> and then equivalent of <code>f(a)</code> without using <code>squishy.of</code>.
+ Similarly the right identity of <code>squishy.chain(m, m.of)</code> is equivalent to
+ <code>m</code> or <code>m.chain(m.of)</code> without using <code>squishy.of</code>.</p>
+<pre><code>  console.log(squishy.of(Array, [1, 2, 3])); // Outputs `[1, 2, 3]`</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    squishy = squishy
+        .method(<span class="string">'of'</span>, strictEquals(AnyVal), <span class="keyword">function</span>() {
+            <span class="keyword">var</span> types = [Boolean, Number, String];
+            <span class="keyword">return</span> <span class="keyword">this</span>.of(<span class="keyword">this</span>.oneOf(types));
+        })
+        .method(<span class="string">'of'</span>, strictEquals(Array), identity)
+        .method(<span class="string">'of'</span>, strictEquals(Boolean), identity)
+        .method(<span class="string">'of'</span>, strictEquals(Function), identity)
+        .method(<span class="string">'of'</span>, strictEquals(Number), identity)
+        .method(<span class="string">'of'</span>, strictEquals(Object), identity)
+        .method(<span class="string">'of'</span>, strictEquals(String), identity);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <h3>empty()</h3>
 <p> Creates an empty value depending on the type. Each resulting value
  will be classified as falsy for the type. Boolean will be
  <code>false</code> and Array will be an empty <code>[]</code> for example.</p>
@@ -1869,11 +1967,11 @@
         </li>
         
         
-        <li id="section-70">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
               <h2>tagged(name, fields)</h2>
 <p> Creates a simple constructor for a tagged object.</p>
@@ -1908,11 +2006,11 @@
         </li>
         
         
-        <li id="section-71">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-71">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <h2>taggedSum(constructors)</h2>
 <p> Creates a disjoint union of constructors, with a catamorphism.</p>
@@ -1963,8 +2061,9 @@
                     opt,
                     i, j;
     
-                <span class="keyword">if</span>(!accessor)
+                <span class="keyword">if</span>(!accessor) {
                     <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">"Constructors given to match didn't include: "</span> + key);
+                }
     
                 <span class="comment">/*
                     Work out if the accessor is an object then if it's a partial
@@ -1983,13 +2082,12 @@
                         }
     
                         <span class="keyword">return</span> first.match(opt);
-                    } <span class="keyword">else</span> {
-                        <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">'Constructor not found: '</span> + key);
                     }
     
-                } <span class="keyword">else</span> {
-                    <span class="keyword">return</span> accessor.apply(<span class="keyword">this</span>, args);
+                    <span class="keyword">throw</span> <span class="keyword">new</span> TypeError(<span class="string">'Constructor not found: '</span> + key);
                 }
+    
+                <span class="keyword">return</span> accessor.apply(<span class="keyword">this</span>, args);
             };
         }
     
@@ -2025,11 +2123,11 @@
         </li>
         
         
-        <li id="section-72">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -2042,25 +2140,24 @@
         </li>
         
         
-        <li id="section-73">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
               <h1>Array</h1>
-<pre><code>  Array a</code></pre>
-<p> Represents a sequence of values that are indexed by integers.</p>
+<pre><code>   Array a</code></pre>
+<p>  Represents a sequence of values that are indexed by integers.</p>
 <ul>
 <li><code>ap(a, b)</code> - Applicative ap(ply)</li>
 <li><code>concat(a, b)</code> - Appends two array objects.</li>
 <li><code>count(a, f)</code> - Count the number of elements in the array which satisfy a predicate.</li>
 <li><code>drop(a, n)</code> - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.</li>
-<li><code>dropRight(a, n)</code> - Returns the array without its rightmost n elements.</li>
+<li><code>dropRight(a, n)</code> - Returns the array without its rightmost <code>n</code> elements.</li>
 <li><code>dropWhile(a, f)</code> - Returns the longest suffix of this array whose first element does not satisfy the predicate.</li>
 <li><code>exists(a, f)</code> - Tests the existence in this array of an element that satisfies the predicate.</li>
 <li><code>filter(a, f)</code> - Returns all the elements of this array that satisfy the predicate p.</li>
-<li><code>filterNot(a, f)</code> - Returns all the elements of this array that does not satisfy the predicate p.</li>
 <li><code>flatMap(a, f)</code> - Applies the given function f to each element of this array, then concatenates the results.</li>
 <li><code>flatten(a)</code> - Concatenate the elements of this array.</li>
 <li><code>fold(a, v, f)</code> - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.</li>
@@ -2073,32 +2170,75 @@
 <li><code>takeRight(n)</code> - Returns the rightmost n elements from this array.</li>
 <li><code>takeWhile(f)</code> - Returns the longest prefix of this array whose elements satisfy the predicate.</li>
 <li><code>zip(a, b)</code> - Returns a array formed from this array and the specified array that by associating each element of the former with the element at the same position in the latter.</li>
+<li><code>zipWithIndex(a)</code> -  Returns a array form from this array and a index of the value that is associated with each element index position.</li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    
-    <span class="keyword">var</span> ap = curry(<span class="keyword">function</span>(a, b) {
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <h3>ap(b, [concat])</h3>
+<p> Apply a function in the applicative of each function
+ Applicative ap(ply)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ap = curry(<span class="keyword">function</span>(a, b) {
         <span class="keyword">var</span> accum = [],
-            x,
-            y,
+            x = a.length,
+            y = b.length,
             i,
             j;
     
-        <span class="keyword">for</span>(i = <span class="number">0</span>, x = a.length; i &lt; x; i++) {
-            <span class="keyword">for</span>(j = <span class="number">0</span>, y = b.length; j &lt; y; j++) {
+        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; x; i++) {
+            <span class="keyword">for</span>(j = <span class="number">0</span>; j &lt; y; j++) {
                 accum.push(a[i](b[j]));
             }
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> concat = curry(<span class="keyword">function</span>(a, b) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <h3>concat(b)</h3>
+<p> Appends two array objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> concat = curry(<span class="keyword">function</span>(a, b) {
         <span class="keyword">return</span> a.concat(b);
-    });
-    
-    <span class="keyword">var</span> count = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <h3>count(f)</h3>
+<p> Count the number of elements in the array which satisfy a predicate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> count = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> accum = <span class="number">0</span>,
             total,
             i;
@@ -2110,17 +2250,61 @@
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> drop = curry(<span class="keyword">function</span>(a, n) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <h3>drop(f)</h3>
+<p> Returns the array without its n first elements. If this array has
+ less than n elements, the empty array is returned.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> drop = curry(<span class="keyword">function</span>(a, n) {
         <span class="keyword">return</span> a.slice(n);
-    });
-    
-    <span class="keyword">var</span> dropRight = curry(<span class="keyword">function</span>(a, n) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <h3>dropRight(n)</h3>
+<p> Returns the array without its rightmost <code>n</code> elements.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> dropRight = curry(<span class="keyword">function</span>(a, n) {
         <span class="keyword">return</span> a.slice(<span class="number">0</span>, -n);
-    });
-    
-    <span class="keyword">var</span> dropWhile = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <h3>dropWhile(f)</h3>
+<p> Returns the longest suffix of this array whose first element
+ does not satisfy the predicate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> dropWhile = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total,
             i;
     
@@ -2131,9 +2315,24 @@
         }
     
         <span class="keyword">return</span> a.slice();
-    });
-    
-    <span class="keyword">var</span> exists = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <h3>exists(f)</h3>
+<p> Tests the existence in this array of an element that satisfies
+ the predicate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> exists = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total,
             i;
     
@@ -2144,9 +2343,23 @@
         }
     
         <span class="keyword">return</span> <span class="literal">false</span>;
-    });
-    
-    <span class="keyword">var</span> filter = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <h3>filter(f)</h3>
+<p> Returns all the elements of this array that satisfy the predicate p.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> filter = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> accum = [],
             total,
             i;
@@ -2158,9 +2371,24 @@
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> flatMap = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Applies the given function f to each element of this array, then
+ concatenates the results.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> flatMap = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> accum = [],
             total,
             i;
@@ -2170,9 +2398,24 @@
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> fold = curry(<span class="keyword">function</span>(a, v, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <h3>fold(v, f)</h3>
+<p> Combines the elements of this array together using the binary function f,
+ from Left to Right, and starting with the value v.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> fold = curry(<span class="keyword">function</span>(a, v, f) {
         <span class="keyword">var</span> total,
             i;
     
@@ -2181,9 +2424,24 @@
         }
     
         <span class="keyword">return</span> v;
-    });
-    
-    <span class="keyword">var</span> foldRight = curry(<span class="keyword">function</span>(a, v, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <h3>foldRight(v, f)</h3>
+<p> Combines the elements of this array together using the binary function f,
+ from Right to Left, and starting with the value v.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> foldRight = curry(<span class="keyword">function</span>(a, v, f) {
         <span class="keyword">var</span> i;
     
         <span class="keyword">for</span> (i = a.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {
@@ -2191,9 +2449,24 @@
         }
     
         <span class="keyword">return</span> v;
-    });
-    
-    <span class="keyword">var</span> map = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <h3>map(f)</h3>
+<p> Returns the array resulting from applying the given function f to each
+ element of this array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> map = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> accum = [],
             total,
             i;
@@ -2203,9 +2476,23 @@
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> partition = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <h3>partition(f)</h3>
+<p> Partition the array in two sub-arrays according to a predicate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> partition = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> left = [],
             right = [],
             total,
@@ -2217,43 +2504,114 @@
         }
     
         <span class="keyword">return</span> Tuple2(left, right);
-    });
-    
-    <span class="keyword">var</span> reduce = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <h3>reduce(f)</h3>
+<p> Combines the elements of this array together using the binary operator
+ op, from Left to Right</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> reduce = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total = a.length,
-            i,
-            v;
+            v = a[<span class="number">0</span>],
+            i;
     
-        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; total; i++) {
-            <span class="keyword">if</span> (i === <span class="number">0</span>) v = a[i];
-            <span class="keyword">else</span> v = f(v, a[i]);
+        <span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; total; i++) {
+            v = f(v, a[i]);
         }
     
         <span class="keyword">return</span> v;
-    });
-    
-    <span class="keyword">var</span> reduceRight = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <h3>reduceRight(f)</h3>
+<p> Combines the elements of this array together using the binary operator
+ op, from Right to Left</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> reduceRight = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total = a.length,
-            i,
-            v;
+            v = a[total - <span class="number">1</span>],
+            i;
     
-        <span class="keyword">for</span> (i = total - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {
-            <span class="keyword">if</span> (i === <span class="number">0</span>) v = a[i];
-            <span class="keyword">else</span> v = f(v, a[i]);
+        <span class="keyword">for</span> (i = total - <span class="number">2</span>; i &gt;= <span class="number">0</span>; --i) {
+            v = f(v, a[i]);
         }
     
         <span class="keyword">return</span> v;
-    });
-    
-    <span class="keyword">var</span> take = curry(<span class="keyword">function</span>(a, m) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <h3>take(v, f)</h3>
+<p> Returns the n first elements of this array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> take = curry(<span class="keyword">function</span>(a, m) {
         <span class="keyword">return</span> a.slice(<span class="number">0</span>, m);
-    });
-    
-    <span class="keyword">var</span> takeRight = curry(<span class="keyword">function</span>(a, m) {
-        <span class="keyword">return</span> a.slice(-m);
-    });
-    
-    <span class="keyword">var</span> takeWhile = curry(<span class="keyword">function</span>(a, f) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <h3>takeRight(n)</h3>
+<p> Returns the rightmost n elements from this array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> takeRight = curry(<span class="keyword">function</span>(a, n) {
+        <span class="keyword">return</span> a.slice(-n);
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <h3>takeWhile(v, f)</h3>
+<p> Returns the longest prefix of this array whose elements satisfy
+ the predicate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> takeWhile = curry(<span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> total,
             i;
     
@@ -2264,9 +2622,25 @@
         }
     
         <span class="keyword">return</span> [];
-    });
-    
-    <span class="keyword">var</span> zip = curry(<span class="keyword">function</span>(a, b) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <h3>zip(b)</h3>
+<p> Returns a array formed from this array and the specified array that
+ by associating each element of the former with the element at the same
+ position in the latter.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> zip = curry(<span class="keyword">function</span>(a, b) {
         <span class="keyword">var</span> accum = [],
             total = Math.min(a.length, b.length),
             i;
@@ -2276,9 +2650,24 @@
         }
     
         <span class="keyword">return</span> accum;
-    });
-    
-    <span class="keyword">var</span> zipWithIndex = curry(<span class="keyword">function</span>(a) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <h3>zipWithIndex()</h3>
+<p> Returns a array form from this array and a index of the value that
+ is associated with each element index position.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> zipWithIndex = curry(<span class="keyword">function</span>(a) {
         <span class="keyword">var</span> accum = [],
             total = a.length,
             i;
@@ -2293,11 +2682,11 @@
         </li>
         
         
-        <li id="section-74">
+        <li id="section-97">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-97">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -2328,50 +2717,69 @@
         </li>
         
         
-        <li id="section-75">
+        <li id="section-98">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-98">&#182;</a>
               </div>
               <h1>Attempt</h1>
-<pre><code>  Attempt e v = Failure e + Success v</code></pre>
-<p> The Attempt data type represents a &quot;Success&quot; value or a
- semigroup of &quot;Failure&quot; values. Attempt has an applicative
- functor which collects Failures&#39; errors or creates a new Success
- value.</p>
-<p> Here&#39;s an example function which validates a String:</p>
-<pre><code>  function nonEmpty(field, string) {
-      return string
-          ? squishy.Success(string)
-          : squishy.Failure([field + &quot; must be non-empty&quot;]);
-  }</code></pre>
+<pre><code>   Attempt e v = Failure e + Success v</code></pre>
+<p>  The Attempt data type represents a &quot;Success&quot; value or a
+  semigroup of &quot;Failure&quot; values. Attempt has an applicative
+  functor which collects Failures&#39; errors or creates a new Success
+  value.</p>
+<p>  Here&#39;s an example function which validates a String:</p>
+<pre><code>   function nonEmpty(field, string) {
+       return string
+           ? squishy.Success(string)
+           : squishy.Failure([field + &quot; must be non-empty&quot;]);
+   }</code></pre>
 <h2>Success(value)</h2>
-<p> Represents a Successful <code>value</code>.</p>
+<p>  Represents a Successful <code>value</code>.</p>
 <h2>Failure(errors)</h2>
-<p> Represents a Failure.</p>
+<p>  Represents a Failure.</p>
 <ul>
 <li><code>ap(b, concat)</code> - Applicative ap(ply)</li>
-<li><code>chain(f)</code> - Monadic flatMap/bind</li>
-<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>Left</code>, <code>b</code> if <code>Right</code></li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>extract()</code> -  extract the value from attempt</li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>Left(x)</code>, <code>b</code> if <code>Right(x)</code></li>
 <li><code>map(f)</code> - Functor map</li>
 <li><code>swap()</code> - Swap values</li>
-<li><code>isSuccess</code> - <code>true</code> if <code>this</code> is <code>Success</code></li>
-<li><code>isFailure</code> - <code>true</code> if <code>this</code> is <code>Failure</code></li>
-<li><code>toOption(r)</code> - <code>Some(x)</code> if <code>Success(x)</code>, <code>None</code> if <code>Failure()</code></li>
-<li><code>toLeft(r)</code> - <code>Left(x)</code> if <code>Some(x)</code>, <code>Right(r)</code> if None</li>
-<li><code>toRight(l)</code> - <code>Right(x)</code> if <code>Some(x)</code>, <code>Left(l)</code> if None</li>
+<li><code>isSuccess</code> - <code>true</code> if <code>this</code> is <code>Success(x)</code></li>
+<li><code>isFailure</code> - <code>true</code> if <code>this</code> is <code>Failure(x)</code></li>
+<li><code>toArray()</code> - <code>[x]</code> if <code>Success(x)</code>, <code>[]</code> if <code>Failure(x)</code></li>
+<li><code>toOption()</code> - <code>Some(x)</code> if <code>Success(x)</code>, <code>None</code> if <code>Failure(x)</code></li>
+<li><code>toStream()</code> - <code>Stream.of(x)</code> if <code>Success(x)</code>, <code>Stream.empty()</code> if <code>Failure(x)</code></li>
+<li><code>toLeft(r)</code> - <code>Left(x)</code> if <code>Success(x)</code>, <code>Right(r)</code> if <code>Failure(x)</code></li>
+<li><code>toRight(l)</code> - <code>Right(x)</code> if <code>Success(x)</code>, <code>Left(l)</code> if <code>Failure(x)</code></li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    
-    <span class="keyword">var</span> Attempt = taggedSum(<span class="string">'Attempt'</span>, {
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Attempt = taggedSum(<span class="string">'Attempt'</span>, {
         Success: [<span class="string">'value'</span>],
         Failure: [<span class="string">'errors'</span>]
-    });
-    
-    Attempt.prototype.ap = <span class="keyword">function</span>(b, concat) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <h3>ap(b, concat)</h3>
+<p> Apply a function in the environment of the success of this attempt,
+ accumulating errors
+ Applicative ap(ply)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.ap = <span class="keyword">function</span>(b, concat) {
         <span class="keyword">var</span> a = <span class="keyword">this</span>;
         <span class="keyword">return</span> a.match({
             Success: <span class="keyword">function</span>(value) {
@@ -2388,20 +2796,23 @@
                 });
             }
         });
-    };
-    
-    Attempt.prototype.chain = <span class="keyword">function</span>(f) {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Success: <span class="keyword">function</span>(a) {
-                <span class="keyword">return</span> f(a);
-            },
-            Failure: <span class="keyword">function</span>(e) {
-                <span class="keyword">return</span> Attempt.Failure(e);
-            }
-        });
-    };
-    
-    Attempt.prototype.equal = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two attempt values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.equal = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> a.match({
@@ -2420,27 +2831,92 @@
                 });
             }
         });
-    };
-    
-    Attempt.prototype.extract = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <h3>extract()</h3>
+<p> Extract the value from the attempt.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.extract = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: identity,
             Failure: identity
         });
-    };
-    
-    Attempt.prototype.fold = <span class="keyword">function</span>(a, b) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the success of the attempt
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Success: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> a(x);
+            Success: <span class="keyword">function</span>(a) {
+                <span class="keyword">return</span> f(a);
             },
-            Failure: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> b(x);
-            }
+            Failure: identity
         });
-    };
-    
-    Attempt.prototype.map = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-103">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-103">&#182;</a>
+              </div>
+              <h3>fold(a, b)</h3>
+<p> Catamorphism. Run the first given function if failure, otherwise,
+ the second given function.
+  <code>a</code> applied to value if <code>Success</code>, <code>b</code> if <code>Failure</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.fold = <span class="keyword">function</span>(a, b) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Success: a,
+            Failure: b
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-104">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-104">&#182;</a>
+              </div>
+              <h3>map(f)</h3>
+<p> Map on the success of this attempt.
+ Functor map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.map = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: <span class="keyword">function</span>(a) {
                 <span class="keyword">return</span> Attempt.Success(f(a));
@@ -2449,39 +2925,114 @@
                 <span class="keyword">return</span> Attempt.Failure(e);
             }
         });
-    };
-    
-    Attempt.prototype.swap = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-105">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-105">&#182;</a>
+              </div>
+              <h3>swap()</h3>
+<p> Flip the failure/success values in this attempt.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.swap = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: Attempt.Failure,
             Failure: Attempt.Success
         });
-    };
-    
-    Attempt.prototype.toOption = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-106">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-106">&#182;</a>
+              </div>
+              <h3>toOption()</h3>
+<p> Return an empty option or option with one element on the success
+ of this attempt.
+ <code>Some(x)</code> if <code>Success(x)</code>, <code>None</code> if <code>Failure()</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toOption = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: Option.Some,
             Failure: <span class="keyword">function</span>() {
                 <span class="keyword">return</span> Option.None;
             }
         });
-    };
-    
-    Attempt.prototype.toLeft = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-107">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-107">&#182;</a>
+              </div>
+              <h3>toLeft()</h3>
+<p> Return an left either bias if attempt is a success.
+ <code>Left(x)</code> if <code>Success(x)</code>, <code>Right(x)</code> if <code>Failure(x)</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toLeft = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: Either.Left,
             Failure: Either.Right
         });
-    };
-    
-    Attempt.prototype.toRight = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-108">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-108">&#182;</a>
+              </div>
+              <h3>toRight()</h3>
+<p> Return an right either bias if attempt is a success.
+ <code>Right(x)</code> if <code>Success(x)</code>, <code>Left(x)</code> if <code>Failure(x)</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toRight = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: Either.Left,
             Failure: Either.Right
         });
-    };
-    
-    Attempt.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-109">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-109">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an empty array or array with one element on the success
+ of this attempt.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Success: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> [x];
@@ -2495,11 +3046,33 @@
         </li>
         
         
-        <li id="section-76">
+        <li id="section-110">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-110">&#182;</a>
+              </div>
+              <h3>toStream()</h3>
+<p> Return an empty stream or stream with one element on the success
+ of this attempt.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toStream = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Success: Stream.of,
+            Failure: Stream.empty
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-111">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-76">&#182;</a>
+                <a class="pilcrow" href="#section-111">&#182;</a>
               </div>
               <h2>Success(x)</h2>
 <p> Constructor to represent the existance of a value, <code>x</code>.</p>
@@ -2512,29 +3085,11 @@
         </li>
         
         
-        <li id="section-77">
+        <li id="section-112">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-77">&#182;</a>
-              </div>
-              <h2>of(x)</h2>
-<p> Constructor <code>of</code> Monad creating <code>Attempt.Success</code> with value of <code>x</code>.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    Attempt.Success.of = <span class="keyword">function</span>(x) {
-        <span class="keyword">return</span> Attempt.Success(x);
-    };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-78">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-78">&#182;</a>
+                <a class="pilcrow" href="#section-112">&#182;</a>
               </div>
               <h2>Failure(x)</h2>
 <p> Constructor to represent the existance of a value, <code>x</code>.</p>
@@ -2547,29 +3102,47 @@
         </li>
         
         
-        <li id="section-79">
+        <li id="section-113">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-79">&#182;</a>
+                <a class="pilcrow" href="#section-113">&#182;</a>
               </div>
               <h2>of(x)</h2>
-<p> Constructor <code>of</code> Monad creating <code>Attempt.Failure</code> with value of <code>x</code>.</p>
+<p> Constructor <code>of</code> Monad creating <code>Attempt.Success</code> with value of <code>x</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    Attempt.Failure.of = <span class="keyword">function</span>(x) {
-        <span class="keyword">return</span> Attempt.Failure(x);
+            <div class="content"><div class='highlight'><pre>    Attempt.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> Attempt.Success(x);
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-80">
+        <li id="section-114">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-80">&#182;</a>
+                <a class="pilcrow" href="#section-114">&#182;</a>
+              </div>
+              <h2>empty()</h2>
+<p> Constructor <code>empty</code> Monad creating <code>Attempt.Failure</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Attempt.Failure();
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-115">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-115">&#182;</a>
               </div>
               <h2>isAttempt(a)</h2>
 <p> Returns <code>true</code> iff <code>a</code> is a <code>Success</code> or a <code>Failure</code>.</p>
@@ -2581,11 +3154,11 @@
         </li>
         
         
-        <li id="section-81">
+        <li id="section-116">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
+                <a class="pilcrow" href="#section-116">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -2595,14 +3168,23 @@
         .property(<span class="string">'Success'</span>, Attempt.Success)
         .property(<span class="string">'Failure'</span>, Attempt.Failure)
         .property(<span class="string">'isAttempt'</span>, isAttempt)
+        .method(<span class="string">'of'</span>, strictEquals(Attempt), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Attempt.of(x);
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Attempt), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> Attempt.empty();
+        })
         .method(<span class="string">'ap'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.ap(b, <span class="keyword">this</span>.concat);
         })
-        .method(<span class="string">'arb'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
+        .method(<span class="string">'arb'</span>, strictEquals(Attempt.Success), <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> Attempt.Success(<span class="keyword">this</span>.arb(AnyVal, b - <span class="number">1</span>));
         })
-        .method(<span class="string">'chain'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
-            <span class="keyword">return</span> a.chain(b);
+        .method(<span class="string">'arb'</span>, strictEquals(Attempt.Failure), <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> Attempt.Failure(<span class="keyword">this</span>.arb(arrayOf(AnyVal), b - <span class="number">1</span>));
+        })
+        .method(<span class="string">'flatMap'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> a.flatMap(b);
         })
         .method(<span class="string">'equal'</span>, isAttempt, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.equal(b);
@@ -2618,43 +3200,63 @@
         })
         .method(<span class="string">'toArray'</span>, isAttempt, <span class="keyword">function</span>(a) {
             <span class="keyword">return</span> a.toArray();
+        })
+        .method(<span class="string">'toStream'</span>, isAttempt, <span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> a.toStream();
         });</pre></div></div>
             
         </li>
         
         
-        <li id="section-82">
+        <li id="section-117">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-82">&#182;</a>
+                <a class="pilcrow" href="#section-117">&#182;</a>
               </div>
               <h1>Either</h1>
-<pre><code>  Either a b = Left a + Right b</code></pre>
-<p> Represents a tagged disjunction between two sets of values; <code>a</code> or
- <code>b</code>. Methods are Right-biased.</p>
+<pre><code>   Either a b = Left a + Right b</code></pre>
+<p>  Represents a tagged disjunction between two sets of values; <code>a</code> or
+  <code>b</code>. Methods are Right-biased.</p>
 <ul>
 <li><code>ap(e)</code> - Applicative ap(ply)</li>
 <li><code>concat(s, f)</code> - Semigroup concat</li>
 <li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
-<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>Left</code>, <code>b</code> if <code>Right</code></li>
+<li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>Left(x)</code>, <code>b</code> if <code>Right(x)</code></li>
 <li><code>map(f)</code> - Functor map</li>
 <li><code>swap()</code> - If this is a Left, then return the Left value in Right or vice versa.</li>
-<li><code>isLeft</code> - <code>true</code> iff <code>this</code> is <code>Left</code></li>
-<li><code>isRight</code> - <code>true</code> iff <code>this</code> is <code>Right</code></li>
-<li><code>toOption()</code> - <code>None</code> if <code>Left</code>, <code>Some</code> value of <code>Right</code></li>
-<li><code>toArray()</code> - <code>[]</code> if <code>Left</code>, singleton value if <code>Right</code></li>
+<li><code>isLeft</code> - <code>true</code> iff <code>this</code> is <code>Left(x)</code></li>
+<li><code>isRight</code> - <code>true</code> iff <code>this</code> is <code>Right(x)</code></li>
+<li><code>toOption()</code> - <code>None</code> if <code>Left(x)</code>, <code>Some(x)</code> value of <code>Right(x)</code></li>
+<li><code>toArray()</code> - <code>[]</code> if <code>Left(x)</code>, <code>[x]</code> value if <code>Right(x)</code></li>
+<li><code>toAttempt()</code> - <code>Failure(x)</code> if <code>Left(x)</code>, <code>Success(x)</code> value if <code>Right(x)</code></li>
+<li><code>toStream()</code> - <code>Stream.empty()</code> if <code>Left(x)</code>, <code>Stream.of(x)</code> value if <code>Right(x)</code></li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    
-    <span class="keyword">var</span> Either = taggedSum(<span class="string">'Either'</span>, {
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Either = taggedSum(<span class="string">'Either'</span>, {
         Left: [<span class="string">'value'</span>],
         Right: [<span class="string">'value'</span>]
-    });
-    
-    Either.prototype.ap = <span class="keyword">function</span>(e) {
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-118">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-118">&#182;</a>
+              </div>
+              <h3>ap(b, concat)</h3>
+<p> Apply a function in the environment of the right of this either,
+ accumulating errors
+ Applicative ap(ply)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.ap = <span class="keyword">function</span>(e) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: <span class="keyword">function</span>() {
                 <span class="keyword">return</span> <span class="keyword">this</span>;
@@ -2663,15 +3265,30 @@
                 <span class="keyword">return</span> e.map(x);
             }
         });
-    };
-    
-    Either.prototype.concat = <span class="keyword">function</span>(s, f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-119">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-119">&#182;</a>
+              </div>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two eithers associatively together.
+ Semigroup concat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.concat = <span class="keyword">function</span>(s, f) {
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: <span class="keyword">function</span>() {
-                <span class="keyword">var</span> Left = <span class="keyword">this</span>;
                 <span class="keyword">return</span> s.fold(
-                  constant(Left),
-                  constant(s)
+                    constant(env),
+                    constant(s)
                 );
             },
             Right: <span class="keyword">function</span>(y) {
@@ -2680,9 +3297,23 @@
                 });
             }
         });
-    };
-    
-    Either.prototype.equal = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-120">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-120">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two attempt values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.equal = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> a.match({
@@ -2701,41 +3332,113 @@
                 });
             }
         });
-    };
-    
-    Either.prototype.extract = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-121">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-121">&#182;</a>
+              </div>
+              <h3>extract(a)</h3>
+<p> Extract the value from the either.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.extract = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: identity,
             Right: identity
         });
-    };
-    
-    Either.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-122">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-122">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the success of the either
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: constant(<span class="keyword">this</span>),
-            Right: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> f(x);
-            }
+            Right: f
         });
-    };
-    
-    Either.prototype.fold = <span class="keyword">function</span>(a, b) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-123">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-123">&#182;</a>
+              </div>
+              <h3>fold(a, b)</h3>
+<p> Catamorphism. Run the first given function if failure, otherwise,
+ the second given function.
+  <code>a</code> applied to value if <code>Left</code>, <code>b</code> if <code>Right</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.fold = <span class="keyword">function</span>(a, b) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: a,
             Right: b
         });
-    };
-    
-    Either.prototype.map = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-124">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-124">&#182;</a>
+              </div>
+              <h3>map(f)</h3>
+<p> Map on the right of this either.
+ Functor map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.map = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: constant(<span class="keyword">this</span>),
             Right: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> Either.Right(f(x));
             }
         });
-    };
-    
-    Either.prototype.swap = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-125">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-125">&#182;</a>
+              </div>
+              <h3>swap()</h3>
+<p> Flip the left/right values in this either.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.swap = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> Either.Right(x);
@@ -2744,25 +3447,71 @@
                 <span class="keyword">return</span> Either.Left(x);
             }
         });
-    };
-    
-    Either.prototype.toOption = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-126">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-126">&#182;</a>
+              </div>
+              <h3>toOption()</h3>
+<p> Return an empty option or option with one element on the right
+ of this either.
+ <code>Some(x)</code> if <code>Success(x)</code>, <code>None</code> if <code>Failure()</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.toOption = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: <span class="keyword">function</span>() {
                 <span class="keyword">return</span> Option.None;
             },
             Right: Option.Some
         });
-    };
-    
-    Either.prototype.toAttempt = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-127">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-127">&#182;</a>
+              </div>
+              <h3>toAttempt()</h3>
+<p> Return failure if either is a left and success if either is right.
+ <code>Left(x)</code> if <code>Failure(x)</code>, <code>Right(x)</code> if <code>Success(x)</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.toAttempt = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: Attempt.Failure,
             Right: Attempt.Success
         });
-    };
-    
-    Either.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-128">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-128">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an empty array or array with one element on the right
+ of this either.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Left: constant([]),
             Right: <span class="keyword">function</span>(x) {
@@ -2774,11 +3523,33 @@
         </li>
         
         
-        <li id="section-83">
+        <li id="section-129">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-129">&#182;</a>
+              </div>
+              <h3>toStream()</h3>
+<p> Return an empty stream or stream with one element on the right
+ of this either.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Attempt.prototype.toStream = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Left: Stream.empty,
+            Right: Stream.of
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-130">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-83">&#182;</a>
+                <a class="pilcrow" href="#section-130">&#182;</a>
               </div>
               <h2>Left(x)</h2>
 <p> Constructor to represent the Left case.</p>
@@ -2791,11 +3562,11 @@
         </li>
         
         
-        <li id="section-84">
+        <li id="section-131">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-84">&#182;</a>
+                <a class="pilcrow" href="#section-131">&#182;</a>
               </div>
               <h2>Right(x)</h2>
 <p> Constructor to represent the (biased) Right case.</p>
@@ -2808,11 +3579,47 @@
         </li>
         
         
-        <li id="section-85">
+        <li id="section-132">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-132">&#182;</a>
+              </div>
+              <h2>of(x)</h2>
+<p> Constructor <code>of</code> Monad creating <code>Either.Right</code> with value of <code>x</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.of = <span class="keyword">function</span>(x) {
+        <span class="keyword">return</span> Either.Right(x);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-133">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-133">&#182;</a>
+              </div>
+              <h2>empty()</h2>
+<p> Constructor <code>empty</code> Monad creating <code>Either.Left</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Either.Right.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Either.Left();
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-134">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-134">&#182;</a>
               </div>
               <h2>isEither(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Left</code> or a <code>Right</code>.</p>
@@ -2825,10 +3632,19 @@
         .property(<span class="string">'Left'</span>, Either.Left)
         .property(<span class="string">'Right'</span>, Either.Right)
         .property(<span class="string">'isEither'</span>, isEither)
+        .method(<span class="string">'of'</span>, strictEquals(Either), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Either.of(x);
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Either), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Either.Left.empty();
+        })
         .method(<span class="string">'ap'</span>, isEither, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.ap(b);
         })
-        .method(<span class="string">'arb'</span>, isEither, <span class="keyword">function</span>(a, b) {
+        .method(<span class="string">'arb'</span>, strictEquals(Either.Left), <span class="keyword">function</span>(a, b) {
+            <span class="keyword">return</span> Either.Left(<span class="keyword">this</span>.arb(AnyVal, b - <span class="number">1</span>));
+        })
+        .method(<span class="string">'arb'</span>, strictEquals(Either.Right), <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> Either.Right(<span class="keyword">this</span>.arb(AnyVal, b - <span class="number">1</span>));
         })
         .method(<span class="string">'concat'</span>, isEither, <span class="keyword">function</span>(a, b) {
@@ -2848,16 +3664,19 @@
         })
         .method(<span class="string">'toArray'</span>, isEither, <span class="keyword">function</span>(a) {
             <span class="keyword">return</span> a.toArray();
+        })
+        .method(<span class="string">'toStream'</span>, isAttempt, <span class="keyword">function</span>(a) {
+            <span class="keyword">return</span> a.toStream();
         });</pre></div></div>
             
         </li>
         
         
-        <li id="section-86">
+        <li id="section-135">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-135">&#182;</a>
               </div>
               <h1>Option</h1>
 <pre><code>  Option a = Some a + None</code></pre>
@@ -2866,38 +3685,90 @@
   absence.</p>
 <ul>
 <li><code>ap(s)</code> - Applicative ap(ply)</li>
+<li><code>chain(f)</code> - Monadic flatMap/bind</li>
 <li><code>concat(s, plus)</code> - Semigroup concat</li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>extract()</code> -  extract the value from option</li>
 <li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
 <li><code>fold(a, b)</code> - Applies <code>a</code> to value if <code>Some</code> or defaults to <code>b</code></li>
+<li><code>get()</code> - get the value from option</li>
 <li><code>getOrElse(a)</code> - Default value for <code>None</code></li>
 <li><code>map(f)</code> - Functor map</li>
 <li><code>isSome</code> - <code>true</code> if <code>this</code> is <code>Some</code></li>
 <li><code>isNone</code> - <code>true</code> if <code>this</code> is <code>None</code></li>
-<li><code>toAttempt(r)</code> - <code>Success(x)</code> if <code>Some(x)</code>, <code>Failure(r)</code> if None</li>
+<li><code>toAttempt(r)</code> - <code>Success(x)</code> if <code>Some(x)</code>, <code>Failure(r)</code> if <code>None</code></li>
+<li><code>toArray()</code> - <code>[x]</code> if <code>Some(x)</code>, <code>[]</code> if <code>None</code></li>
+<li><code>toStream()</code> - <code>Stream.of(x)</code> if <code>Some(x)</code>, <code>Stream.empty()</code> if <code>None</code></li>
 <li><code>toLeft(r)</code> - <code>Left(x)</code> if <code>Some(x)</code>, <code>Right(r)</code> if None</li>
 <li><code>toRight(l)</code> - <code>Right(x)</code> if <code>Some(x)</code>, <code>Left(l)</code> if None</li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    
-    <span class="keyword">var</span> Option = taggedSum(<span class="string">'Option'</span>, {
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Option = taggedSum(<span class="string">'Option'</span>, {
         Some: [<span class="string">'value'</span>],
         None: []
-    });
-    
-    Option.prototype.ap = <span class="keyword">function</span>(b) {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Some: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> b.map(x);
-            },
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> <span class="keyword">this</span>;
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-136">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-136">&#182;</a>
+              </div>
+              <h3>ap(b)</h3>
+<p> Apply a function in the environment of the some of this option,
+ accumulating errors
+ Applicative ap(ply)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.ap = <span class="keyword">function</span>(a) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.flatMap(
+            <span class="keyword">function</span>(f) {
+                <span class="keyword">return</span> squishy.map(a, f);
             }
-        });
-    };
-    
-    Option.prototype.concat = <span class="keyword">function</span>(s, f) {
+        );
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-137">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-137">&#182;</a>
+              </div>
+              <h3>chain(f)</h3>
+<p> Bind through the success of the option
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.chain = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.flatMap(f);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-138">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-138">&#182;</a>
+              </div>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two options associatively together.
+ Semigroup concat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.concat = <span class="keyword">function</span>(s, f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> s.map(
@@ -2906,13 +3777,25 @@
                     }
                 );
             },
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> <span class="keyword">this</span>;
-            }
+            None: constant(<span class="keyword">this</span>)
         });
-    };
-    
-    Option.prototype.equal = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-139">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-139">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two option values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.equal = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: <span class="keyword">function</span>(x) {
                 <span class="keyword">return</span> a.match({
@@ -2929,83 +3812,159 @@
                 });
             }
         });
-    };
-    
-    Option.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-140">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-140">&#182;</a>
+              </div>
+              <h3>extract()</h3>
+<p> Extract the value from the option.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.extract = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Some: identity,
+            None: constant(<span class="literal">null</span>)
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-141">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-141">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the success of the option
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: f,
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> <span class="keyword">this</span>;
-            }
+            None: constant(<span class="keyword">this</span>)
         });
-    };
-    
-    Option.prototype.fold = <span class="keyword">function</span>(f, g) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-142">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-142">&#182;</a>
+              </div>
+              <h3>fold(a, b)</h3>
+<p> Catamorphism. Run the first given function if failure, otherwise,
+ the second given function.
+  <code>a</code> applied to value if <code>Some</code>, <code>b</code> if <code>None</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.fold = <span class="keyword">function</span>(f, g) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: f,
             None: g
         });
-    };
-    
-    Option.prototype.get = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-143">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-143">&#182;</a>
+              </div>
+              <h3>get()</h3>
+<p> Get the value from the option.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.get = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: identity,
             None: error(<span class="string">'Unexpected value'</span>)
         });
-    };
-    
-    Option.prototype.getOrElse = <span class="keyword">function</span>(x) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-144">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-144">&#182;</a>
+              </div>
+              <h3>get()</h3>
+<p> Get the value from the option or else</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.getOrElse = <span class="keyword">function</span>(x) {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: identity,
             None: constant(x)
         });
-    };
-    
-    Option.prototype.map = <span class="keyword">function</span>(f) {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Some: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> Option.Some(f(x));
-            },
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> <span class="keyword">this</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-145">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-145">&#182;</a>
+              </div>
+              <h3>map(f)</h3>
+<p> Map on the some of this option.
+ Functor map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.map = <span class="keyword">function</span>(f) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.flatMap(
+            <span class="keyword">function</span>(a) {
+                <span class="keyword">return</span> Option.of(f(a));
             }
-        });
-    };
-    
-    Option.prototype.toAttempt = <span class="keyword">function</span>() {
+        );
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-146">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-146">&#182;</a>
+              </div>
+              <h3>toAttempt()</h3>
+<p> Return failure if option is a some and success if option is none.
+ <code>None</code> if <code>Failure(x)</code>, <code>Some(x)</code> if <code>Success(e)</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.toAttempt = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.match({
             Some: Attempt.Success,
             None: <span class="keyword">function</span>() {
                 <span class="keyword">return</span> Attempt.Failure(squishy.empty(Array));
-            }
-        });
-    };
-    
-    Option.prototype.toLeft = <span class="keyword">function</span>(o) {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Some: Either.Left,
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> Either.Right(o);
-            }
-        });
-    };
-    
-    Option.prototype.toRight = <span class="keyword">function</span>(o) {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Some: Either.Right,
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> Either.Left(o);
-            }
-        });
-    };
-    
-    Option.prototype.toArray = <span class="keyword">function</span>() {
-        <span class="keyword">return</span> <span class="keyword">this</span>.match({
-            Some: <span class="keyword">function</span>(x) {
-                <span class="keyword">return</span> [x];
-            },
-            None: <span class="keyword">function</span>() {
-                <span class="keyword">return</span> [];
             }
         });
     };</pre></div></div>
@@ -3013,11 +3972,83 @@
         </li>
         
         
-        <li id="section-87">
+        <li id="section-147">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-147">&#182;</a>
+              </div>
+              <h3>toLeft()</h3>
+<p> Return an left either bias if option is a some.
+ <code>Left(x)</code> if <code>Some(x)</code>, <code>Right(x)</code> if <code>None</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.toLeft = <span class="keyword">function</span>(o) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Some: Either.Left,
+            None: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> Either.Right(o);
+            }
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-148">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-148">&#182;</a>
+              </div>
+              <h3>toRight()</h3>
+<p> Return an right either bias if option is a some.
+ <code>Right(x)</code> if <code>Some(x)</code>, <code>Left(x)</code> if <code>None</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.toRight = <span class="keyword">function</span>(o) {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Some: Either.Right,
+            None: <span class="keyword">function</span>() {
+                <span class="keyword">return</span> Either.Left(o);
+            }
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-149">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-149">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an empty array or array with one element on the some
+ of this option.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Option.prototype.toArray = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>.match({
+            Some: <span class="keyword">function</span>(x) {
+                <span class="keyword">return</span> [x];
+            },
+            None: constant([])
+        });
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-150">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-150">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Option</code> with value of <code>x</code>.</p>
@@ -3031,11 +4062,11 @@
         </li>
         
         
-        <li id="section-88">
+        <li id="section-151">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-151">&#182;</a>
               </div>
               <h2>Some(x)</h2>
 <p> Constructor to represent the existence of a value, <code>x</code>.</p>
@@ -3048,11 +4079,11 @@
         </li>
         
         
-        <li id="section-89">
+        <li id="section-152">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-152">&#182;</a>
               </div>
               <h2>None</h2>
 <p> Represents the absence of a value.</p>
@@ -3065,11 +4096,11 @@
         </li>
         
         
-        <li id="section-90">
+        <li id="section-153">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-90">&#182;</a>
+                <a class="pilcrow" href="#section-153">&#182;</a>
               </div>
               <h2>isOption(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is a <code>Some</code> or <code>None</code>.</p>
@@ -3082,6 +4113,12 @@
         .property(<span class="string">'Some'</span>, Option.Some)
         .property(<span class="string">'None'</span>, Option.None)
         .property(<span class="string">'isOption'</span>, isOption)
+        .method(<span class="string">'of'</span>, strictEquals(Option.Some), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Option.Some.of(x);
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Option.Some), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Option.None;
+        })
         .method(<span class="string">'ap'</span>, isOption, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.ap(b);
         })
@@ -3116,11 +4153,11 @@
         </li>
         
         
-        <li id="section-91">
+        <li id="section-154">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-91">&#182;</a>
+                <a class="pilcrow" href="#section-154">&#182;</a>
               </div>
               <h1>Tuples</h1>
 <p> Tuples are another way of storing multiple values in a single value.
@@ -3143,11 +4180,31 @@
         </li>
         
         
-        <li id="section-92">
+        <li id="section-155">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-92">&#182;</a>
+                <a class="pilcrow" href="#section-155">&#182;</a>
+              </div>
+              <h2>Tuple2</h2>
+<ul>
+<li><code>flip()</code> - flip values</li>
+<li><code>concat()</code> - Semigroup (value must also be a Semigroup)</li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>toArray()</code> - <code>[_1, _2]</code> of the tuple</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-156">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-156">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Tuple2</code>.</p>
@@ -3161,47 +4218,161 @@
         </li>
         
         
-        <li id="section-93">
+        <li id="section-157">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-93">&#182;</a>
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-157">&#182;</a>
               </div>
-              <h2>Tuple2</h2>
-<ul>
-<li>flip() - flip values</li>
-<li>concat() - Semigroup (value must also be a Semigroup)</li>
-</ul>
+              <h3>flip()</h3>
+<p>  Flip the values of the first and second.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    Tuple2.prototype.flip = <span class="keyword">function</span>() {
         <span class="keyword">return</span> Tuple2.of(<span class="keyword">this</span>._2, <span class="keyword">this</span>._1);
-    };
-    
-    Tuple2.prototype.concat = <span class="keyword">function</span>(b) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-158">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-158">&#182;</a>
+              </div>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two tuples associatively together.
+ Semigroup concat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.concat = <span class="keyword">function</span>(b) {
         <span class="keyword">return</span> Tuple2.of(
             squishy.concat(<span class="keyword">this</span>._1, b._1),
             squishy.concat(<span class="keyword">this</span>._2, b._2)
         );
-    };
-    
-    Tuple2.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-159">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-159">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two option values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.equal = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> squishy.equal(<span class="keyword">this</span>.toArray(), b.toArray());
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-160">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-160">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the tuple of the tuples
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> f(<span class="keyword">this</span>);
-    };
-    
-    Tuple2.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-161">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-161">&#182;</a>
+              </div>
+              <h3>first()</h3>
+<p> Retrieve the first argument.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.first = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>._1;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-162">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-162">&#182;</a>
+              </div>
+              <h3>second()</h3>
+<p> Retrieve the second argument.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.second = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> <span class="keyword">this</span>._2;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-163">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-163">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an array with each element of the tuple.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple2.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> [<span class="keyword">this</span>._1, <span class="keyword">this</span>._2];
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-94">
+        <li id="section-164">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-94">&#182;</a>
+                <a class="pilcrow" href="#section-164">&#182;</a>
+              </div>
+              <h2>Tuple3</h2>
+<ul>
+<li><code>concat()</code> - Semigroup (value must also be a Semigroup)</li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>toArray()</code> - <code>[_1, _2, _3]</code> of the tuple</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-165">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-165">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Tuple3</code>.</p>
@@ -3215,16 +4386,15 @@
         </li>
         
         
-        <li id="section-95">
+        <li id="section-166">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-95">&#182;</a>
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-166">&#182;</a>
               </div>
-              <h2>Tuple3</h2>
-<ul>
-<li>concat() - Semigroup (value must also be a Semigroup)</li>
-</ul>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two tuples associatively together.
+ Semigroup concat</p>
 
             </div>
             
@@ -3234,24 +4404,90 @@
             squishy.concat(<span class="keyword">this</span>._2, b._2),
             squishy.concat(<span class="keyword">this</span>._3, b._3)
         );
-    };
-    
-    Tuple3.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-167">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-167">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two option values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple3.prototype.equal = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> squishy.equal(<span class="keyword">this</span>.toArray(), b.toArray());
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-168">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-168">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the tuple of the tuples
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple3.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> f(<span class="keyword">this</span>);
-    };
-    
-    Tuple3.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-169">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-169">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an array with each element of the tuple.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple3.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> [<span class="keyword">this</span>._1, <span class="keyword">this</span>._2, <span class="keyword">this</span>._3];
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-96">
+        <li id="section-170">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-96">&#182;</a>
+                <a class="pilcrow" href="#section-170">&#182;</a>
+              </div>
+              <h2>Tuple4</h2>
+<ul>
+<li><code>concat()</code> - Semigroup (value must also be a Semigroup)</li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>toArray()</code> - <code>[_1, _2, _3, _4]</code> of the tuple</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-171">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-171">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Tuple4</code>.</p>
@@ -3265,16 +4501,15 @@
         </li>
         
         
-        <li id="section-97">
+        <li id="section-172">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-97">&#182;</a>
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-172">&#182;</a>
               </div>
-              <h2>Tuple4</h2>
-<ul>
-<li>concat() - Semigroup (value must also be a Semigroup)</li>
-</ul>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two tuples associatively together.
+ Semigroup concat</p>
 
             </div>
             
@@ -3285,24 +4520,90 @@
             squishy.concat(<span class="keyword">this</span>._3, b._3),
             squishy.concat(<span class="keyword">this</span>._4, b._4)
         );
-    };
-    
-    Tuple4.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-173">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-173">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two option values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple4.prototype.equal = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> squishy.equal(<span class="keyword">this</span>.toArray(), b.toArray());
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-174">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-174">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the tuple of the tuples
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple4.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> f(<span class="keyword">this</span>);
-    };
-    
-    Tuple4.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-175">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-175">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an array with each element of the tuple.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple4.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> [<span class="keyword">this</span>._1, <span class="keyword">this</span>._2, <span class="keyword">this</span>._3, <span class="keyword">this</span>._4];
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-98">
+        <li id="section-176">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-98">&#182;</a>
+                <a class="pilcrow" href="#section-176">&#182;</a>
+              </div>
+              <h2>Tuple5</h2>
+<ul>
+<li><code>concat()</code> - Semigroup (value must also be a Semigroup)</li>
+<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
+<li><code>toArray()</code> - <code>[_1, _2, _3, _4, _5]</code> of the tuple</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-177">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-177">&#182;</a>
               </div>
               <h2>of(x)</h2>
 <p> Constructor <code>of</code> Monad creating <code>Tuple5</code>.</p>
@@ -3316,16 +4617,15 @@
         </li>
         
         
-        <li id="section-99">
+        <li id="section-178">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-99">&#182;</a>
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-178">&#182;</a>
               </div>
-              <h2>Tuple5</h2>
-<ul>
-<li>concat() - Semigroup (value must also be a Semigroup)</li>
-</ul>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two tuples associatively together.
+ Semigroup concat</p>
 
             </div>
             
@@ -3337,24 +4637,71 @@
             squishy.concat(<span class="keyword">this</span>._4, b._4),
             squishy.concat(<span class="keyword">this</span>._5, b._5)
         );
-    };
-    
-    Tuple5.prototype.flatMap = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-179">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-179">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two option values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple5.prototype.equal = <span class="keyword">function</span>(b) {
+        <span class="keyword">return</span> squishy.equal(<span class="keyword">this</span>.toArray(), b.toArray());
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-180">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-180">&#182;</a>
+              </div>
+              <h3>flatMap(f)</h3>
+<p> Bind through the tuple of the tuples
+ Monadic flatMap/bind</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple5.prototype.flatMap = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> f(<span class="keyword">this</span>);
-    };
-    
-    Tuple5.prototype.toArray = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-181">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-181">&#182;</a>
+              </div>
+              <h3>toArray()</h3>
+<p> Return an array with each element of the tuple.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Tuple5.prototype.toArray = <span class="keyword">function</span>() {
         <span class="keyword">return</span> [<span class="keyword">this</span>._1, <span class="keyword">this</span>._2, <span class="keyword">this</span>._3, <span class="keyword">this</span>._4, <span class="keyword">this</span>._5];
     };</pre></div></div>
             
         </li>
         
         
-        <li id="section-100">
+        <li id="section-182">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-100">&#182;</a>
+                <a class="pilcrow" href="#section-182">&#182;</a>
               </div>
               <h2>isTuple2(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Tuple2</code>.</p>
@@ -3366,11 +4713,11 @@
         </li>
         
         
-        <li id="section-101">
+        <li id="section-183">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-101">&#182;</a>
+                <a class="pilcrow" href="#section-183">&#182;</a>
               </div>
               <h2>isTuple4(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Tuple3</code>.</p>
@@ -3382,11 +4729,11 @@
         </li>
         
         
-        <li id="section-102">
+        <li id="section-184">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-102">&#182;</a>
+                <a class="pilcrow" href="#section-184">&#182;</a>
               </div>
               <h2>isTuple4(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Tuple4</code>.</p>
@@ -3398,11 +4745,11 @@
         </li>
         
         
-        <li id="section-103">
+        <li id="section-185">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-103">&#182;</a>
+                <a class="pilcrow" href="#section-185">&#182;</a>
               </div>
               <h2>isTuple5(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Tuple5</code>.</p>
@@ -3414,11 +4761,11 @@
         </li>
         
         
-        <li id="section-104">
+        <li id="section-186">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-104">&#182;</a>
+                <a class="pilcrow" href="#section-186">&#182;</a>
               </div>
               <h2>isTuple(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Tuple</code>.</p>
@@ -3435,14 +4782,14 @@
         </li>
         
         
-        <li id="section-105">
+        <li id="section-187">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-105">&#182;</a>
+                <a class="pilcrow" href="#section-187">&#182;</a>
               </div>
               <h2>arbTuple(a)</h2>
-<p> Returns an arbitrary <code>Tuple</code> with the right set of values. </p>
+<p> Returns an arbitrary <code>Tuple</code> with the right set of values.</p>
 
             </div>
             
@@ -3469,15 +4816,15 @@
         .property(<span class="string">'isTuple3'</span>, isTuple3)
         .property(<span class="string">'isTuple4'</span>, isTuple4)
         .property(<span class="string">'isTuple5'</span>, isTuple5)
-        .method(<span class="string">'arb'</span>, isTuple2, arbTuple(Tuple2, <span class="number">2</span>))
-        .method(<span class="string">'arb'</span>, isTuple3, arbTuple(Tuple3, <span class="number">3</span>))
-        .method(<span class="string">'arb'</span>, isTuple4, arbTuple(Tuple2, <span class="number">4</span>))
-        .method(<span class="string">'arb'</span>, isTuple5, arbTuple(Tuple5, <span class="number">5</span>))
+        .method(<span class="string">'arb'</span>, strictEquals(Tuple2), arbTuple(Tuple2, <span class="number">2</span>))
+        .method(<span class="string">'arb'</span>, strictEquals(Tuple3), arbTuple(Tuple3, <span class="number">3</span>))
+        .method(<span class="string">'arb'</span>, strictEquals(Tuple4), arbTuple(Tuple4, <span class="number">4</span>))
+        .method(<span class="string">'arb'</span>, strictEquals(Tuple5), arbTuple(Tuple5, <span class="number">5</span>))
         .method(<span class="string">'concat'</span>, isTuple, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.concat(b);
         })
         .method(<span class="string">'equal'</span>, isTuple, <span class="keyword">function</span>(a, b) {
-            <span class="keyword">return</span> squishy.equal(a.toArray(), b.toArray());
+            <span class="keyword">return</span> a.equal(b);
         })
         .method(<span class="string">'flatMap'</span>, isTuple, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.flatMap(b);
@@ -3489,11 +4836,11 @@
         </li>
         
         
-        <li id="section-106">
+        <li id="section-188">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-106">&#182;</a>
+                <a class="pilcrow" href="#section-188">&#182;</a>
               </div>
               <h2>Promise(deferred)</h2>
 <p> Promise is a constructor which takes a <code>deferred</code> function. The <code>deferred</code>
@@ -3506,20 +4853,16 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">Promise</span><span class="params">(fork)</span> {</span>
-        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, Promise);
-        self.fork = fork;
-        <span class="keyword">return</span> self;
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Promise = tagged(<span class="string">'Promise'</span>, [<span class="string">'fork'</span>]);</pre></div></div>
             
         </li>
         
         
-        <li id="section-107">
+        <li id="section-189">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-107">&#182;</a>
+                <a class="pilcrow" href="#section-189">&#182;</a>
               </div>
               <h3>Promise.of(x)</h3>
 <p> Creates a Promise that contains a successful value.</p>
@@ -3529,7 +4872,7 @@
             <div class="content"><div class='highlight'><pre>    Promise.of = <span class="keyword">function</span>(x) {
         <span class="keyword">return</span> Promise(
             <span class="keyword">function</span>(resolve, reject) {
-                resolve(x);
+                <span class="keyword">return</span> resolve(x);
             }
         );
     };</pre></div></div>
@@ -3537,13 +4880,31 @@
         </li>
         
         
-        <li id="section-108">
+        <li id="section-190">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-108">&#182;</a>
+                <a class="pilcrow" href="#section-190">&#182;</a>
               </div>
-              <h3><code>Promise.error(x)</code></h3>
+              <h3>empty()</h3>
+<p> Creates a Empty Promise that contains no value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Promise.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Promise.of();
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-191">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-191">&#182;</a>
+              </div>
+              <h3>error(x)</h3>
 <p> Creates a Promise that contains a failure value.</p>
 
             </div>
@@ -3551,7 +4912,7 @@
             <div class="content"><div class='highlight'><pre>    Promise.error = <span class="keyword">function</span>(x) {
         <span class="keyword">return</span> Promise(
             <span class="keyword">function</span>(resolve, reject) {
-                reject(x);
+                <span class="keyword">return</span> reject(x);
             }
         );
     };</pre></div></div>
@@ -3559,11 +4920,11 @@
         </li>
         
         
-        <li id="section-109">
+        <li id="section-192">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-109">&#182;</a>
+                <a class="pilcrow" href="#section-192">&#182;</a>
               </div>
               <h3>chain(f)</h3>
 <p> Returns a new promise that evaluates <code>f</code> when the current promise
@@ -3572,12 +4933,12 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    Promise.prototype.chain = <span class="keyword">function</span>(f) {
-        <span class="keyword">var</span> promise = <span class="keyword">this</span>;
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Promise(
             <span class="keyword">function</span>(resolve, reject) {
-                promise.fork(
+                <span class="keyword">return</span> env.fork(
                     <span class="keyword">function</span>(a) {
-                        f(a).fork(resolve, reject);
+                        <span class="keyword">return</span> f(a).fork(resolve, reject);
                     },
                     reject
                 );
@@ -3588,11 +4949,11 @@
         </li>
         
         
-        <li id="section-110">
+        <li id="section-193">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-110">&#182;</a>
+                <a class="pilcrow" href="#section-193">&#182;</a>
               </div>
               <h3>extract()</h3>
 <p> Executes a promise to get a value.</p>
@@ -3613,11 +4974,11 @@
         </li>
         
         
-        <li id="section-111">
+        <li id="section-194">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-111">&#182;</a>
+                <a class="pilcrow" href="#section-194">&#182;</a>
               </div>
               <h3>map(f)</h3>
 <p> Returns a new promise that evaluates <code>f</code> on a value and passes it
@@ -3626,12 +4987,12 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    Promise.prototype.map = <span class="keyword">function</span>(f) {
-        <span class="keyword">var</span> promise = <span class="keyword">this</span>;
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Promise(
             <span class="keyword">function</span>(resolve, reject) {
-                promise.fork(
+                <span class="keyword">return</span> env.fork(
                     <span class="keyword">function</span>(a) {
-                        resolve(f(a));
+                        <span class="keyword">return</span> resolve(f(a));
                     },
                     reject
                 );
@@ -3642,26 +5003,26 @@
         </li>
         
         
-        <li id="section-112">
+        <li id="section-195">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-112">&#182;</a>
+                <a class="pilcrow" href="#section-195">&#182;</a>
               </div>
-              <h3><code>reject(f)</code></h3>
+              <h3>reject(f)</h3>
 <p> Returns a new promise that evaluates <code>f</code> when the current promise
  fails. <code>f</code> must return a new promise.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    Promise.prototype.reject = <span class="keyword">function</span>(f) {
-        <span class="keyword">var</span> promise = <span class="keyword">this</span>;
+        <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Promise(
             <span class="keyword">function</span>(resolve, reject) {
-                promise.fork(
+                <span class="keyword">return</span> env.fork(
                     resolve,
                     <span class="keyword">function</span>(a) {
-                        f(a).fork(resolve, reject);
+                        <span class="keyword">return</span> f(a).fork(resolve, reject);
                     }
                 );
             }
@@ -3671,11 +5032,11 @@
         </li>
         
         
-        <li id="section-113">
+        <li id="section-196">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-113">&#182;</a>
+                <a class="pilcrow" href="#section-196">&#182;</a>
               </div>
               <h2>isPromise(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Promise</code>.</p>
@@ -3687,11 +5048,11 @@
         </li>
         
         
-        <li id="section-114">
+        <li id="section-197">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-114">&#182;</a>
+                <a class="pilcrow" href="#section-197">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -3700,6 +5061,12 @@
             <div class="content"><div class='highlight'><pre>    squishy = squishy
         .property(<span class="string">'Promise'</span>, Promise)
         .property(<span class="string">'isPromise'</span>, isPromise)
+        .method(<span class="string">'empty'</span>, strictEquals(Promise), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> Promise.empty();
+        })
+        .method(<span class="string">'of'</span>, strictEquals(Promise), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Promise.of(x);
+        })
         .method(<span class="string">'chain'</span>, isPromise, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.chain(b);
         })
@@ -3716,11 +5083,11 @@
         </li>
         
         
-        <li id="section-115">
+        <li id="section-198">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-115">&#182;</a>
+                <a class="pilcrow" href="#section-198">&#182;</a>
               </div>
               <h1>Trampoline</h1>
 <p> Reifies continutations onto the heap, rather than the stack. Allows
@@ -3744,11 +5111,11 @@
         </li>
         
         
-        <li id="section-116">
+        <li id="section-199">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-116">&#182;</a>
+                <a class="pilcrow" href="#section-199">&#182;</a>
               </div>
               <h2>done(result)</h2>
 <p> Result constructor for a continuation.</p>
@@ -3765,11 +5132,11 @@
         </li>
         
         
-        <li id="section-117">
+        <li id="section-200">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-117">&#182;</a>
+                <a class="pilcrow" href="#section-200">&#182;</a>
               </div>
               <h2>cont(thunk)</h2>
 <p> Continuation constructor. <code>thunk</code> is a nullary closure, resulting
@@ -3787,11 +5154,11 @@
         </li>
         
         
-        <li id="section-118">
+        <li id="section-201">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-118">&#182;</a>
+                <a class="pilcrow" href="#section-201">&#182;</a>
               </div>
               <h2>trampoline(bounce)</h2>
 <p> The beginning of the continuation to call. Will repeatedly evaluate
@@ -3814,11 +5181,11 @@
         </li>
         
         
-        <li id="section-119">
+        <li id="section-202">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-119">&#182;</a>
+                <a class="pilcrow" href="#section-202">&#182;</a>
               </div>
               <h2>Stream(state)</h2>
 <p> The Stream type represents a flow of data ever evolving values over time.</p>
@@ -3831,11 +5198,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">Stream</span><span class="params">(fork)</span> {</span>
-        <span class="keyword">var</span> self = getInstance(<span class="keyword">this</span>, Stream);
-        self.fork = fork;
-        <span class="keyword">return</span> self;
-    }
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Stream = tagged(<span class="string">'Stream'</span>, [<span class="string">'fork'</span>]);
     
     Stream.empty = <span class="keyword">function</span>() {
         <span class="keyword">return</span> Stream.of();
@@ -4056,11 +5419,11 @@
         </li>
         
         
-        <li id="section-120">
+        <li id="section-203">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-120">&#182;</a>
+                <a class="pilcrow" href="#section-203">&#182;</a>
               </div>
               <h2>isStream(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Stream</code>.</p>
@@ -4072,11 +5435,11 @@
         </li>
         
         
-        <li id="section-121">
+        <li id="section-204">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-121">&#182;</a>
+                <a class="pilcrow" href="#section-204">&#182;</a>
               </div>
               <h2>streamOf(type)</h2>
 <p> Sentinel value for when an stream of a particular type is needed:</p>
@@ -4093,11 +5456,11 @@
         </li>
         
         
-        <li id="section-122">
+        <li id="section-205">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-122">&#182;</a>
+                <a class="pilcrow" href="#section-205">&#182;</a>
               </div>
               <h2>isStreamOf(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>streamOf</code>.</p>
@@ -4109,11 +5472,11 @@
         </li>
         
         
-        <li id="section-123">
+        <li id="section-206">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-123">&#182;</a>
+                <a class="pilcrow" href="#section-206">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4160,11 +5523,11 @@
         </li>
         
         
-        <li id="section-124">
+        <li id="section-207">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-124">&#182;</a>
+                <a class="pilcrow" href="#section-207">&#182;</a>
               </div>
               <h1>Identity</h1>
 <p> The Identity monad is a monad that does not embody any computational
@@ -4181,6 +5544,10 @@
             <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Identity = tagged(<span class="string">'Identity'</span>, [<span class="string">'x'</span>]);
     
     Identity.of = Identity;
+    
+    Identity.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Identity.of();
+    };
     
     Identity.prototype.chain = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> f(<span class="keyword">this</span>.x);
@@ -4201,11 +5568,11 @@
         </li>
         
         
-        <li id="section-125">
+        <li id="section-208">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-125">&#182;</a>
+                <a class="pilcrow" href="#section-208">&#182;</a>
               </div>
               <h2>isIdentity(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Identity</code>.</p>
@@ -4217,11 +5584,11 @@
         </li>
         
         
-        <li id="section-126">
+        <li id="section-209">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-126">&#182;</a>
+                <a class="pilcrow" href="#section-209">&#182;</a>
               </div>
               <h2>Identity Transformer</h2>
 <p> The trivial monad transformer, which maps a monad to an equivalent monad.</p>
@@ -4239,6 +5606,10 @@
     
         IdentityT.of = <span class="keyword">function</span>(a) {
             <span class="keyword">return</span> IdentityT(M.of(a));
+        };
+    
+        Identity.empty = <span class="keyword">function</span>() {
+            <span class="keyword">return</span> Identity.of(M.empty());
         };
     
         IdentityT.lift = IdentityT;
@@ -4267,11 +5638,11 @@
         </li>
         
         
-        <li id="section-127">
+        <li id="section-210">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-127">&#182;</a>
+                <a class="pilcrow" href="#section-210">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4281,6 +5652,12 @@
         .property(<span class="string">'Identity'</span>, Identity)
         .property(<span class="string">'isIdentity'</span>, isIdentity)
         .property(<span class="string">'IdentityT'</span>, Identity.IdentityT)
+        .method(<span class="string">'of'</span>, strictEquals(Identity), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Identity.of(x);
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Identity), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> Identity.empty();
+        })
         .method(<span class="string">'map'</span>, isIdentity, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.map(b);
         })
@@ -4291,11 +5668,11 @@
         </li>
         
         
-        <li id="section-128">
+        <li id="section-211">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-128">&#182;</a>
+                <a class="pilcrow" href="#section-211">&#182;</a>
               </div>
               <h1>Input/output</h1>
 <p> Purely functional IO wrapper.</p>
@@ -4305,11 +5682,11 @@
         </li>
         
         
-        <li id="section-129">
+        <li id="section-212">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-129">&#182;</a>
+                <a class="pilcrow" href="#section-212">&#182;</a>
               </div>
               <h2>io(f)</h2>
 <p> Pure wrapper around a side-effecting <code>f</code> function.</p>
@@ -4339,11 +5716,11 @@
         </li>
         
         
-        <li id="section-130">
+        <li id="section-213">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-130">&#182;</a>
+                <a class="pilcrow" href="#section-213">&#182;</a>
               </div>
               <h2>isIO(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an <code>io</code>.</p>
@@ -4367,11 +5744,11 @@
         </li>
         
         
-        <li id="section-131">
+        <li id="section-214">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-131">&#182;</a>
+                <a class="pilcrow" href="#section-214">&#182;</a>
               </div>
               <h2>Lens</h2>
 
@@ -4467,11 +5844,11 @@
         </li>
         
         
-        <li id="section-132">
+        <li id="section-215">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-132">&#182;</a>
+                <a class="pilcrow" href="#section-215">&#182;</a>
               </div>
               <h2>PartialLens</h2>
 
@@ -4521,11 +5898,11 @@
         </li>
         
         
-        <li id="section-133">
+        <li id="section-216">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-133">&#182;</a>
+                <a class="pilcrow" href="#section-216">&#182;</a>
               </div>
               <h2>isLens(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Lens</code>.</p>
@@ -4537,11 +5914,11 @@
         </li>
         
         
-        <li id="section-134">
+        <li id="section-217">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-134">&#182;</a>
+                <a class="pilcrow" href="#section-217">&#182;</a>
               </div>
               <h2>isPartialLens(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>PartialLens</code>.</p>
@@ -4553,11 +5930,11 @@
         </li>
         
         
-        <li id="section-135">
+        <li id="section-218">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-135">&#182;</a>
+                <a class="pilcrow" href="#section-218">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4572,11 +5949,11 @@
         </li>
         
         
-        <li id="section-136">
+        <li id="section-219">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-136">&#182;</a>
+                <a class="pilcrow" href="#section-219">&#182;</a>
               </div>
               <h2>Store(set, get)</h2>
 
@@ -4613,11 +5990,11 @@
         </li>
         
         
-        <li id="section-137">
+        <li id="section-220">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-137">&#182;</a>
+                <a class="pilcrow" href="#section-220">&#182;</a>
               </div>
               <h2>isStore(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Store</code>.</p>
@@ -4629,11 +6006,11 @@
         </li>
         
         
-        <li id="section-138">
+        <li id="section-221">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-138">&#182;</a>
+                <a class="pilcrow" href="#section-221">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4659,11 +6036,11 @@
         </li>
         
         
-        <li id="section-139">
+        <li id="section-222">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-139">&#182;</a>
+                <a class="pilcrow" href="#section-222">&#182;</a>
               </div>
               <h2>Reader(run)</h2>
 
@@ -4679,6 +6056,10 @@
         <span class="keyword">return</span> Reader(<span class="keyword">function</span>(e) {
             <span class="keyword">return</span> a;
         });
+    };
+    
+    Reader.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Reader(nothing);
     };
     
     Reader.prototype.ap = <span class="keyword">function</span>(a) {
@@ -4703,11 +6084,11 @@
         </li>
         
         
-        <li id="section-140">
+        <li id="section-223">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-140">&#182;</a>
+                <a class="pilcrow" href="#section-223">&#182;</a>
               </div>
               <h2>isReader(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Reader</code>.</p>
@@ -4719,11 +6100,11 @@
         </li>
         
         
-        <li id="section-141">
+        <li id="section-224">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-141">&#182;</a>
+                <a class="pilcrow" href="#section-224">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4732,6 +6113,12 @@
             <div class="content"><div class='highlight'><pre>    squishy = squishy
         .property(<span class="string">'Reader'</span>, Reader)
         .property(<span class="string">'isReader'</span>, isReader)
+        .method(<span class="string">'of'</span>, strictEquals(Reader), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> Reader.of(x);
+        })
+        .method(<span class="string">'empty'</span>, strictEquals(Reader), <span class="keyword">function</span>() {
+            <span class="keyword">return</span> Reader.empty();
+        })
         .method(<span class="string">'flatMap'</span>, isReader, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.flatMap(b);
         })
@@ -4747,11 +6134,11 @@
         </li>
         
         
-        <li id="section-142">
+        <li id="section-225">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-142">&#182;</a>
+                <a class="pilcrow" href="#section-225">&#182;</a>
               </div>
               <p>Methods</p>
 
@@ -4804,11 +6191,11 @@
         </li>
         
         
-        <li id="section-143">
+        <li id="section-226">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-143">&#182;</a>
+                <a class="pilcrow" href="#section-226">&#182;</a>
               </div>
               <p>Derived</p>
 
@@ -4823,11 +6210,11 @@
         </li>
         
         
-        <li id="section-144">
+        <li id="section-227">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-144">&#182;</a>
+                <a class="pilcrow" href="#section-227">&#182;</a>
               </div>
               <p>Transformer</p>
 
@@ -4904,11 +6291,11 @@
         </li>
         
         
-        <li id="section-145">
+        <li id="section-228">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-145">&#182;</a>
+                <a class="pilcrow" href="#section-228">&#182;</a>
               </div>
               <h2>isState(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>State</code>.</p>
@@ -4920,11 +6307,11 @@
         </li>
         
         
-        <li id="section-146">
+        <li id="section-229">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-146">&#182;</a>
+                <a class="pilcrow" href="#section-229">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -4933,6 +6320,9 @@
             <div class="content"><div class='highlight'><pre>    squishy = squishy
         .property(<span class="string">'State'</span>, State)
         .property(<span class="string">'isState'</span>, isState)
+        .method(<span class="string">'of'</span>, strictEquals(State), <span class="keyword">function</span>(x) {
+            <span class="keyword">return</span> State.of(x);
+        })
         .method(<span class="string">'ap'</span>, isState, <span class="keyword">function</span>(a, b) {
             <span class="keyword">return</span> a.ap(b);
         })
