@@ -38,7 +38,7 @@ Promise.empty = function() {
 };
 
 //
-//  ### `Promise.error(x)`
+//  ### error(x)
 //
 //  Creates a Promise that contains a failure value.
 //
@@ -107,7 +107,7 @@ Promise.prototype.map = function(f) {
 };
 
 //
-//  ### `reject(f)`
+//  ### reject(f)
 //
 //  Returns a new promise that evaluates `f` when the current promise
 //  fails. `f` must return a new promise.
