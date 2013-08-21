@@ -30,7 +30,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-08-21 17:37 */</span>
+            <div class="content"><div class='highlight'><pre><span class="comment">/* Compiled : 2013-08-21 18:26 */</span>
 (<span class="keyword">function</span>(global) {
 
     <span class="string">'use strict'</span>;</pre></div></div>
@@ -2741,8 +2741,8 @@
 <p>  Represents a Failure.</p>
 <ul>
 <li><code>ap(b, concat)</code> - Applicative ap(ply)</li>
-<li><code>equal(a)</code> -  <code>true</code> if <code>a</code> is equal to <code>this</code></li>
-<li><code>extract()</code> -  extract the value from attempt</li>
+<li><code>equal(a)</code> - <code>true</code> if <code>a</code> is equal to <code>this</code></li>
+<li><code>extract()</code> - extract the value from attempt</li>
 <li><code>flatMap(f)</code> - Monadic flatMap/bind</li>
 <li><code>fold(a, b)</code> - <code>a</code> applied to value if <code>Left(x)</code>, <code>b</code> if <code>Right(x)</code></li>
 <li><code>map(f)</code> - Functor map</li>
@@ -4850,6 +4850,12 @@
 <h3>deferred(resolve)</h3>
 <p> The <code>resolve</code> callback will be called with an <code>Attempt</code>. The <code>Attempt</code> can
  either be a Success or a Failure.</p>
+<ul>
+<li><code>chain(f)</code> - Monadic flatMap/bind</li>
+<li><code>extract()</code> - extract the value from attempt</li>
+<li><code>map(f)</code> - Functor map for resolve</li>
+<li><code>reject(f)</code> - Functor map for reject</li>
+</ul>
 
             </div>
             
@@ -4864,7 +4870,7 @@
               <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-189">&#182;</a>
               </div>
-              <h3>Promise.of(x)</h3>
+              <h3>of(x)</h3>
 <p> Creates a Promise that contains a successful value.</p>
 
             </div>
@@ -5187,24 +5193,47 @@
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-202">&#182;</a>
               </div>
-              <h2>Stream(state)</h2>
+              <h2>Stream(fork)</h2>
 <p> The Stream type represents a flow of data ever evolving values over time.</p>
-<p> Here is an example of a continuous random numbers piped through to the console.</p>
+<p> Here is an example of a number piped through to the console.</p>
 <pre><code>   Stream.of(1).map(
        function (a) {
            return a + 1;
        }
-   );</code></pre>
+   ).fork(console.log);</code></pre>
+<ul>
+<li><code>ap(a, b)</code> - Applicative ap(ply)</li>
+<li><code>concat(a, b)</code> - Appends two stream objects.</li>
+<li><code>drop(a, n)</code> - Returns the stream without its n first elements. If this stream has less than n elements, the empty stream is returned.</li>
+<li><code>filter(a, f)</code> - Returns all the elements of this stream that satisfy the predicate p.</li>
+<li><code>chain(a, f)</code> - Applies the given function f to each element of this stream, then concatenates the results.</li>
+<li><code>fold(a, v, f)</code> - Combines the elements of this stream together using the binary function f, from Left to Right, and starting with the value v.</li>
+<li><code>map(a, f)</code> - Returns the stream resulting from applying the given function f to each element of this stream.</li>
+<li><code>scan(a, f)</code> - Combines the elements of this stream together using the binary operator op, from Left to Right</li>
+<li><code>take(n)</code> - Returns the n first elements of this stream.</li>
+<li><code>zip(a, b)</code> - Returns a stream formed from this stream and the specified stream that by associating each element of the former with the element at the same position in the latter.</li>
+<li><code>zipWithIndex(a)</code> -  Returns a stream form from this stream and a index of the value that is associated with each element index position.</li>
+</ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Stream = tagged(<span class="string">'Stream'</span>, [<span class="string">'fork'</span>]);
-    
-    Stream.empty = <span class="keyword">function</span>() {
-        <span class="keyword">return</span> Stream.of();
-    };
-    
-    Stream.of = <span class="keyword">function</span>(a) {
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> Stream = tagged(<span class="string">'Stream'</span>, [<span class="string">'fork'</span>]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-203">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-203">&#182;</a>
+              </div>
+              <h3>of(x)</h3>
+<p> Creates a stream that contains a successful value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.of = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> Stream(
             <span class="keyword">function</span>(next, done) {
                 squishy.toOption(a).fold(
@@ -5214,17 +5243,65 @@
                 <span class="keyword">return</span> done();
             }
         );
-    };
-    
-    Stream.prototype.ap = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-204">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-204">&#182;</a>
+              </div>
+              <h3>empty()</h3>
+<p> Creates a Empty stream that contains no value.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.empty = <span class="keyword">function</span>() {
+        <span class="keyword">return</span> Stream.of();
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-205">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-205">&#182;</a>
+              </div>
+              <h3>ap(b)</h3>
+<p> Apply a function in the environment of the success of this stream
+ Applicative ap(ply)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.ap = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> <span class="keyword">this</span>.chain(
             <span class="keyword">function</span>(f) {
                 <span class="keyword">return</span> a.map(f);
             }
         );
-    };
-    
-    Stream.prototype.chain = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-206">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-206">&#182;</a>
+              </div>
+              <h3>chain(f)</h3>
+<p> Returns a new stream that evaluates <code>f</code> when the current stream
+ is successfully fulfilled. <code>f</code> must return a new stream.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.chain = <span class="keyword">function</span>(f) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Stream(<span class="keyword">function</span>(next, done) {
             <span class="keyword">return</span> env.fork(
@@ -5234,9 +5311,24 @@
                 done
             );
         });
-    };
-    
-    Stream.prototype.concat = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-207">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-207">&#182;</a>
+              </div>
+              <h3>concat(s, f)</h3>
+<p> Concatenate two streams associatively together.
+ Semigroup concat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.concat = <span class="keyword">function</span>(a) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Stream(<span class="keyword">function</span>(next, done) {
             <span class="keyword">return</span> env.fork(
@@ -5246,9 +5338,23 @@
                 }
             );
         });
-    };
-    
-    Stream.prototype.drop = <span class="keyword">function</span>(n) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-208">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-208">&#182;</a>
+              </div>
+              <h3>drop(f)</h3>
+<p> Returns the stream without its n first elements.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.drop = <span class="keyword">function</span>(n) {
         <span class="keyword">var</span> dropped = <span class="number">0</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>.chain(
             <span class="keyword">function</span>(a) {
@@ -5260,25 +5366,67 @@
                 }
             }
         );
-    };
-    
-    Stream.prototype.equal = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-209">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-209">&#182;</a>
+              </div>
+              <h3>equal(a)</h3>
+<p> Compare two stream values for equality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.equal = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> <span class="keyword">this</span>.zip(a).fold(
             <span class="literal">true</span>,
             <span class="keyword">function</span>(v, t) {
                 <span class="keyword">return</span> v &amp;&amp; squishy.equal(t._1, t._2);
             }
         );
-    };
-    
-    Stream.prototype.extract = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-210">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-210">&#182;</a>
+              </div>
+              <h3>extract(a)</h3>
+<p> Extract the value from the stream.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.extract = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.fork(
             identity,
             constant(<span class="literal">null</span>)
         );
-    };
-    
-    Stream.prototype.filter = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-211">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-211">&#182;</a>
+              </div>
+              <h3>filter(f)</h3>
+<p> Returns all the elements of this stream that satisfy the predicate p.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.filter = <span class="keyword">function</span>(f) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Stream(<span class="keyword">function</span>(next, done) {
             <span class="keyword">return</span> env.fork(
@@ -5290,9 +5438,23 @@
                 done
             );
         });
-    };
-    
-    Stream.prototype.fold = <span class="keyword">function</span>(v, f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-212">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-212">&#182;</a>
+              </div>
+              <h3>fold(v, f)</h3>
+<p> Combines the elements of this stream together using the binary function f</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.fold = <span class="keyword">function</span>(v, f) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Stream(
             <span class="keyword">function</span>(next, done) {
@@ -5308,9 +5470,23 @@
                 );
             }
         );
-    };
-    
-    Stream.prototype.length = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-213">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-213">&#182;</a>
+              </div>
+              <h3>length()</h3>
+<p> Returns the length of the stream</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.length = <span class="keyword">function</span>() {
         <span class="keyword">return</span> <span class="keyword">this</span>.map(
             constant(<span class="number">1</span>)
         ).fold(
@@ -5319,17 +5495,46 @@
                 <span class="keyword">return</span> x + y;
             })
         );
-    };
-    
-    Stream.prototype.map = <span class="keyword">function</span>(f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-214">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-214">&#182;</a>
+              </div>
+              <h3>map(f)</h3>
+<p> Returns the stream resulting from applying the given function f to each
+ element of this stream.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.map = <span class="keyword">function</span>(f) {
         <span class="keyword">return</span> <span class="keyword">this</span>.chain(
             <span class="keyword">function</span>(a) {
                 <span class="keyword">return</span> Stream.of(f(a));
             }
         );
-    };
-    
-    Stream.prototype.merge = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-215">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-215">&#182;</a>
+              </div>
+              <h3>merge(a)</h3>
+<p> Merge the values of two streams in to one stream</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.merge = <span class="keyword">function</span>(a) {
         <span class="keyword">var</span> resolver;
     
         <span class="keyword">this</span>.map(optional(resolver));
@@ -5340,9 +5545,24 @@
                 resolver = next;
             }
         );
-    };
-    
-    Stream.prototype.scan = <span class="keyword">function</span>(a, f) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-216">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-216">&#182;</a>
+              </div>
+              <h3>scan(a)</h3>
+<p> Combines the elements of this stream together using the binary operator
+ op, from Left to Right</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.scan = <span class="keyword">function</span>(a, f) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
         <span class="keyword">return</span> Stream(
             <span class="keyword">function</span>(next, done) {
@@ -5354,18 +5574,48 @@
                     done
                 );
             });
-    };
-    
-    Stream.prototype.take = <span class="keyword">function</span>(n) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-217">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-217">&#182;</a>
+              </div>
+              <h3>take(v, f)</h3>
+<p> Returns the n first elements of this stream.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.take = <span class="keyword">function</span>(n) {
         <span class="keyword">var</span> taken = <span class="number">0</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>.chain(
             <span class="keyword">function</span>(a) {
                 <span class="keyword">return</span> (++taken &lt; n) ? Stream.of(a) : Stream.empty();
             }
         );
-    };
-    
-    Stream.prototype.zip = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-218">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-218">&#182;</a>
+              </div>
+              <h3>zip(b)</h3>
+<p> Returns a stream formed from this stream and the specified stream that
+ by associating each element of the former with the element at the same
+ position in the latter.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.zip = <span class="keyword">function</span>(a) {
         <span class="keyword">var</span> env = <span class="keyword">this</span>;
     
         <span class="keyword">return</span> Stream(
@@ -5396,18 +5646,47 @@
                 );
             }
         );
-    };
-    
-    Stream.prototype.zipWithIndex = <span class="keyword">function</span>() {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-219">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-219">&#182;</a>
+              </div>
+              <h3>zipWithIndex()</h3>
+<p> Returns a stream form from this stream and a index of the value that
+ is associated with each element index position.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.prototype.zipWithIndex = <span class="keyword">function</span>() {
         <span class="keyword">var</span> index = <span class="number">0</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>.map(
             <span class="keyword">function</span>(a) {
                 <span class="keyword">return</span> Tuple2(a, index++);
             }
         );
-    };
-    
-    Stream.fromArray = <span class="keyword">function</span>(a) {
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-220">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-220">&#182;</a>
+              </div>
+              <h2>fromArray(a)</h2>
+<p> Returns a new stream which iterates over each element of the array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Stream.fromArray = <span class="keyword">function</span>(a) {
         <span class="keyword">return</span> Stream(
             <span class="keyword">function</span>(next, done) {
                 squishy.map(a, next);
@@ -5419,11 +5698,11 @@
         </li>
         
         
-        <li id="section-203">
+        <li id="section-221">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-203">&#182;</a>
+                <a class="pilcrow" href="#section-221">&#182;</a>
               </div>
               <h2>isStream(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Stream</code>.</p>
@@ -5435,11 +5714,11 @@
         </li>
         
         
-        <li id="section-204">
+        <li id="section-222">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-204">&#182;</a>
+                <a class="pilcrow" href="#section-222">&#182;</a>
               </div>
               <h2>streamOf(type)</h2>
 <p> Sentinel value for when an stream of a particular type is needed:</p>
@@ -5456,11 +5735,11 @@
         </li>
         
         
-        <li id="section-205">
+        <li id="section-223">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-205">&#182;</a>
+                <a class="pilcrow" href="#section-223">&#182;</a>
               </div>
               <h2>isStreamOf(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>streamOf</code>.</p>
@@ -5472,11 +5751,11 @@
         </li>
         
         
-        <li id="section-206">
+        <li id="section-224">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-206">&#182;</a>
+                <a class="pilcrow" href="#section-224">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -5523,11 +5802,11 @@
         </li>
         
         
-        <li id="section-207">
+        <li id="section-225">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-207">&#182;</a>
+                <a class="pilcrow" href="#section-225">&#182;</a>
               </div>
               <h1>Identity</h1>
 <p> The Identity monad is a monad that does not embody any computational
@@ -5568,11 +5847,11 @@
         </li>
         
         
-        <li id="section-208">
+        <li id="section-226">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-208">&#182;</a>
+                <a class="pilcrow" href="#section-226">&#182;</a>
               </div>
               <h2>isIdentity(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Identity</code>.</p>
@@ -5584,11 +5863,11 @@
         </li>
         
         
-        <li id="section-209">
+        <li id="section-227">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-209">&#182;</a>
+                <a class="pilcrow" href="#section-227">&#182;</a>
               </div>
               <h2>Identity Transformer</h2>
 <p> The trivial monad transformer, which maps a monad to an equivalent monad.</p>
@@ -5638,11 +5917,11 @@
         </li>
         
         
-        <li id="section-210">
+        <li id="section-228">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-210">&#182;</a>
+                <a class="pilcrow" href="#section-228">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -5668,11 +5947,11 @@
         </li>
         
         
-        <li id="section-211">
+        <li id="section-229">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-211">&#182;</a>
+                <a class="pilcrow" href="#section-229">&#182;</a>
               </div>
               <h1>Input/output</h1>
 <p> Purely functional IO wrapper.</p>
@@ -5682,11 +5961,11 @@
         </li>
         
         
-        <li id="section-212">
+        <li id="section-230">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-212">&#182;</a>
+                <a class="pilcrow" href="#section-230">&#182;</a>
               </div>
               <h2>io(f)</h2>
 <p> Pure wrapper around a side-effecting <code>f</code> function.</p>
@@ -5716,11 +5995,11 @@
         </li>
         
         
-        <li id="section-213">
+        <li id="section-231">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-213">&#182;</a>
+                <a class="pilcrow" href="#section-231">&#182;</a>
               </div>
               <h2>isIO(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is an <code>io</code>.</p>
@@ -5744,11 +6023,11 @@
         </li>
         
         
-        <li id="section-214">
+        <li id="section-232">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-214">&#182;</a>
+                <a class="pilcrow" href="#section-232">&#182;</a>
               </div>
               <h2>Lens</h2>
 
@@ -5844,11 +6123,11 @@
         </li>
         
         
-        <li id="section-215">
+        <li id="section-233">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-215">&#182;</a>
+                <a class="pilcrow" href="#section-233">&#182;</a>
               </div>
               <h2>PartialLens</h2>
 
@@ -5898,11 +6177,11 @@
         </li>
         
         
-        <li id="section-216">
+        <li id="section-234">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-216">&#182;</a>
+                <a class="pilcrow" href="#section-234">&#182;</a>
               </div>
               <h2>isLens(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Lens</code>.</p>
@@ -5914,11 +6193,11 @@
         </li>
         
         
-        <li id="section-217">
+        <li id="section-235">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-217">&#182;</a>
+                <a class="pilcrow" href="#section-235">&#182;</a>
               </div>
               <h2>isPartialLens(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>PartialLens</code>.</p>
@@ -5930,11 +6209,11 @@
         </li>
         
         
-        <li id="section-218">
+        <li id="section-236">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-218">&#182;</a>
+                <a class="pilcrow" href="#section-236">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -5949,11 +6228,11 @@
         </li>
         
         
-        <li id="section-219">
+        <li id="section-237">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-219">&#182;</a>
+                <a class="pilcrow" href="#section-237">&#182;</a>
               </div>
               <h2>Store(set, get)</h2>
 
@@ -5990,11 +6269,11 @@
         </li>
         
         
-        <li id="section-220">
+        <li id="section-238">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-220">&#182;</a>
+                <a class="pilcrow" href="#section-238">&#182;</a>
               </div>
               <h2>isStore(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Store</code>.</p>
@@ -6006,11 +6285,11 @@
         </li>
         
         
-        <li id="section-221">
+        <li id="section-239">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-221">&#182;</a>
+                <a class="pilcrow" href="#section-239">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -6036,11 +6315,11 @@
         </li>
         
         
-        <li id="section-222">
+        <li id="section-240">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-222">&#182;</a>
+                <a class="pilcrow" href="#section-240">&#182;</a>
               </div>
               <h2>Reader(run)</h2>
 
@@ -6084,11 +6363,11 @@
         </li>
         
         
-        <li id="section-223">
+        <li id="section-241">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-223">&#182;</a>
+                <a class="pilcrow" href="#section-241">&#182;</a>
               </div>
               <h2>isReader(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>Reader</code>.</p>
@@ -6100,11 +6379,11 @@
         </li>
         
         
-        <li id="section-224">
+        <li id="section-242">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-224">&#182;</a>
+                <a class="pilcrow" href="#section-242">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
@@ -6134,11 +6413,11 @@
         </li>
         
         
-        <li id="section-225">
+        <li id="section-243">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-225">&#182;</a>
+                <a class="pilcrow" href="#section-243">&#182;</a>
               </div>
               <p>Methods</p>
 
@@ -6191,11 +6470,11 @@
         </li>
         
         
-        <li id="section-226">
+        <li id="section-244">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-226">&#182;</a>
+                <a class="pilcrow" href="#section-244">&#182;</a>
               </div>
               <p>Derived</p>
 
@@ -6210,11 +6489,11 @@
         </li>
         
         
-        <li id="section-227">
+        <li id="section-245">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-227">&#182;</a>
+                <a class="pilcrow" href="#section-245">&#182;</a>
               </div>
               <p>Transformer</p>
 
@@ -6291,11 +6570,11 @@
         </li>
         
         
-        <li id="section-228">
+        <li id="section-246">
             <div class="annotation">
               
               <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-228">&#182;</a>
+                <a class="pilcrow" href="#section-246">&#182;</a>
               </div>
               <h2>isState(a)</h2>
 <p> Returns <code>true</code> if <code>a</code> is <code>State</code>.</p>
@@ -6307,11 +6586,11 @@
         </li>
         
         
-        <li id="section-229">
+        <li id="section-247">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-229">&#182;</a>
+                <a class="pilcrow" href="#section-247">&#182;</a>
               </div>
               <p> append methods to the squishy environment.</p>
 
