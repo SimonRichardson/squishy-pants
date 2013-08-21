@@ -79,8 +79,9 @@ function taggedSum(name, constructors) {
                 opt,
                 i, j;
 
-            if(!accessor)
+            if(!accessor) {
                 throw new TypeError("Constructors given to match didn't include: " + key);
+            }
 
             /*
                 Work out if the accessor is an object then if it's a partial
@@ -99,13 +100,12 @@ function taggedSum(name, constructors) {
                     }
 
                     return first.match(opt);
-                } else {
-                    throw new TypeError('Constructor not found: ' + key);
                 }
 
-            } else {
-                return accessor.apply(this, args);
+                throw new TypeError('Constructor not found: ' + key);
             }
+
+            return accessor.apply(this, args);
         };
     }
 
