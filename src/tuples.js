@@ -338,10 +338,10 @@ squishy = squishy
     .property('isTuple3', isTuple3)
     .property('isTuple4', isTuple4)
     .property('isTuple5', isTuple5)
-    .method('arb', isTuple2, arbTuple(Tuple2, 2))
-    .method('arb', isTuple3, arbTuple(Tuple3, 3))
-    .method('arb', isTuple4, arbTuple(Tuple2, 4))
-    .method('arb', isTuple5, arbTuple(Tuple5, 5))
+    .method('arb', strictEquals(Tuple2), arbTuple(Tuple2, 2))
+    .method('arb', strictEquals(Tuple3), arbTuple(Tuple3, 3))
+    .method('arb', strictEquals(Tuple4), arbTuple(Tuple4, 4))
+    .method('arb', strictEquals(Tuple5), arbTuple(Tuple5, 5))
     .method('concat', isTuple, function(a, b) {
         return a.concat(b);
     })
