@@ -23,7 +23,7 @@ var Promise = tagged('Promise', ['fork']);
 Promise.of = function(x) {
     return Promise(
         function(resolve, reject) {
-            resolve(x);
+            return resolve(x);
         }
     );
 };
@@ -45,7 +45,7 @@ Promise.empty = function() {
 Promise.error = function(x) {
     return Promise(
         function(resolve, reject) {
-            reject(x);
+            return reject(x);
         }
     );
 };
@@ -60,9 +60,9 @@ Promise.prototype.chain = function(f) {
     var promise = this;
     return Promise(
         function(resolve, reject) {
-            promise.fork(
+            return promise.fork(
                 function(a) {
-                    f(a).fork(resolve, reject);
+                    return f(a).fork(resolve, reject);
                 },
                 reject
             );
@@ -96,9 +96,9 @@ Promise.prototype.map = function(f) {
     var promise = this;
     return Promise(
         function(resolve, reject) {
-            promise.fork(
+            return promise.fork(
                 function(a) {
-                    resolve(f(a));
+                    return resolve(f(a));
                 },
                 reject
             );
@@ -116,10 +116,10 @@ Promise.prototype.reject = function(f) {
     var promise = this;
     return Promise(
         function(resolve, reject) {
-            promise.fork(
+            return promise.fork(
                 resolve,
                 function(a) {
-                    f(a).fork(resolve, reject);
+                    return f(a).fork(resolve, reject);
                 }
             );
         }

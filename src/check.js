@@ -205,7 +205,7 @@ squishy = squishy
           a Number overflow (worst case Infinity), meaning we can
           add multiple arb(Number) together without issues.
         */
-        var variance = Number.MAX_VALUE / this.goal;
+        var variance = Math.pow(2, 53) / this.goal;
         return this.randomRange(-variance, variance);
     })
     .method('arb', strictEquals(Object), function(a, s) {
