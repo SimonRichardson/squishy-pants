@@ -13,10 +13,15 @@
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
 //  either be a Success or a Failure.
 //
+//  * `chain(f)` - Monadic flatMap/bind
+//  * `extract()` - extract the value from attempt
+//  * `map(f)` - Functor map for resolve
+//  * `reject(f)` - Functor map for reject
+//
 var Promise = tagged('Promise', ['fork']);
 
 //
-//  ### Promise.of(x)
+//  ### of(x)
 //
 //  Creates a Promise that contains a successful value.
 //

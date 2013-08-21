@@ -25,8 +25,8 @@
 //   Represents a Failure.
 //
 //   * `ap(b, concat)` - Applicative ap(ply)
-//   * `equal(a)` -  `true` if `a` is equal to `this`
-//   * `extract()` -  extract the value from attempt
+//   * `equal(a)` - `true` if `a` is equal to `this`
+//   * `extract()` - extract the value from attempt
 //   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
 //   * `map(f)` - Functor map
