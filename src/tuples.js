@@ -79,6 +79,24 @@ Tuple2.prototype.flatMap = function(f) {
 };
 
 //
+//  ### first()
+//
+//  Retrieve the first argument.
+//
+Tuple2.prototype.first = function() {
+    return this._1;
+};
+
+//
+//  ### second()
+//
+//  Retrieve the second argument.
+//
+Tuple2.prototype.second = function() {
+    return this._2;
+};
+
+//
 //  ### toArray()
 //
 //  Return an array with each element of the tuple.
