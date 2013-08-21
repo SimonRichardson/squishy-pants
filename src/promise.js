@@ -57,10 +57,10 @@ Promise.error = function(x) {
 //  is successfully fulfilled. `f` must return a new promise.
 //
 Promise.prototype.chain = function(f) {
-    var promise = this;
+    var env = this;
     return Promise(
         function(resolve, reject) {
-            return promise.fork(
+            return env.fork(
                 function(a) {
                     return f(a).fork(resolve, reject);
                 },
@@ -93,10 +93,10 @@ Promise.prototype.extract = function() {
 //  through to the resolve function.
 //
 Promise.prototype.map = function(f) {
-    var promise = this;
+    var env = this;
     return Promise(
         function(resolve, reject) {
-            return promise.fork(
+            return env.fork(
                 function(a) {
                     return resolve(f(a));
                 },
@@ -113,10 +113,10 @@ Promise.prototype.map = function(f) {
 //  fails. `f` must return a new promise.
 //
 Promise.prototype.reject = function(f) {
-    var promise = this;
+    var env = this;
     return Promise(
         function(resolve, reject) {
-            return promise.fork(
+            return env.fork(
                 resolve,
                 function(a) {
                     return f(a).fork(resolve, reject);

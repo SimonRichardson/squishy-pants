@@ -107,7 +107,7 @@ exports.promise = {
     'testing error with fork should return correct value': _.check(
         function(a) {
             return _.Promise.error(a).fork(
-                function(errors) {
+                function(a) {
                     _.error('Failed if called');
                 },
                 function(b) {
@@ -141,7 +141,7 @@ exports.promise = {
                         return _.Promise.error(a + 1);
                     }
                 ).fork(
-                    function(errors) {
+                    function(a) {
                         _.error('Failed if called');
                     },
                     function(b) {
@@ -150,42 +150,102 @@ exports.promise = {
                 );
         },
         [Number]
+    ),
+    'when using reject on promises should return correct value': _.check(
+        function(a) {
+            return _.Promise.error(a).reject(
+                    function(a) {
+                        return _.Promise.error(a + 1);
+                    }
+                ).fork(
+                    function(a) {
+                        _.error('Failed if called');
+                    },
+                    function(b) {
+                        return _.expect(b).toBe(a + 1);
+                    }
+                );
+        },
+        [Number]
+    ),
+    'when using reject with of on promises should return correct value': _.check(
+        function(a) {
+            return _.Promise.error(a).reject(
+                    function(a) {
+                        return _.Promise.of(a + 1);
+                    }
+                ).fork(
+                    function(b) {
+                        return _.expect(b).toBe(a + 1);
+                    },
+                    function(errors) {
+                        _.error('Failed if called');
+                    }
+                );
+        },
+        [Number]
+    ),
+    'when using map on promises should return correct value': _.check(
+        function(a) {
+            return _.Promise.of(a).map(
+                    function(a) {
+                        return a + 1;
+                    }
+                ).fork(
+                    function(b) {
+                        return _.expect(b).toBe(a + 1);
+                    },
+                    function(errors) {
+                        _.error('Failed if called');
+                    }
+                );
+        },
+        [Number]
+    ),
+    'when using map on error with promises should return correct value': _.check(
+        function(a) {
+            return _.Promise.error(a).map(
+                    function(a) {
+                        return a + 1;
+                    }
+                ).fork(
+                    function(b) {
+                        _.error('Failed if called');
+                    },
+                    function(b) {
+                        return _.expect(b).toBe(a);
+                    }
+                );
+        },
+        [Number]
+    ),
+    'when using reject on of with promises should return correct value': _.check(
+        function(a) {
+            return _.Promise.of(a).reject(
+                    function(a) {
+                        return a + 1;
+                    }
+                ).fork(
+                    function(b) {
+                        return _.expect(b).toBe(a);
+                    },
+                    function(b) {
+                        _.error('Failed if called');
+                    }
+                );
+        },
+        [Number]
+    ),
+    'when using extract on promises should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Promise.of(a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using extract on error with promises should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Promise.error(a).extract()).toBe(a);
+        },
+        [_.AnyVal]
     )
-};
-
-exports.promiseReject = {
-    testPromiseRejectError: function(test) {
-        var promise = _.Promise.error(41).reject(
-            function(a) {
-                return _.Promise.error(a + 1);
-            }
-        );
-        promise.fork(
-            function(data) {
-                test.ok(false, 'Failed if called');
-            },
-            function(errors) {
-                test.equal(42, errors);
-            }
-        );
-        test.expect(1);
-        test.done();
-    },
-    testPromiseRejectOf: function(test) {
-        var promise = _.Promise.error(41).reject(
-            function(a) {
-                return _.Promise.of(a + 1);
-            }
-        );
-        promise.fork(
-            function(data) {
-                test.equal(42, data);
-            },
-            function(errors) {
-                test.ok(false, 'Failed if called');
-            }
-        );
-        test.expect(1);
-        test.done();
-    }
 };
