@@ -1,6 +1,22 @@
 var _ = require('./lib/test');
 
 exports.stream = {
+    'when testing ap with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var binder = _.fill(a.length)(
+                    function(v) {
+                        return _.concat(v);
+                    }
+                ),
+                x = _.Stream.fromArray(binder),
+                y = _.Stream.fromArray(a),
+                actual = x.ap(y),
+                expected = _.Stream.fromArray(_.ap(binder, a));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
     'when testing concat with the stream should dispatch all items': _.checkStream(
         function(a, b) {
             var x = _.Stream.fromArray(a),
@@ -10,8 +26,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
     'when testing drop with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -23,15 +38,13 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal)]
     ),
     'when testing equality with same stream should return true': _.checkStream(
         function(a) {
             return a.equal(a);
         },
-        [_.Stream],
-        true
+        [_.Stream]
     ),
     'when testing filter with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -40,8 +53,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.Integer)],
-        true
+        [_.arrayOf(_.Integer)]
     ),
     'when testing length with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -50,8 +62,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.Integer)],
-        true
+        [_.arrayOf(_.Integer)]
     ),
     'when testing map with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -60,8 +71,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.Integer)],
-        true
+        [_.arrayOf(_.Integer)]
     ),
     'when testing merge with the stream should dispatch all items': _.checkStream(
         function(a, b) {
@@ -72,8 +82,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
     'when testing take with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -84,8 +93,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal)]
     ),
     'when testing zip with the stream should dispatch all items': _.checkStream(
         function(a, b) {
@@ -96,8 +104,7 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
     'when testing zipWithIndex with the stream should dispatch all items': _.checkStream(
         function(a) {
@@ -107,7 +114,6 @@ exports.stream = {
 
             return actual.equal(expected);
         },
-        [_.arrayOf(_.AnyVal)],
-        true
+        [_.arrayOf(_.AnyVal)]
     )
 };

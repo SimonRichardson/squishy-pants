@@ -1,29 +1,29 @@
 squishy = squishy
-    .method('map', isFunction, function(a, b) {
+    .method('map', isFunction, curry(function(a, b) {
         return compose(b, a);
-    })
-    .method('concat', isFunction, function(a, b) {
+    }))
+    .method('concat', isFunction, curry(function(a, b) {
         return a().concat(b());
-    })
-    .method('ap', isFunction, function(a, b) {
+    }))
+    .method('ap', isFunction, curry(function(a, b) {
         return function(x) {
             return a(x)(b(x));
         };
-    });
+    }));
 
 squishy = squishy
-    .method('concat', isBoolean, function(a, b) {
+    .method('concat', isBoolean, curry(function(a, b) {
         return a & b;
-    })
-    .method('concat', squishy.liftA2(or, isNumber, isString), function(a, b) {
+    }))
+    .method('concat', squishy.liftA2(or, isNumber, isString), curry(function(a, b) {
         return a + b;
-    })
-    .method('map', isBoolean, function(a, b) {
+    }))
+    .method('map', isBoolean, curry(function(a, b) {
         return b(a);
-    })
-    .method('map', squishy.liftA2(or, isNumber, isString), function(a, b) {
+    }))
+    .method('map', squishy.liftA2(or, isNumber, isString), curry(function(a, b) {
         return b(a);
-    });
+    }));
 
 //
 //  ### equal(a, b)

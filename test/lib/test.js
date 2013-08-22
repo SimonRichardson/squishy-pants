@@ -36,7 +36,7 @@ _ = _
 
         test.done();
     }))
-    .property('checkStream', _.curry(function(property, args, shouldComplete, test) {
+    .property('checkStream', _.curry(function(property, args, test) {
         var env = this,
             failures = [],
             inputs,
@@ -65,18 +65,16 @@ _ = _
                     )
                 });
             },
-            checkDone = function(shouldComplete) {
+            checkDone = function() {
                 return function() {
-                    if (shouldComplete) {
-                        test.ok(true, 'OK');
-                    }
+                    test.ok(true, 'OK');
                 };
             };
 
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
-            applied.fork(check(reporter, inputs, i), checkDone(shouldComplete));
+            applied.fork(check(reporter, inputs, i), checkDone());
         }
 
         var valid = _.fold(failures, true, function(a, b) {
