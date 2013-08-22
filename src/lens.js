@@ -2,14 +2,22 @@
 //  ## Lens
 //
 //
+//  * `identityLens()` - Identity lens that returns the original target.
+//  * `objectLens()` - Lens access for a object at a given property.
+//  * `arrayLens()` - Lens access for an array at a given index.
+//  * `parse(s)` - Parse a string to for a chain of lenses
+//  * `andThen(b)` - Helper method to enable chaining of lens objects.
+//  * `compose(b)` - Enabling of composing lenses together.
+//
 
 var Lens = tagged('Lens', ['run']),
     PartialLens = tagged('PartialLens', ['run']);
 
-function thisAndThen(b) {
-    return b.compose(this);
-}
-
+//
+//  ### identityLens
+//
+//  Identity lens that returns the original target.
+//
 Lens.identityLens = function() {
     return Lens(function(target) {
         return Store(
@@ -21,6 +29,11 @@ Lens.identityLens = function() {
     });
 };
 
+//
+//  ### objectLens
+//
+//  Lens access for a object at a given property.
+//
 Lens.objectLens = function(property) {
     return Lens(function(o) {
         return Store(
@@ -34,6 +47,11 @@ Lens.objectLens = function(property) {
     });
 };
 
+//
+//  ### arrayLens
+//
+//  Lens access for an array at a given index.
+//
 Lens.arrayLens = function(index) {
     return Lens(function(a) {
         return Store(
@@ -49,6 +67,21 @@ Lens.arrayLens = function(index) {
     });
 };
 
+//
+//  ### parse(s)
+//
+//  Parse a formatted string of accessors to create a series of
+//  lenses that can access a object
+//
+//  The following example will return a the value of `e`.
+//
+//          Lens.parse('c.z.i[0].e').run(a).get();
+//
+//  The following example will return a new object with the
+//  updated value of `e`.
+//
+//          Lens.parse('c.z.i[0].e').run(a).set(b);
+//
 Lens.parse = function(s) {
     return squishy.fold(s.split('.'), Lens.identityLens(), function(a, b) {
         var access = squishy.fold(b.split('['), Lens.identityLens(), function(a, b) {
@@ -67,8 +100,20 @@ Lens.parse = function(s) {
     });
 };
 
-Lens.prototype.andThen = thisAndThen;
+//
+//  ### andThen
+//
+//  Helper method to enable chaining of lens objects.
+//
+Lens.prototype.andThen = function(b) {
+    return b.compose(this);
+};
 
+//
+//  ### compose
+//
+//  Enabling of composing lenses together.
+//
 Lens.prototype.compose = function(b) {
     var a = this;
     return Lens(function(target) {
@@ -82,6 +127,11 @@ Lens.prototype.compose = function(b) {
     });
 };
 
+//
+//  ### toPartail
+//
+//  Return an partial lens from a lens.
+//
 Lens.prototype.toPartial = function() {
     var self = this;
     return PartialLens(function(target) {
@@ -92,14 +142,32 @@ Lens.prototype.toPartial = function() {
 //
 //  ## PartialLens
 //
+//  * `identityLens()` - Identity lens that returns the original target.
+//  * `objectLens()` - Lens access for a object at a given property.
+//  * `arrayLens()` - Lens access for an array at a given index.
+//  * `parse(s)` - Parse a string to for a chain of lenses
+//  * `andThen(b)` - Helper method to enable chaining of lens objects.
+//  * `compose(b)` - Enabling of composing lenses together.
 //
 
+
+//
+//  ### identityLens
+//
+//  Identity partial lens that returns the original target.
+//
 PartialLens.identityLens = function() {
     return PartialLens(function(target) {
-        return Option.Some(Lens.id().run(target));
+        return Option.Some(Lens.identity().run(target));
     });
 };
 
+//
+//  ### objectLens
+//
+//  PartialLens access for a object at a given property if the property
+//  exists otherwise returns none.
+//
 PartialLens.objectLens = function(property) {
     var lens = Lens.objectLens(property);
     return PartialLens(function(target) {
@@ -109,6 +177,12 @@ PartialLens.objectLens = function(property) {
     });
 };
 
+//
+//  ### arrayLens
+//
+//  PartialLens access for an array at a given index if the index exists
+//  otherwise returns none.
+//
 PartialLens.arrayLens = function(index) {
     var lens = Lens.arrayLens(index);
     return PartialLens(function(target) {
@@ -118,8 +192,20 @@ PartialLens.arrayLens = function(index) {
     });
 };
 
-PartialLens.prototype.andThen = thisAndThen;
+//
+//  ### andThen
+//
+//  Helper method to enable chaining of lens objects.
+//
+PartialLens.prototype.andThen = function(b) {
+    return b.compose(this);
+};
 
+//
+//  ### compose
+//
+//  Enabling of composing lenses together.
+//
 PartialLens.prototype.compose = function(b) {
     var a = this;
     return PartialLens(function(target) {
