@@ -39,16 +39,19 @@ _ = _
     .property('checkStream', _.curry(function(property, args, test) {
         var env = this,
             failures = [],
+            expected = 0,
             inputs,
             applied,
             i,
             check = env.curry(function(state, inputs, index, result) {
                 state(
                     !result ?
-                    env.Some(_.failureReporter(
-                        inputs,
-                        index + 1
-                    )) :
+                    env.Some(
+                        _.failureReporter(
+                            inputs,
+                            index + 1
+                        )
+                    ) :
                     env.None
                 );
             }),
@@ -69,12 +72,17 @@ _ = _
                 return function() {
                     test.ok(true, 'OK');
                 };
-            };
+            },
+            add = function() {
+                expected = _.inc(expected);
+            },
+            nothing = function() {};
 
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
             applied.fork(check(reporter, inputs, i), checkDone());
+            applied.length().fork(add, nothing);
         }
 
         var valid = _.fold(failures, true, function(a, b) {
@@ -85,7 +93,7 @@ _ = _
             });
 
         // FIXME: This should only call checkDone once.
-        // test.expect(shouldComplete ? 2 : 1);
+        test.expect(expected + 1);
         test.ok(valid, words);
         test.done();
     }))
