@@ -373,6 +373,14 @@ function lazy(f) {
     };
 }
 
+function point(a) {
+    return a.of || a.constructor.of;
+}
+
+function empty(a) {
+    return a.empty || a.constructor.empty;
+}
+
 //
 //  ## optional
 //
