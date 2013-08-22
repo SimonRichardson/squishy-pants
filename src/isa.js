@@ -53,6 +53,24 @@ function isArray(a) {
 }
 
 //
+//  ## isNull(a)
+//
+//  Returns `true` if `a` is `null`.
+//
+function isNull(a) {
+    return a === null;
+}
+
+//
+//  ## isUndefined(a)
+//
+//  Returns `true` if `a` is `null`.
+//
+function isUndefined(a) {
+    return a === void(0);
+}
+
+//
 //  ## isNaN(a)
 //
 //  Returns `true` if `a` is a not a number including `NaN` and `Infinity`.

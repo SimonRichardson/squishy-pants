@@ -33,6 +33,14 @@ exports.empty = {
 };
 
 exports.equal = {
+    'when testing equal with null should return true': function(test) {
+        test.ok(_.equal(null, null));
+        test.done();
+    },
+    'when testing equal with undefined should return true': function(test) {
+        test.ok(_.equal(undefined, undefined));
+        test.done();
+    },
     'when testing equal with Boolean should return true': _.check(
         function(a) {
             return _.equal(a, a);

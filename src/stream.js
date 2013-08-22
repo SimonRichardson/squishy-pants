@@ -238,6 +238,25 @@ Stream.prototype.merge = function(a) {
 };
 
 //
+//  ### pipe(a)
+//
+//  Pipe a stream to a state or writer monad.
+//
+Stream.prototype.pipe = function(o) {
+    var env = this;
+    return Stream(
+        function(next, done) {
+            return env.fork(
+                function(v) {
+                    return o.run(v);
+                },
+                done
+            );
+        }
+    );
+};
+
+//
 //  ### scan(a)
 //
 //  Combines the elements of this stream together using the binary operator

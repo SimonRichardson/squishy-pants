@@ -46,6 +46,13 @@ exports.stream = {
         },
         [_.Stream]
     ),
+    'when testing extract with the stream should dispatch all items': _.check(
+        function(a) {
+            var actual = _.Stream.fromArray(a).extract();
+            return _.expect(actual).toBe(null);
+        },
+        [_.arrayOf(_.Integer)]
+    ),
     'when testing filter with the stream should dispatch all items': _.checkStream(
         function(a) {
             var actual = _.Stream.fromArray(a).filter(_.isEven),
@@ -83,6 +90,44 @@ exports.stream = {
             return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+    ),
+    'when testing pipe with the stream should dispatch all items': _.checkStream(
+        function(a, b) {
+            var x = _.Stream.fromArray(a),
+                y = _.Stream(function (next, done) {
+                    // Pretent to be a state/writer monad
+                    x.pipe({
+                        run: next
+                    });
+                }),
+                expected = _.Stream.fromArray(a);
+
+            return expected.equal(y);
+        },
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+    ),
+    'when testing scan with the stream should dispatch all items': _.checkStream(
+        function(a) {
+            var x = _.Stream.fromArray(a),
+                sum = function(a, b) {
+                    return a + b;
+                },
+                inc = function(a) {
+                    var x = 0;
+                    return _.map(
+                        a,
+                        function(y) {
+                            x = sum(x, y);
+                            return x;
+                        }
+                    );
+                },
+                actual = x.scan(0, sum),
+                expected = _.Stream.fromArray(inc(a));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(Number)]
     ),
     'when testing take with the stream should dispatch all items': _.checkStream(
         function(a) {

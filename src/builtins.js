@@ -32,6 +32,7 @@ squishy = squishy
 //  complex structures like `object` and `array`s.
 //
 squishy = squishy
+    .method('equal', isNull, strictEquals)
     .method('equal', isBoolean, strictEquals)
     .method('equal', isFunction, strictEquals)
     .method('equal', isNumber, strictEquals)
@@ -64,7 +65,6 @@ squishy = squishy
         }
         return false;
     })
-    .method('equal', strictEquals(null), strictEquals)
     .method('equal', strictEquals(undefined), strictEquals)
     .property('expect', function(a) {
         var env = this;
