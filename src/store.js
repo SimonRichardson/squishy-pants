@@ -1,19 +1,32 @@
 //
 //  ## Store(set, get)
 //
+//  * `extract()` - Extracting value returning new
+//  * `extend(f)` - Monadic flatMap/bind
+//  * `map(f)` - Functor map
 //
 var Store = tagged('Store', ['set', 'get']);
 
+//
+//  ### extract()
+//
+//  Extract the value and sets a new value.
+//
 Store.prototype.extract = function() {
     return this.set(this.get());
 };
 
+//
+//  ### extend(f)
+//
+//  Extend the store value with the result from f, chaining stores together.
+//
 Store.prototype.extend = function(f) {
-    var self = this;
+    var env = this;
     return Store(
         function(k) {
             return f(Store(
-                self.set,
+                env.set,
                 function() {
                     return k;
                 }
@@ -23,6 +36,11 @@ Store.prototype.extend = function(f) {
     );
 };
 
+//
+//  ### map(f)
+//
+//  Returns a new state that evaluates `f` on a value and passes it through.
+//
 Store.prototype.map = function(f) {
     var self = this;
     return this.extend(function(c) {
