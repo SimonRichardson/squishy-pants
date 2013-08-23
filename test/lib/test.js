@@ -72,17 +72,12 @@ _ = _
                 return function() {
                     test.ok(true, 'OK');
                 };
-            },
-            add = function() {
-                expected = _.inc(expected);
-            },
-            nothing = function() {};
+            };
 
         for(i = 0; i < env.goal; i++) {
             inputs = env.generateInputs(env, args, i);
             applied = property.apply(this, inputs);
             applied.fork(check(reporter, inputs, i), checkDone());
-            applied.length().fork(add, nothing);
         }
 
         var valid = _.fold(failures, true, function(a, b) {
@@ -92,8 +87,7 @@ _ = _
                 return b.valid ? a : a + '\n' + b.msg;
             });
 
-        // FIXME: This should only call checkDone once.
-        test.expect(expected + 1);
+        test.expect(env.goal + 1);
         test.ok(valid, words);
         test.done();
     }))
