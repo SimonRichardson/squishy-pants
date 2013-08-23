@@ -5,44 +5,59 @@
 //
 
 //
-//  ## io(f)
+//  ## IO(f)
 //
 //  Pure wrapper around a side-effecting `f` function.
 //
 //  * perform() - action to be called a single time per program
 //  * flatMap(f) - monadic flatMap/bind
 //
-function io(f) {
-    var self = getInstance(this, io);
+var IO = tagged('IO', ['unsafePerform']);
 
-    self.perform = function() {
-        return f();
-    };
+IO.of = function(x) {
+    return IO(function() {
+        return x;
+    });
+};
 
-    self.flatMap = function(g) {
-        return io(function() {
-            return g(f()).perform();
-        });
-    };
+IO.prototype.ap = function(a) {
+    return this.chain(function(f) {
+        return squishy.map(a, f);
+    });
+};
 
-    return self;
-}
+IO.prototype.chain = function(f) {
+    var env = this;
+    return IO(function() {
+        return f(env.unsafePerform()).unsafePerform();
+    });
+};
+
+IO.prototype.map = function(f) {
+    return this.chain(function(a) {
+        return IO.of(f(a));
+    });
+};
 
 //
 //  ## isIO(a)
 //
 //  Returns `true` if `a` is an `io`.
 //
-var isIO = isInstanceOf(io);
+var isIO = isInstanceOf(IO);
 
 squishy = squishy
-    .property('io', io)
+    .property('IO', IO)
     .property('isIO', isIO)
-    .method('pure', strictEquals(io), function(m, a) {
-        return io(function() {
-            return a;
-        });
+    .method('of', strictEquals(IO), function(m, a) {
+        return IO.of(a);
     })
-    .method('flatMap', isIO, function(a, b) {
+    .method('ap', isIO, function(a, b) {
         return a.flatMap(b);
+    })
+    .method('chain', isIO, function(a, b) {
+        return a.flatMap(b);
+    })
+    .method('map', isIO, function(a, b) {
+        return a.map(b);
     });
