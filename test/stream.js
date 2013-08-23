@@ -1,6 +1,66 @@
 var _ = require('./lib/test');
 
 exports.stream = {
+    'when testing fork should call next correct number of times': _.check(
+        function(a) {
+            var accum = 0,
+                stream = _.Stream.fromArray(a);
+            stream.fork(
+                function() {
+                    accum += 1;
+                },
+                _.identity
+            );
+            return _.expect(accum).toBe(a.length);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when testing fork should call done correct number of times': _.check(
+        function(a) {
+            var accum = 0,
+                stream = _.Stream.fromArray(a);
+            stream.fork(
+                _.identity,
+                function() {
+                    accum += 1;
+                }
+            );
+            return _.expect(accum).toBe(1);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when testing map and then fork should call done correct number of times': _.check(
+        function(a) {
+            var accum = 0,
+                stream = _.Stream.fromArray(a).map(
+                    function(x) {
+                        return a + 1;
+                    }
+                );
+            stream.fork(
+                _.identity,
+                function() {
+                    accum += 1;
+                }
+            );
+            return _.expect(accum).toBe(1);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when testing equal and then fork should call done correct number of times': _.check(
+        function(a) {
+            var accum = 0,
+                stream = _.Stream.fromArray(a).equal(_.Stream.fromArray(a));
+            stream.fork(
+                _.identity,
+                function() {
+                    accum += 1;
+                }
+            );
+            return _.expect(accum).toBe(1);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
     'when testing ap with the stream should dispatch all items': _.checkStream(
         function(a) {
             var binder = _.fill(a.length)(

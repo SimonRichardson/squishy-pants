@@ -365,11 +365,14 @@ function dec(x) {
 //       )();
 //
 function lazy(f) {
+    /* Create a special lock so we don't have to look for undefined */
     var args = [].slice.call(arguments),
-        val;
+        lock = {},
+        val = lock;
 
     return function() {
-        return (val !== undefined) ? f.apply(null, args) : val;
+        if (val === lock) val = f.apply(null, args);
+        return val;
     };
 }
 
