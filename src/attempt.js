@@ -55,7 +55,7 @@ Attempt.prototype.ap = function(b, concat) {
     var a = this;
     return a.match({
         Success: function(value) {
-            return b.map(value);
+            return squishy.map(b, value);
         },
         Failure: function(e) {
             return b.match({

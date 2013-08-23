@@ -37,7 +37,7 @@ Either.prototype.ap = function(e) {
             return this;
         },
         Right: function(x) {
-            return e.map(x);
+            return squishy.map(e, x);
         }
     });
 };
@@ -52,13 +52,14 @@ Either.prototype.concat = function(s, f) {
     var env = this;
     return this.match({
         Left: function() {
-            return s.fold(
+            return squishy.fold(
+                s,
                 constant(env),
                 constant(s)
             );
         },
         Right: function(y) {
-            return s.map(function(x) {
+            return squishy.map(s, function(x) {
                 return f(x, y);
             });
         }
@@ -287,6 +288,9 @@ squishy = squishy
     })
     .method('extract', isEither, function(a) {
         return a.extract();
+    })
+    .method('fold', isEither, function(a, b, c) {
+        return a.fold(b, c);
     })
     .method('flatMap', isEither, function(a, b) {
         return a.flatMap(b);

@@ -64,7 +64,8 @@ Option.prototype.chain = function(f) {
 Option.prototype.concat = function(s, f) {
     return this.match({
         Some: function(x) {
-            return s.map(
+            return squishy.map(
+                s,
                 function(y) {
                     return f(x, y);
                 }

@@ -15,6 +15,13 @@ exports.reader = {
         },
         [_.AnyVal, _.AnyVal]
     ),
+    'when testing ap on the Reader should return the new value': _.check(
+        function(a) {
+            var reader = _.Reader.of(_.concat(1));
+            return _.expect(reader.ap(_.Reader.of(a)).run()).toBe(a + 1);
+        },
+        [Number]
+    ),
     'when testing flatMap on the Reader should return the new value': _.check(
         function(a, b) {
             return _.equal(a.length + b, _.Reader.ask.flatMap(function(s) {
@@ -22,5 +29,13 @@ exports.reader = {
             }).run(a));
         },
         [String, Number]
+    ),
+    'when testing map on the Reader should return the new value': _.check(
+        function(a) {
+            return _.expect(_.Reader.ask.map(function(a) {
+                return a + 1;
+            }).run(a)).toBe(a + 1);
+        },
+        [Number]
     )
 };
