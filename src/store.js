@@ -25,14 +25,15 @@ Store.prototype.extend = function(f) {
     var env = this;
     return Store(
         function(k) {
-            return f(Store(
+            env.set(f(Store(
                 env.set,
-                function() {
-                    return k;
-                }
-            ));
+                constant(k)
+            )));
+            return env.get();
         },
-        this.get
+        function() {
+            return env.get();
+        }
     );
 };
 

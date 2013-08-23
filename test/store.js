@@ -53,28 +53,28 @@ exports.store = {
             return _.expect(store.get()).toBe(a);
         },
         [_.AnyVal]
-    )/*,
+    ),
     'when testing store with map should return correct value': _.check(
         function(a) {
             var store = _.Store(
                     function(v) {
                         this.value = v;
-                        return this;
+                        return v;
                     },
                     function() {
                         return this.value;
                     }
-                ).set(a);
+                ),
+                newStore = store.map(
+                    function(a) {
+                        return a + 1;
+                    }
+                );
 
-            console.log(store.map(
-                function(a) {
-                    console.log('...',a);
-                    return a + 1;
-                }
-            ).get());
+            newStore.set(a);
 
-            return true;//_.expect().toBe(a + 1);
+            return _.expect(newStore.get()).toBe(a + 1);
         },
         [Number]
-    )*/
+    )
 };
