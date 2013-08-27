@@ -54,6 +54,7 @@ var ap = curry(function(a, b) {
 //  ### concat(b)
 //
 //  Appends two array objects.
+//  semigroup concat
 //
 var concat = curry(function(a, b) {
     return a.concat(b);

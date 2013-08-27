@@ -47,24 +47,6 @@ squishy = squishy
         }
         return false;
     })
-    .method('equal', isObject, function(a, b) {
-        var i;
-        /* We need to be sure that the there is an `a` and a `b` here. */
-        if (and(a, b) && isObject(b)) {
-            /* This would be better if we turn objects into ordered
-               arrays so we can pass it through equal(a, b) */
-            for (i in a) {
-                if (!this.equal(a[i], b[i]))
-                    return false;
-            }
-            for (i in b) {
-                if (!this.equal(b[i], a[i]))
-                    return false;
-            }
-            return true;
-        }
-        return false;
-    })
     .method('equal', strictEquals(undefined), strictEquals)
     .property('expect', function(a) {
         var env = this;

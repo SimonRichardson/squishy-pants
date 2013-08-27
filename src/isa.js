@@ -136,7 +136,6 @@ var isInstanceOf = curry(function(a, b) {
 //
 var isArrayOf = isInstanceOf(arrayOf);
 
-
 //
 //  ## isObjectLike(a)
 //

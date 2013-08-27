@@ -59,7 +59,7 @@
 //
 //       env.name === 'Squishy';
 //
-function findRegistered(registrations, args) {
+function findRegistered(name, registrations, args) {
     var i,
         total;
 
@@ -68,13 +68,13 @@ function findRegistered(registrations, args) {
             return registrations[i].f;
     }
 
-    throw new Error('Method not implemented for this input');
+    throw new Error('Method `' + name + '` not implemented for this input');
 }
 
-function makeMethod(registrations) {
+function makeMethod(name, registrations) {
     return function() {
         var args = [].slice.call(arguments);
-        return findRegistered(registrations, args).apply(this, args);
+        return findRegistered(name, registrations, args).apply(this, args);
     };
 }
 
@@ -113,7 +113,7 @@ function environment(methods, properties) {
         if(self[i]) throw new Error("Method `" + i + "` already in environment.");
         else {
             /* Make sure the methods are names */
-            var method = makeMethod(methods[i]);
+            var method = makeMethod(i, methods[i]);
             method._name = i;
             self[i] = method;
         }
