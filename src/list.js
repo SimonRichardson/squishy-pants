@@ -54,14 +54,14 @@ var List = taggedSum('List', {
 //  Create a list from a range of values.
 //
 List.range = curry(function(a, b) {
-    var accum = List.Nil,
-        i;
-
-    for (i = a; i < b; i++) {
-        accum = List.Cons(i, accum);
-    }
-
-    return accum.reverse();
+    var total = b - a;
+    var rec = function(x, y) {
+        if (y - a >= total) return done(x);
+        return cont(function() {
+            return rec(List.Cons(y, x), ++y);
+        });
+    };
+    return trampoline(rec(List.Nil, a));
 });
 
 //
@@ -200,16 +200,19 @@ List.prototype.equal = function(b) {
 //  Returns all the elements of this list that satisfy the predicate p.
 //
 List.prototype.filter = function(f) {
-    var accum = List.Nil,
-        p = this;
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
 
-    while(p.isNonEmpty) {
-        if(f(p.head)) {
-            accum = accum.prepend(p.head);
-        }
-        p = p.tail;
-    }
-    return accum.reverse();
+        return cont(function() {
+            var c = curry(rec)(a.tail);
+            if (f(a.head)) {
+                return c(List.Cons(a.head, b));
+            } else {
+                return c(b);
+            }
+        });
+    };
+    return trampoline(rec(this, List.Nil)).reverse();
 };
 
 //
@@ -234,14 +237,14 @@ List.prototype.flatMap = function(f) {
 //  from Left to Right, and starting with the value v.
 //
 List.prototype.fold = function(v, f) {
-    var accum = v,
-        p = this;
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
 
-    while(p.isNonEmpty) {
-        accum = f(accum, p.head);
-        p = p.tail;
-    }
-    return accum;
+        return cont(function() {
+            return rec(a.tail, f(b, a.head));
+        });
+    };
+    return trampoline(rec(this, v));
 };
 
 //
@@ -316,14 +319,14 @@ List.prototype.prepend = function(a) {
 //  Prepend a list of values to the current list returning a new list.
 //
 List.prototype.prependAll = function(a) {
-    var accum = this,
-        p = a;
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
 
-    while(p.isNonEmpty) {
-        accum = List.Cons(p.head, accum);
-        p = p.tail;
-    }
-    return accum;
+        return cont(function() {
+            return rec(a.tail, List.Cons(a.head, b));
+        });
+    };
+    return trampoline(rec(a, this));
 };
 
 //
@@ -332,14 +335,19 @@ List.prototype.prependAll = function(a) {
 //  Reverse the list as a new list.
 //
 List.prototype.reverse = function() {
-    var accum = List.Nil,
-        p = this;
-
-    while(p.isNonEmpty) {
-        accum = List.Cons(p.head, accum);
-        p = p.tail;
-    }
-    return accum;
+    var rec = function(p, accum) {
+        return p.match({
+            Cons: function(a, b) {
+                return cont(function() {
+                    return rec(p.tail, List.Cons(a, accum));
+                });
+            },
+            Nil: function() {
+                return done(accum);
+            }
+        });
+    };
+    return trampoline(rec(this, List.Nil));
 };
 
 //
@@ -348,14 +356,14 @@ List.prototype.reverse = function() {
 //  size of the list
 //
 List.prototype.size = function() {
-    var accum = 0,
-        p = this;
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
 
-    while(p.isNonEmpty) {
-        accum += 1;
-        p = p.tail;
-    }
-    return accum;
+        return cont(function() {
+            return rec(a.tail, ++b);
+        });
+    };
+    return trampoline(rec(this, 0));
 };
 
 //
