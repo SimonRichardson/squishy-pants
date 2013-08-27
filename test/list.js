@@ -228,6 +228,23 @@ exports.list = {
         },
         [_.listOf(_.AnyVal)]
     ),
+    'when testing takeRight with list should be correct value': _.check(
+        function(a) {
+            var x = Math.floor(_.randomRange(0, a.size())),
+                expected = _.takeRight(a.toArray(), x);
+
+            return _.expect(a.takeRight(x)).toBe(_.List.fromArray(expected));
+        },
+        [_.listOf(_.Integer)]
+    ),
+    'when testing takeWhile with list should be correct value': _.check(
+        function(a) {
+            var expected = _.takeWhile(a.toArray(), _.isEven);
+
+            return _.expect(a.takeWhile(_.isEven)).toBe(_.List.fromArray(expected));
+        },
+        [_.listOf(_.Integer)]
+    ),
     'when testing zip should return correct value': _.check(
         function(a, b) {
             var expected = _.List.fromArray(_.zip(a.toArray(), b.toArray()));

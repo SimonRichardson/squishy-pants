@@ -46,6 +46,8 @@
 //   * `reduceRight(a, f)` - Combines the elements of this list together using the binary operator op, from Right to Left
 //   * `size()` - size of the list
 //   * `take(n)` - Returns the n first elements of this list.
+//   * `takeRight(n)` - Returns the rightmost n elements from this list.
+//   * `takeWhile(f)` - Returns the longest prefix of this list whose elements satisfy the predicate.
 //   * `zip(a, b)` - Returns a list formed from this list and the specified list that by associating each element of the former with the element at the same position in the latter.
 //   * `zipWithIndex(a)` -  Returns a list form from this list and a index of the value that is associated with each element index position.
 //
@@ -490,6 +492,44 @@ List.prototype.take = function(n) {
     return accum.reverse();
 };
 
+//
+//  ### takeRight(n)
+//
+//  Returns the rightmost n elements from this list.
+//
+List.prototype.takeRight = function(n) {
+    if (n < 1) return this;
+
+    var rec = function(a, b, c) {
+        if (a.isEmpty || c < 1) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, b.prepend(a.head), --c);
+        });
+    };
+    return trampoline(rec(this.reverse(), List.Nil, n));
+};
+
+//
+//  ### takeWhile(f)
+//
+//  Returns the longest prefix of this list whose elements satisfy
+//  the predicate.
+//
+List.prototype.takeWhile = function(f) {
+    var env = this,
+        rec = function(a, b) {
+            if (a.isEmpty) return done(0);
+            else if(!f(a.head)) return done(b);
+
+            return cont(function() {
+                return rec(a.tail, ++b);
+            });
+        },
+        index = trampoline(rec(this, 0));
+
+    return this.take(index);
+};
 
 //
 //  ### zip(b)
@@ -667,6 +707,9 @@ squishy = squishy
     })
     .method('take', isList, function(a, b) {
         return a.take(b);
+    })
+    .method('takeRight', isList, function(a, b) {
+        return a.takeRight(b);
     })
     .method('zip', isList, function(a, b) {
         return a.zip(b);
