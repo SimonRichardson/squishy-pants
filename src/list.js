@@ -25,6 +25,8 @@
 //
 //   * `ap(a, b)` - Applicative ap(ply)
 //   * `concat(a)` - semigroup concat
+//   * `count(a, f)` - Count the number of elements in the list which satisfy a predicate.
+//   * `drop(a, n)` - Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
 //   * `extract()` -  extract the value from option
 //   * `equal(a)` -  `true` if `a` is equal to `this`
 //   * `fold(a, b)` - applies `a` to value if `Cons` or defaults to `b`
@@ -138,6 +140,39 @@ List.prototype.appendAll = function(a) {
 //
 List.prototype.concat = function(s) {
     return this.appendAll(s);
+};
+
+//
+//  ### count(f)
+//
+//  Count the number of elements in the list which satisfy a predicate.
+//
+List.prototype.count = function(f) {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, f(a.head) ? inc(b) : b);
+        });
+    };
+    return trampoline(rec(this, 0));
+};
+
+//
+//  ### drop(n)
+//
+//  Appends two list objects.
+//  semigroup concat
+//
+List.prototype.drop = function(n) {
+    var rec = function(a, b) {
+        if (a.isEmpty || b < 1) return done(a);
+
+        return cont(function() {
+            return rec(a.tail, --b);
+        });
+    };
+    return trampoline(rec(this, n));
 };
 
 //
@@ -522,6 +557,12 @@ squishy = squishy
     })
     .method('concat', isList, function(a, b) {
         return a.concat(b);
+    })
+    .method('count', isList, function(a, b) {
+        return a.count(b);
+    })
+    .method('drop', isList, function(a, b) {
+        return a.drop(b);
     })
     .method('equal', isList, function(a, b) {
         return a.equal(b);

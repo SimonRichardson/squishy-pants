@@ -56,6 +56,23 @@ exports.list = {
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
+    'when testing count with list should be correct value': _.check(
+        function(a) {
+            var expected = _.count(a.toArray(), _.isEven);
+
+            return _.expect(a.count(_.isEven)).toBe(expected);
+        },
+        [_.listOf(_.Integer)]
+    ),
+    'when testing drop with list should be correct value': _.check(
+        function(a) {
+            var x = Math.floor(_.randomRange(0, a.size())),
+                expected = _.drop(a.toArray(), x);
+
+            return _.expect(a.drop(x)).toBe(_.List.fromArray(expected));
+        },
+        [_.listOf(_.Integer)]
+    ),
     'when testing exists should return correct value': _.check(
         function(a) {
             var size = a.size(),
