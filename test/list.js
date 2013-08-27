@@ -73,6 +73,23 @@ exports.list = {
         },
         [_.listOf(_.Integer)]
     ),
+    'when testing dropRight with list should be correct value': _.check(
+        function(a) {
+            var x = Math.floor(_.randomRange(0, a.size())),
+                expected = _.dropRight(a.toArray(), x);
+
+            return _.expect(a.dropRight(x)).toBe(_.List.fromArray(expected));
+        },
+        [_.listOf(_.Integer)]
+    ),
+    'when testing dropWhile with list should be correct value': _.check(
+        function(a) {
+            var expected = _.dropWhile(a.toArray(), _.isEven);
+
+            return _.expect(a.dropWhile(_.isEven)).toBe(_.List.fromArray(expected));
+        },
+        [_.listOf(_.Integer)]
+    ),
     'when testing exists should return correct value': _.check(
         function(a) {
             var size = a.size(),
@@ -142,6 +159,28 @@ exports.list = {
             return _.expect(_.Nil.prependAll(_.Cons(a, _.Cons(b, _.Nil)))).toBe(_.Cons(b, _.Cons(a, _.Nil)));
         },
         [_.AnyVal, _.AnyVal]
+    ),
+    'when testing reduce with list should yield items': _.check(
+        function(a) {
+            var sum = function(a, b) {
+                    return a + b;
+                },
+                expected = _.reduce(a.toArray(), sum);
+
+            return _.expect(a.reduce(sum)).toBe(expected);
+        },
+        [_.listOf(Number)]
+    ),
+    'when testing reduceRight with list should yield items': _.check(
+        function(a) {
+            var minus = function(a, b) {
+                    return a - b;
+                },
+                expected = _.reduceRight(a.toArray(), minus);
+
+            return _.expect(a.reduceRight(minus)).toBe(expected);
+        },
+        [_.listOf(Number)]
     ),
     'when testing reverse should return correct value': _.check(
         function(a) {

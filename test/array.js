@@ -163,7 +163,7 @@ exports.array = {
     ),
     'when testing reduce with array should yield items': _.check(
         function(a) {
-            var accum = a[0],
+            var accum = a[0] || null,
                 sum = function(a, b) {
                     return a + b;
                 },
@@ -179,7 +179,7 @@ exports.array = {
     ),
     'when testing reduceRight with array should yield items': _.check(
         function(a) {
-            var accum = a[a.length - 1],
+            var accum = a[a.length - 1] || null,
                 minus = function(a, b) {
                     return a - b;
                 },

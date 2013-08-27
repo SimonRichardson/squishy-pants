@@ -251,7 +251,7 @@ var partition = curry(function(a, f) {
 //
 var reduce = curry(function(a, f) {
     var total = a.length,
-        v = a[0],
+        v = a[0] || null,
         i;
 
     for (i = 1; i < total; i++) {
@@ -269,7 +269,7 @@ var reduce = curry(function(a, f) {
 //
 var reduceRight = curry(function(a, f) {
     var total = a.length,
-        v = a[total - 1],
+        v = a[total - 1] || null,
         i;
 
     for (i = total - 2; i >= 0; --i) {

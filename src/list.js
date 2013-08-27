@@ -27,6 +27,8 @@
 //   * `concat(a)` - semigroup concat
 //   * `count(a, f)` - Count the number of elements in the list which satisfy a predicate.
 //   * `drop(a, n)` - Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
+//   * `dropRight(a, n)` - Returns the list without its rightmost `n` elements.
+//   * `dropWhile(a, f)` - Returns the longest suffix of this list whose first element does not satisfy the predicate.
 //   * `extract()` -  extract the value from option
 //   * `equal(a)` -  `true` if `a` is equal to `this`
 //   * `fold(a, b)` - applies `a` to value if `Cons` or defaults to `b`
@@ -40,6 +42,8 @@
 //   * `exists()` - test by predicate
 //   * `filter()` - filter by predicate
 //   * `partition()` - partition by predicate
+//   * `reduce(a, f)` - Combines the elements of this list together using the binary operator op, from Left to Right
+//   * `reduceRight(a, f)` - Combines the elements of this list together using the binary operator op, from Right to Left
 //   * `size()` - size of the list
 //   * `take(n)` - Returns the n first elements of this list.
 //   * `zip(a, b)` - Returns a list formed from this list and the specified list that by associating each element of the former with the element at the same position in the latter.
@@ -161,8 +165,7 @@ List.prototype.count = function(f) {
 //
 //  ### drop(n)
 //
-//  Appends two list objects.
-//  semigroup concat
+//  Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
 //
 List.prototype.drop = function(n) {
     var rec = function(a, b) {
@@ -173,6 +176,45 @@ List.prototype.drop = function(n) {
         });
     };
     return trampoline(rec(this, n));
+};
+
+//
+//  ### dropRight(n)
+//
+//  Returns the list without its rightmost `n` elements.
+//
+List.prototype.dropRight = function(n) {
+    if (n < 1) return List.Nil;
+
+    var rec = function(a, b, c) {
+        if (a.isEmpty || c < 1) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, b.prepend(a.head), --c);
+        });
+    };
+    return trampoline(rec(this, List.Nil, this.size() - n)).reverse();
+};
+
+//
+//  ### dropWhile(f)
+//
+//  Returns the longest suffix of this array whose first element
+//  does not satisfy the predicate.
+//
+List.prototype.dropWhile = function(f) {
+    var env = this,
+        rec = function(a, b) {
+            if (a.isEmpty) return done(0);
+            else if(!f(a.head)) return done(b);
+
+            return cont(function() {
+                return rec(a.tail, ++b);
+            });
+        },
+        index = trampoline(rec(this, 0));
+
+    return this.drop(index);
 };
 
 //
@@ -362,6 +404,35 @@ List.prototype.prependAll = function(a) {
         });
     };
     return trampoline(rec(a, this));
+};
+
+//
+//  ### reduce(f)
+//
+//  Combines the elements of this list together using the binary operator
+//  op, from Left to Right
+//
+List.prototype.reduce = function(f) {
+    if (this.isEmpty) return null;
+
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, f(b, a.head));
+        });
+    };
+    return trampoline(rec(this.tail, this.head));
+};
+
+//
+//  ### reduceRight(f)
+//
+//  Combines the elements of this list together using the binary operator
+//  op, from Right to Left
+//
+List.prototype.reduceRight = function(f) {
+    return this.reverse().reduce(f);
 };
 
 //
@@ -564,6 +635,12 @@ squishy = squishy
     .method('drop', isList, function(a, b) {
         return a.drop(b);
     })
+    .method('dropRight', isList, function(a, b) {
+        return a.dropRight(b);
+    })
+    .method('dropWhile', isList, function(a, b) {
+        return a.dropWhile(b);
+    })
     .method('equal', isList, function(a, b) {
         return a.equal(b);
     })
@@ -581,6 +658,12 @@ squishy = squishy
     })
     .method('partition', isList, function(a, f) {
         return a.partition(f);
+    })
+    .method('reduce', isList, function(a, f) {
+        return a.reduce(f);
+    })
+    .method('reduceRight', isList, function(a, f) {
+        return a.reduceRight(f);
     })
     .method('take', isList, function(a, b) {
         return a.take(b);
