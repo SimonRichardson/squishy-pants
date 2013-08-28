@@ -28,7 +28,7 @@ exports.tuple2 = {
                 );
             return _.expect(a.concat(b)).toBe(expected);
         },
-        [_.Tuple2, _.Tuple2]
+        [_.tuple2Of(_.AnyVal, _.AnyVal), _.tuple2Of(_.AnyVal, _.AnyVal)]
     ),
     'when testing tuple2 and calling flatMap should have correct arguments': _.check(
         function(a, b) {
@@ -38,13 +38,13 @@ exports.tuple2 = {
                     }
                 )).toBe(b);
         },
-        [_.Tuple2, _.Tuple2]
+        [_.tuple2Of(_.AnyVal, _.AnyVal), _.tuple2Of(_.AnyVal, _.AnyVal)]
     ),
     'when testing tuple2 and calling toArray should have correct arguments': _.check(
         function(a) {
             return _.expect(a.toArray()).toBe([a._1, a._2]);
         },
-        [_.Tuple2]
+        [_.tuple2Of(_.AnyVal, _.AnyVal)]
     )
 };
 
@@ -65,7 +65,7 @@ exports.tuple3 = {
                 );
             return _.expect(a.concat(b)).toBe(expected);
         },
-        [_.Tuple3, _.Tuple3]
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple3 and calling flatMap should have correct arguments': _.check(
         function(a, b) {
@@ -75,13 +75,13 @@ exports.tuple3 = {
                     }
                 )).toBe(b);
         },
-        [_.Tuple3, _.Tuple3]
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple3 and calling toArray should have correct arguments': _.check(
         function(a) {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3]);
         },
-        [_.Tuple3]
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
     )
 };
 
@@ -103,7 +103,7 @@ exports.tuple4 = {
                 );
             return _.expect(a.concat(b)).toBe(expected);
         },
-        [_.Tuple4, _.Tuple4]
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple4 and calling flatMap should have correct arguments': _.check(
         function(a, b) {
@@ -113,13 +113,13 @@ exports.tuple4 = {
                     }
                 )).toBe(b);
         },
-        [_.Tuple4, _.Tuple4]
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple4 and calling toArray should have correct arguments': _.check(
         function(a) {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3, a._4]);
         },
-        [_.Tuple4]
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     )
 };
 
@@ -142,7 +142,7 @@ exports.tuple5 = {
                 );
             return _.expect(a.concat(b)).toBe(expected);
         },
-        [_.Tuple5, _.Tuple5]
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple5 and calling flatMap should have correct arguments': _.check(
         function(a, b) {
@@ -152,13 +152,13 @@ exports.tuple5 = {
                     }
                 )).toBe(b);
         },
-        [_.Tuple5, _.Tuple5]
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
     'when testing tuple5 and calling toArray should have correct arguments': _.check(
         function(a) {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3, a._4, a._5]);
         },
-        [_.Tuple5]
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     )
 };
 

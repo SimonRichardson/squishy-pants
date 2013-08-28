@@ -268,11 +268,55 @@ Option.None.isNone = true;
 //
 var isOption = isInstanceOf(Option);
 
+//
+//  ## someOf(type)
+//
+//  Sentinel value for when an some of a particular type is needed:
+//
+//       someOf(Number)
+//
+function someOf(type) {
+    var self = getInstance(this, someOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isSomeOf(a)
+//
+//  Returns `true` if `a` is an instance of `someOf`.
+//
+var isSomeOf = isInstanceOf(someOf);
+
+//
+//  ## noneOf(type)
+//
+//  Sentinel value for when an none of a particular type is needed:
+//
+//       noneOf(Number)
+//
+function noneOf(type) {
+    var self = getInstance(this, noneOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isNoneOf(a)
+//
+//  Returns `true` if `a` is an instance of `noneOf`.
+//
+var isNoneOf = isInstanceOf(noneOf);
+
 squishy = squishy
     .property('Option', Option)
     .property('Some', Option.Some)
     .property('None', Option.None)
+    .property('someOf', someOf)
+    .property('noneOf', noneOf)
     .property('isOption', isOption)
+    .property('isSomeOf', isSomeOf)
+    .property('isNoneOf', isNoneOf)
     .method('of', strictEquals(Option.Some), function(x) {
         return Option.Some.of(x);
     })
@@ -300,8 +344,14 @@ squishy = squishy
     .method('map', isOption, function(a, b) {
         return a.map(b);
     })
-    .method('arb', isOption, function(a, b) {
-        return Option.Some(this.arb(AnyVal, b - 1));
+    .method('arb', isSomeOf, function(a, b) {
+        return Option.Some(this.arb(a.type, b - 1));
+    })
+    .method('arb', isNoneOf, function(a, b) {
+        return Option.None;
+    })
+    .method('shrink', isOption, function(a, b) {
+        return [];
     })
     .method('toArray', isOption, function(a) {
         return a.toArray();

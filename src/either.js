@@ -261,11 +261,55 @@ Either.Right.empty = function() {
 //
 var isEither = isInstanceOf(Either);
 
+//
+//  ## leftOf(type)
+//
+//  Sentinel value for when an left of a particular type is needed:
+//
+//       leftOf(Number)
+//
+function leftOf(type) {
+    var self = getInstance(this, leftOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isLeftOf(a)
+//
+//  Returns `true` if `a` is an instance of `leftOf`.
+//
+var isLeftOf = isInstanceOf(leftOf);
+
+//
+//  ## rightOf(type)
+//
+//  Sentinel value for when an right of a particular type is needed:
+//
+//       rightOf(Number)
+//
+function rightOf(type) {
+    var self = getInstance(this, rightOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isRightOf(a)
+//
+//  Returns `true` if `a` is an instance of `rightOf`.
+//
+var isRightOf = isInstanceOf(rightOf);
+
 squishy = squishy
     .property('Either', Either)
     .property('Left', Either.Left)
     .property('Right', Either.Right)
+    .property('leftOf', leftOf)
+    .property('rightOf', rightOf)
     .property('isEither', isEither)
+    .property('isLeftOf', isLeftOf)
+    .property('isRightOf', isRightOf)
     .method('of', strictEquals(Either), function(x) {
         return Either.of(x);
     })
@@ -275,11 +319,14 @@ squishy = squishy
     .method('ap', isEither, function(a, b) {
         return a.ap(b);
     })
-    .method('arb', strictEquals(Either.Left), function(a, b) {
-        return Either.Left(this.arb(AnyVal, b - 1));
+    .method('arb', isLeftOf, function(a, b) {
+        return Either.Left(this.arb(a.type, b - 1));
     })
-    .method('arb', strictEquals(Either.Right), function(a, b) {
-        return Either.Right(this.arb(AnyVal, b - 1));
+    .method('arb', isRightOf, function(a, b) {
+        return Either.Right(this.arb(a.type, b - 1));
+    })
+    .method('shrink', isEither, function(a) {
+        return [];
     })
     .method('concat', isEither, function(a, b) {
         return a.concat(b, this.concat);

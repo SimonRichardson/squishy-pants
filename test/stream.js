@@ -104,7 +104,7 @@ exports.stream = {
         function(a) {
             return a.equal(a);
         },
-        [_.Stream]
+        [_.streamOf(_.AnyVal)]
     ),
     'when testing extract with the stream should dispatch all items': _.check(
         function(a) {

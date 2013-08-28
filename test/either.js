@@ -210,19 +210,19 @@ exports.either = {
         function(a) {
             return a.equal(a);
         },
-        [_.Left]
+        [_.leftOf(_.AnyVal)]
     ),
     'when creating right and calling equal with same value in right should return true': _.check(
         function(a) {
             return a.equal(a);
         },
-        [_.Right]
+        [_.rightOf(_.AnyVal)]
     ),
     'when creating left and calling equal with right should return false': _.check(
         function(a, b) {
             return !a.equal(b);
         },
-        [_.Left, _.Right]
+        [_.leftOf(_.AnyVal), _.rightOf(_.AnyVal)]
     ),
     'when creating left and calling equal with same value in right should return false': _.check(
         function(a) {

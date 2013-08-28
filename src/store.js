@@ -57,21 +57,46 @@ Store.prototype.map = function(f) {
 var isStore = isInstanceOf(Store);
 
 //
+//  ## storeOf(type)
+//
+//  Sentinel value for when an store of a particular type is needed:
+//
+//       storeOf(Number)
+//
+function storeOf(type) {
+    var self = getInstance(this, storeOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStoreOf(a)
+//
+//  Returns `true` if `a` is an instance of `storeOf`.
+//
+var isStoreOf = isInstanceOf(storeOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Store', Store)
+    .property('storeOf', storeOf)
     .property('isStore', isStore)
+    .property('isStoreOf', isStoreOf)
     .method('extract', isStore, function(a) {
         return a.extract();
     })
     .method('map', isStore, function(a, b) {
         return a.map(b);
     })
-    .method('arb', isStore, function(a, b) {
-        var value = this.arb(AnyVal, b - 1);
+    .method('arb', isStoreOf, function(a, b) {
+        var value = this.arb(a.type, b - 1);
         return Store(
             identity,
             constant(value)
         );
+    })
+    .method('shrink', isStore, function(a, b) {
+        return [];
     });

@@ -337,8 +337,8 @@ var arbTuple = curry(function(t, n) {
     return function(a, s) {
         var env = this;
         return t.of.apply(this, env.map(
-            env.fill(n)(function() {
-                return AnyVal;
+            env.fill(n)(function(i) {
+                return a.types[i];
             }),
             function(arg) {
                 return env.arb(arg, s);
@@ -347,19 +347,113 @@ var arbTuple = curry(function(t, n) {
     };
 });
 
+//
+//  ## tuple2Of(a, b)
+//
+//  Sentinel value for when an tuple2 of a particular type is needed:
+//
+//       tuple2Of(Number, Number)
+//
+function tuple2Of(a, b) {
+    var self = getInstance(this, tuple2Of);
+    self.types = [].slice.call(arguments);
+    return self;
+}
+
+//
+//  ## isTuple2Of(a)
+//
+//  Returns `true` if `a` is an instance of `tuple2Of`.
+//
+var isTuple2Of = isInstanceOf(tuple2Of);
+
+//
+//  ## tuple3Of(a, b, c)
+//
+//  Sentinel value for when an tuple3 of a particular type is needed:
+//
+//       tuple3Of(Number, Number, Number)
+//
+function tuple3Of(a, b, c) {
+    var self = getInstance(this, tuple3Of);
+    self.types = [].slice.call(arguments);
+    return self;
+}
+
+//
+//  ## isTuple3Of(a)
+//
+//  Returns `true` if `a` is an instance of `tuple3Of`.
+//
+var isTuple3Of = isInstanceOf(tuple3Of);
+
+//
+//  ## tuple4Of(a, b, c, d)
+//
+//  Sentinel value for when an tuple4 of a particular type is needed:
+//
+//       tuple4Of(Number, Number, Number, Number)
+//
+function tuple4Of(a, b, c, d) {
+    var self = getInstance(this, tuple4Of);
+    self.types = [].slice.call(arguments);
+    return self;
+}
+
+//
+//  ## isTuple4Of(a)
+//
+//  Returns `true` if `a` is an instance of `tuple4Of`.
+//
+var isTuple4Of = isInstanceOf(tuple4Of);
+
+//
+//  ## tuple5Of(a, b, c, d, e)
+//
+//  Sentinel value for when an tuple5 of a particular type is needed:
+//
+//       tuple5Of(Number, Number, Number, Number, Number)
+//
+function tuple5Of(a, b, c, d, e) {
+    var self = getInstance(this, tuple5Of);
+    self.types = [].slice.call(arguments);
+    return self;
+}
+
+//
+//  ## isTuple5Of(a)
+//
+//  Returns `true` if `a` is an instance of `tuple5Of`.
+//
+var isTuple5Of = isInstanceOf(tuple5Of);
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('Tuple2', Tuple2)
     .property('Tuple3', Tuple3)
     .property('Tuple4', Tuple4)
     .property('Tuple5', Tuple5)
+    .property('tuple2Of', tuple2Of)
+    .property('tuple3Of', tuple3Of)
+    .property('tuple4Of', tuple4Of)
+    .property('tuple5Of', tuple5Of)
     .property('isTuple2', isTuple2)
     .property('isTuple3', isTuple3)
     .property('isTuple4', isTuple4)
     .property('isTuple5', isTuple5)
-    .method('arb', strictEquals(Tuple2), arbTuple(Tuple2, 2))
-    .method('arb', strictEquals(Tuple3), arbTuple(Tuple3, 3))
-    .method('arb', strictEquals(Tuple4), arbTuple(Tuple4, 4))
-    .method('arb', strictEquals(Tuple5), arbTuple(Tuple5, 5))
+    .property('isTuple2Of', isTuple2Of)
+    .property('isTuple3Of', isTuple3Of)
+    .property('isTuple4Of', isTuple4Of)
+    .property('isTuple5Of', isTuple5Of)
+    .method('arb', isTuple2Of, arbTuple(Tuple2, 2))
+    .method('arb', isTuple3Of, arbTuple(Tuple3, 3))
+    .method('arb', isTuple4Of, arbTuple(Tuple4, 4))
+    .method('arb', isTuple5Of, arbTuple(Tuple5, 5))
+    .method('shrink', isTuple, function(a, b) {
+        return [];
+    })
     .method('concat', isTuple, function(a, b) {
         return a.concat(b);
     })

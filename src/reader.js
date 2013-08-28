@@ -84,11 +84,33 @@ Reader.prototype.map = function(f) {
 var isReader = isInstanceOf(Reader);
 
 //
+//  ## readerOf(type)
+//
+//  Sentinel value for when an reader of a particular type is needed:
+//
+//       readerOf(Number)
+//
+function readerOf(type) {
+    var self = getInstance(this, readerOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isReaderOf(a)
+//
+//  Returns `true` if `a` is an instance of `readerOf`.
+//
+var isReaderOf = isInstanceOf(readerOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Reader', Reader)
+    .property('readerOf', readerOf)
     .property('isReader', isReader)
+    .property('isReaderOf', isReaderOf)
     .method('of', strictEquals(Reader), function(x) {
         return Reader.of(x);
     })
@@ -101,6 +123,9 @@ squishy = squishy
     .method('map', isReader, function(a, b) {
         return a.map(b);
     })
-    .method('arb', isReader, function(a, b) {
-        return Reader.of(this.arb(AnyVal, b - 1));
+    .method('arb', isReaderOf, function(a, b) {
+        return Reader.of(this.arb(a.type, b - 1));
+    })
+    .method('shrink', isReader, function(a, b) {
+        return [];
     });

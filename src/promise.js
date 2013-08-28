@@ -139,11 +139,33 @@ Promise.prototype.reject = function(f) {
 var isPromise = isInstanceOf(Promise);
 
 //
+//  ## promiseOf(type)
+//
+//  Sentinel value for when an promise of a particular type is needed:
+//
+//       promiseOf(Number)
+//
+function promiseOf(type) {
+    var self = getInstance(this, promiseOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isPromiseOf(a)
+//
+//  Returns `true` if `a` is an instance of `promiseOf`.
+//
+var isPromiseOf = isInstanceOf(promiseOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Promise', Promise)
+    .property('promiseOf', promiseOf)
     .property('isPromise', isPromise)
+    .property('isPromiseOf', isPromiseOf)
     .method('empty', strictEquals(Promise), function() {
         return Promise.empty();
     })
@@ -159,6 +181,9 @@ squishy = squishy
     .method('map', isPromise, function(a, b) {
         return a.map(b);
     })
-    .method('arb', isPromise, function(a, b) {
-        return Promise.of(this.arb(AnyVal, b - 1));
+    .method('arb', isPromiseOf, function(a, b) {
+        return Promise.of(this.arb(a.type, b - 1));
+    })
+    .method('shrink', isPromise, function(a, b) {
+        return [];
     });

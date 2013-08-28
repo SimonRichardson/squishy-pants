@@ -280,13 +280,57 @@ Attempt.empty = function() {
 var isAttempt = isInstanceOf(Attempt);
 
 //
+//  ## successOf(type)
+//
+//  Sentinel value for when an success of a particular type is needed:
+//
+//       successOf(Number)
+//
+function successOf(type) {
+    var self = getInstance(this, successOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isSuccessOf(a)
+//
+//  Returns `true` if `a` is an instance of `successOf`.
+//
+var isSuccessOf = isInstanceOf(successOf);
+
+//
+//  ## failureOf(type)
+//
+//  Sentinel value for when an failure of a particular type is needed:
+//
+//       failureOf(Number)
+//
+function failureOf(type) {
+    var self = getInstance(this, failureOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isFailureOf(a)
+//
+//  Returns `true` if `a` is an instance of `failureOf`.
+//
+var isFailureOf = isInstanceOf(failureOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Attempt', Attempt)
     .property('Success', Attempt.Success)
     .property('Failure', Attempt.Failure)
+    .property('successOf', successOf)
+    .property('failureOf', failureOf)
     .property('isAttempt', isAttempt)
+    .property('isSuccessOf', isSuccessOf)
+    .property('isFailureOf', isFailureOf)
     .method('of', strictEquals(Attempt), function(x) {
         return Attempt.of(x);
     })
@@ -296,11 +340,14 @@ squishy = squishy
     .method('ap', isAttempt, function(a, b) {
         return a.ap(b, this.concat);
     })
-    .method('arb', strictEquals(Attempt.Success), function(a, b) {
-        return Attempt.Success(this.arb(AnyVal, b - 1));
+    .method('arb', isSuccessOf, function(a, b) {
+        return Attempt.Success(this.arb(a.type, b - 1));
     })
-    .method('arb', strictEquals(Attempt.Failure), function(a, b) {
-        return Attempt.Failure(this.arb(arrayOf(AnyVal), b - 1));
+    .method('arb', isFailureOf, function(a, b) {
+        return Attempt.Failure(this.arb(a.type, b - 1));
+    })
+    .method('shrink', isAttempt, function(a) {
+        return [];
     })
     .method('flatMap', isAttempt, function(a, b) {
         return a.flatMap(b);

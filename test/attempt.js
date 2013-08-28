@@ -160,19 +160,19 @@ exports.attempt = {
         function(a) {
             return a.equal(a);
         },
-        [_.Success]
+        [_.successOf(_.AnyVal)]
     ),
     'when creating failure and checking equality should be true': _.check(
         function(a) {
             return a.equal(a);
         },
-        [_.Failure]
+        [_.failureOf(_.AnyVal)]
     ),
     'when creating failure with success and checking equality should be false': _.check(
         function(a, b) {
             return !a.equal(b);
         },
-        [_.Success, _.Failure]
+        [_.successOf(_.AnyVal), _.failureOf(_.AnyVal)]
     ),
     'when creating success and extracting value should be correct value': _.check(
         function(a) {
@@ -190,7 +190,7 @@ exports.attempt = {
         function(a) {
             return a.swap().isFailure;
         },
-        [_.Success]
+        [_.successOf(_.AnyVal)]
     ),
     'when creating success and swapping value should be correct value': _.check(
         function(a) {
@@ -202,7 +202,7 @@ exports.attempt = {
         function(a) {
             return a.swap().isSuccess;
         },
-        [_.Failure]
+        [_.failureOf(_.AnyVal)]
     ),
     'when creating failure and swapping value should be correct value': _.check(
         function(a) {

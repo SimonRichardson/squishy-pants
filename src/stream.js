@@ -392,16 +392,15 @@ var isStreamOf = isInstanceOf(streamOf);
 //
 squishy = squishy
     .property('Stream', Stream)
-    .property('isStream', isStream)
     .property('streamOf', streamOf)
+    .property('isStream', isStream)
     .property('isStreamOf', isStreamOf)
-    .method('arb', strictEquals(Stream), function(a, b) {
-        var args = this.arb(this.arrayOf(AnyVal), b);
-        return Stream.fromArray(args);
-    })
     .method('arb', isStreamOf, function(a, b) {
         var args = this.arb(a.type, b - 1);
         return Stream.fromArray(args);
+    })
+    .method('shrink', isStream, function(a, b) {
+        return [];
     })
     .method('ap', isStream, function(a, b) {
         return a.ap(b);

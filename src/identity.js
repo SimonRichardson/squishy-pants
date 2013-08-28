@@ -149,14 +149,36 @@ Identity.IdentityT = function(M) {
 };
 
 //
+//  ## identityOf(type)
+//
+//  Sentinel value for when an identity of a particular type is needed:
+//
+//       identityOf(Number)
+//
+function identityOf(type) {
+    var self = getInstance(this, identityOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isFailureOf(a)
+//
+//  Returns `true` if `a` is an instance of `identityOf`.
+//
+var isIdentityOf = isInstanceOf(identityOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Identity', Identity)
-    .property('isIdentity', isIdentity)
     .property('IdentityT', Identity.IdentityT)
-    .method('arb', strictEquals(Identity), function(a, b) {
-        return Identity(this.arb(AnyVal, b - 1));
+    .property('identityOf', identityOf)
+    .property('isIdentity', isIdentity)
+    .property('isIdentityOf', isIdentityOf)
+    .method('arb', isIdentityOf, function(a, b) {
+        return Identity(this.arb(a.type, b - 1));
     })
     .method('of', strictEquals(Identity), function(x) {
         return Identity.of(x);

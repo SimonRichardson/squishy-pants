@@ -5,7 +5,7 @@ exports.identity = {
         function(a) {
             return _.expect(a).toBe(a);
         },
-        [_.Identity]
+        [_.identityOf(_.AnyVal)]
     ),
     'when testing identity ap should return correct value': _.check(
         function(a) {
