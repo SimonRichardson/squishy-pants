@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Promise with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../bin/squishy-pants.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML += x + '<br />';
+              })),
+              logger = _.curry(function(prefix, value) {
+                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              }),
+
+              // Normal promise
+              promise = _.Promise(function(resolve, reject) {
+                  setTimeout(function() {
+                      resolve(_.arb(String, 20));
+                  }, 100);
+              }),
+
+              // Lazy promise with stateful deferred
+              lazy = _.lazy(
+                  function() {
+                      return _.arb(String, 20);
+                  }
+              ),
+              lazyPromise = _.Promise(lazy);
+
+              // Lazy async promise with stateful deferred
+              lazyAsync = _.lazyAsync(
+                  function(resolve, reject) {
+                      setTimeout(function() {
+                          resolve(_.arb(String, 20));
+                      }, 100);
+                  }
+              ),
+              lazyAsyncPromise = _.Promise(lazyAsync);
+
+          // Normal promise listener
+          promise.fork(
+              logger('A - Normal Immediate success'),
+              logger('A - Normal Immediate failure')
+          );
+
+          // Lazy promise listener
+          lazyPromise.fork(
+              logger('B - Lazy Immediate success'),
+              logger('B - Lazy Immediate failure')
+          );
+
+          // Lazy async promise listener
+          lazyAsyncPromise.fork(
+              logger('C - Lazy Async Immediate success'),
+              logger('C - Lazy Async Immediate failure')
+          );
+
+          // Wait to call again
+          setTimeout(function() {
+
+              promise.fork(
+                  logger('A - Normal Asynchronous success'),
+                  logger('A - Normal Asynchronous failure')
+              );
+
+              lazyPromise.fork(
+                  logger('B - Lazy Asynchronous success'),
+                  logger('B - Lazy Asynchronous failure')
+              );
+
+              lazyAsyncPromise.fork(
+                  logger('C - Lazy Async Asynchronous success'),
+                  logger('C - Lazy Async Asynchronous failure')
+              );
+
+          }, 200);
+
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>Promise using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert">
+              <p>
+                Note: The lazy &amp; lazyAsync deferred is only called once, where as the normal
+                deferred is called each time the fork is called. With this in mind each resulting
+                string for normal deferred is then different.
+              </p>
+          </div>
+          <hr />
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

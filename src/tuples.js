@@ -38,6 +38,24 @@ Tuple2.of = function(a, b) {
 };
 
 //
+//  ### first(t)
+//
+//  Retrieve the first argument.
+//
+Tuple2.first = function(t) {
+    return t._1;
+};
+
+//
+//  ### second(t)
+//
+//  Retrieve the second argument.
+//
+Tuple2.second = function(t) {
+    return t._2;
+};
+
+//
 //   ### flip()
 //
 //   Flip the values of the first and second.
@@ -76,24 +94,6 @@ Tuple2.prototype.equal = function(b) {
 //
 Tuple2.prototype.flatMap = function(f) {
     return f(this);
-};
-
-//
-//  ### first()
-//
-//  Retrieve the first argument.
-//
-Tuple2.prototype.first = function() {
-    return this._1;
-};
-
-//
-//  ### second()
-//
-//  Retrieve the second argument.
-//
-Tuple2.prototype.second = function() {
-    return this._2;
 };
 
 //
