@@ -15,7 +15,7 @@
 /* Use with care */
 function lazy(f) {
     /* Create a special lock so we don't have to look for undefined */
-    var args = [].slice.call(arguments),
+    var args = [].slice.call(arguments).slice(1),
         lock = {},
         val = lock;
 
