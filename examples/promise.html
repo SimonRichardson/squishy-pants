@@ -36,7 +36,9 @@
                       return _.arb(String, 20);
                   }
               ),
-              lazyPromise = _.Promise(lazy);
+              lazyPromise = _.Promise(function(resolve, reject) {
+                  resolve(lazy());
+              });
 
               // Lazy async promise with stateful deferred
               lazyAsync = _.lazyAsync(

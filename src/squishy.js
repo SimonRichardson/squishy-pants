@@ -372,9 +372,8 @@ function lazy(f) {
         lock = {},
         val = lock;
 
-    return function(a) {
+    return function() {
         if (val === lock) val = f.apply(null, args);
-        if (a) a(val);
         return val;
     };
 }
