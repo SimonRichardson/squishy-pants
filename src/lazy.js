@@ -101,3 +101,11 @@ function lazyAsync(f) {
         }
     };
 }
+
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property('lazy', lazy)
+    .property('lazyAsync', lazyAsync);

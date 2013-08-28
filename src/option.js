@@ -269,6 +269,7 @@ Option.None.isNone = true;
 var isOption = isInstanceOf(Option);
 
 squishy = squishy
+    .property('Option', Option)
     .property('Some', Option.Some)
     .property('None', Option.None)
     .property('isOption', isOption)

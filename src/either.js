@@ -262,6 +262,7 @@ Either.Right.empty = function() {
 var isEither = isInstanceOf(Either);
 
 squishy = squishy
+    .property('Either', Either)
     .property('Left', Either.Left)
     .property('Right', Either.Right)
     .property('isEither', isEither)

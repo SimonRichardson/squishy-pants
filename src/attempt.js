@@ -275,7 +275,7 @@ Attempt.empty = function() {
 //
 //  ## isAttempt(a)
 //
-//  Returns `true` iff `a` is a `Success` or a `Failure`.
+//  Returns `true` if `a` is a `Success` or a `Failure`.
 //
 var isAttempt = isInstanceOf(Attempt);
 
@@ -283,6 +283,7 @@ var isAttempt = isInstanceOf(Attempt);
 //  append methods to the squishy environment.
 //
 squishy = squishy
+    .property('Attempt', Attempt)
     .property('Success', Attempt.Success)
     .property('Failure', Attempt.Failure)
     .property('isAttempt', isAttempt)

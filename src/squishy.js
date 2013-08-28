@@ -410,6 +410,4 @@ squishy = squishy
     .property('range', range)
     .property('randomRange', randomRange)
     .property('inc', inc)
-    .property('dec', dec)
-    .property('lazy', lazy)
-    .property('lazyAsync', lazyAsync);
+    .property('dec', dec);
