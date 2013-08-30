@@ -245,6 +245,11 @@ State.StateT = function(M) {
 var isState = isInstanceOf(State);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(State.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

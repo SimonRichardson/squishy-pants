@@ -77,6 +77,11 @@ function storeOf(type) {
 var isStoreOf = isInstanceOf(storeOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Store.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

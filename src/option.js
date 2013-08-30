@@ -297,6 +297,14 @@ function noneOf(type) {
 //
 var isNoneOf = isInstanceOf(noneOf);
 
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Option.prototype);
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('Option', Option)
     .property('Some', Option.Some)

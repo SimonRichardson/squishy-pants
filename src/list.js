@@ -632,6 +632,14 @@ function listOf(type) {
 //
 var isListOf = isInstanceOf(listOf);
 
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(List.prototype);
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('List', List)
     .property('Cons', List.Cons)

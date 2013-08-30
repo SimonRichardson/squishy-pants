@@ -104,6 +104,11 @@ function readerOf(type) {
 var isReaderOf = isInstanceOf(readerOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Reader.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

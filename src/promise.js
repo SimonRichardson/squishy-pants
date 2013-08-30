@@ -159,6 +159,11 @@ function promiseOf(type) {
 var isPromiseOf = isInstanceOf(promiseOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Promise.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

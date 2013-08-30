@@ -12,6 +12,14 @@ squishy = squishy
     }));
 
 squishy = squishy
+    .method('kleisli', isFunction, function(a, b) {
+        var env = this;
+        return function(x) {
+            return env.chain(a(x), b);
+        };
+    });
+
+squishy = squishy
     .method('concat', isBoolean, curry(function(a, b) {
         return a & b;
     }))

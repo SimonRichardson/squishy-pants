@@ -169,6 +169,11 @@ function identityOf(type) {
 var isIdentityOf = isInstanceOf(identityOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Identity.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

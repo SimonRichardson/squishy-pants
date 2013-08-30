@@ -250,11 +250,11 @@ var partition = curry(function(a, f) {
 //  op, from Left to Right
 //
 var reduce = curry(function(a, f) {
-    var total = a.length,
-        v = a[0] || null,
+    var v = a[0] || null,
+        total,
         i;
 
-    for (i = 1; i < total; i++) {
+    for (i = 1, total = a.length; i < total; i++) {
         v = f(v, a[i]);
     }
 

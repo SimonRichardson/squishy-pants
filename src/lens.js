@@ -235,6 +235,11 @@ var isLens = isInstanceOf(Lens);
 var isPartialLens = isInstanceOf(PartialLens);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Lens.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

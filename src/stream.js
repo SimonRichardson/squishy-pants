@@ -388,6 +388,11 @@ function streamOf(type) {
 var isStreamOf = isInstanceOf(streamOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Stream.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

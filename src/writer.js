@@ -111,6 +111,11 @@ function writerOf(type) {
 var isWriterOf = isInstanceOf(writerOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Writer.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

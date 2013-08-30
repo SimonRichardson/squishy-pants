@@ -301,6 +301,14 @@ function rightOf(type) {
 //
 var isRightOf = isInstanceOf(rightOf);
 
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Either.prototype);
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('Either', Either)
     .property('Left', Either.Left)
