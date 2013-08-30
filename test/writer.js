@@ -1,6 +1,15 @@
 var _ = require('./lib/test');
 
 exports.writer = {
+    'when testing writer with multiple maps should return correct value': function(test) {
+        var f = function(t) {
+                return _.Tuple2(t._1 / 2, 'I just halved ' + t._1 + '!');
+            },
+            result = _.Writer.put(_.Tuple2(8, '')).map(f).map(f).run();
+
+        test.ok(_.expect(result).toBe(_.Tuple2(2, 'I just halved 8!I just halved 4!')));
+        test.done();
+    },
     'when creating a writer using of then running should return correct value': _.check(
         function(a) {
             var writer = _.Writer.of(a);

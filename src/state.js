@@ -43,7 +43,7 @@ State.modify = function(f) {
 //
 //  ## put(s)
 //
-//  Constructor `put` to return the value of s.
+//  Constructor `put` to return the value of `s`.
 //
 State.put = function(s) {
     return State.modify(function(a) {

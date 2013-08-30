@@ -1,24 +1,52 @@
 //
 //   ## Writer(run)
 //
+//  Writer represents a computation, which can write values, passes values from
+//  function to functions.
+//
+//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `map(f)` - Functor map
+//
 var Writer = tagged('Writer', ['run']);
 
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating a `Writer`.
+//
 Writer.of = function(a) {
     return Writer(function() {
         return Tuple2(a, null);
     });
 };
 
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating a `Writer`.
+//
 Writer.empty = function() {
     return Writer(nothing);
 };
 
+//
+//  ## put()
+//
+//  Constructor `put` to return the value of `t`.
+//
 Writer.put = function(t) {
     return Writer(function() {
         return t;
     });
 };
 
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the value of this writer
+//  Applicative ap(ply)
+//
 Writer.prototype.ap = function(a) {
     return this.chain(function(tup) {
         return squishy.map(a, function(val) {
@@ -27,6 +55,12 @@ Writer.prototype.ap = function(a) {
     });
 };
 
+//
+//  ### chain(f)
+//
+//  Bind through the value of the writer
+//  Monadic flatMap/bind
+//
 Writer.prototype.chain = function(f) {
     var env = this;
     return Writer(function(e) {
@@ -37,6 +71,12 @@ Writer.prototype.chain = function(f) {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Map on the value of this writer.
+//  Functor map
+//
 Writer.prototype.map = function(f) {
     return this.chain(function(a) {
         return Writer.put(f(a));
