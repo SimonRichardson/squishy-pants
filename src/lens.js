@@ -209,7 +209,7 @@ PartialLens.prototype.andThen = function(b) {
 PartialLens.prototype.compose = function(b) {
     var a = this;
     return PartialLens(function(target) {
-        return b.run(target).flatMap(function(c) {
+        return b.run(target).chain(function(c) {
             return a.run(c.get()).map(function(d) {
                 return Store(
                     compose(c.set, d.set),

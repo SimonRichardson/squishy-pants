@@ -144,15 +144,15 @@ exports.attempt = {
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
-    'when creating success and calling flatMap with function should be correct value': _.check(
+    'when creating success and calling chain with function should be correct value': _.check(
         function(a) {
-            return _.expect(_.Success(a).flatMap(_.identity)).toBe(a);
+            return _.expect(_.Success(a).chain(_.identity)).toBe(a);
         },
         [_.AnyVal]
     ),
-    'when creating failure and calling flatMap with function should be correct value': _.check(
+    'when creating failure and calling chain with function should be correct value': _.check(
         function(a) {
-            return _.expect(_.Failure(a).flatMap(_.constant(false))).toBe(a);
+            return _.expect(_.Failure(a).chain(_.constant(false))).toBe(a);
         },
         [_.AnyVal]
     ),

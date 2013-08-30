@@ -12,7 +12,6 @@
 //   * `concat(s, plus)` - Semigroup concat
 //   * `equal(a)` -  `true` if `a` is equal to `this`
 //   * `extract()` -  extract the value from option
-//   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - Applies `a` to value if `Some` or defaults to `b`
 //   * `get()` - get the value from option
 //   * `getOrElse(a)` - Default value for `None`
@@ -38,7 +37,7 @@ var Option = taggedSum('Option', {
 //  Applicative ap(ply)
 //
 Option.prototype.ap = function(a) {
-    return this.flatMap(
+    return this.chain(
         function(f) {
             return squishy.map(a, f);
         }
@@ -52,7 +51,10 @@ Option.prototype.ap = function(a) {
 //  Monadic flatMap/bind
 //
 Option.prototype.chain = function(f) {
-    return this.flatMap(f);
+    return this.match({
+        Some: f,
+        None: constant(this)
+    });
 };
 
 //
@@ -112,19 +114,6 @@ Option.prototype.extract = function() {
 };
 
 //
-//  ### flatMap(f)
-//
-//  Bind through the success of the option
-//  Monadic flatMap/bind
-//
-Option.prototype.flatMap = function(f) {
-    return this.match({
-        Some: f,
-        None: constant(this)
-    });
-};
-
-//
 //  ### fold(a, b)
 //
 //  Catamorphism. Run the first given function if failure, otherwise,
@@ -169,7 +158,7 @@ Option.prototype.getOrElse = function(x) {
 //  Functor map
 //
 Option.prototype.map = function(f) {
-    return this.flatMap(
+    return this.chain(
         function(a) {
             return Option.of(f(a));
         }

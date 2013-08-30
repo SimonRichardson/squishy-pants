@@ -256,6 +256,9 @@ squishy = squishy
     .method('ap', isState, function(a, b) {
         return a.ap(b);
     })
+    .method('chain', isState, function(a, b) {
+        return a.chain(b);
+    })
     .method('map', isState, function(a, b) {
         return a.map(b);
     });

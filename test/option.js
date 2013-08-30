@@ -154,21 +154,21 @@ exports.option = {
         },
         [_.AnyVal]
     ),
-    'when testing some with flatMap should return correct value': _.check(
+    'when testing some with chain should return correct value': _.check(
         function(a, b) {
-            return _.expect(_.Some(a).flatMap(_.constant(_.Some(b)))).toBe(_.Some(b));
+            return _.expect(_.Some(a).chain(_.constant(_.Some(b)))).toBe(_.Some(b));
         },
         [_.AnyVal, _.AnyVal]
     ),
-    'when testing none with flatMap should return correct value': _.check(
+    'when testing none with chain should return correct value': _.check(
         function(a) {
-            return _.expect(_.None.flatMap(_.constant(_.Some(a)))).toBe(_.None);
+            return _.expect(_.None.chain(_.constant(_.Some(a)))).toBe(_.None);
         },
         [_.AnyVal]
     ),
-    'when testing some with flatMap none should return correct value': _.check(
+    'when testing some with chain none should return correct value': _.check(
         function(a) {
-            return _.expect(_.Some(a).flatMap(_.constant(_.None))).toBe(_.None);
+            return _.expect(_.Some(a).chain(_.constant(_.None))).toBe(_.None);
         },
         [_.AnyVal]
     ),

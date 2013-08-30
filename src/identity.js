@@ -183,6 +183,12 @@ squishy = squishy
     .method('of', strictEquals(Identity), function(x) {
         return Identity.of(x);
     })
+    .method('ap', isIdentity, function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', isIdentity, function(a, b) {
+        return a.chain(b);
+    })
     .method('empty', strictEquals(Identity), function() {
         return Identity.empty();
     })
@@ -191,7 +197,4 @@ squishy = squishy
     })
     .method('map', isIdentity, function(a, b) {
         return a.map(b);
-    })
-    .method('ap', isIdentity, function(a, b) {
-        return a.ap(b);
     });

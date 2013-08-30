@@ -6,6 +6,7 @@
 //   Represents a sequence of values that are indexed by integers.
 //
 //   * `ap(a, b)` - Applicative ap(ply)
+//   * `chain(a, f)` - Applies the given function f to each element of this array, then concatenates the results.
 //   * `concat(a, b)` - Appends two array objects.
 //   * `count(a, f)` - Count the number of elements in the array which satisfy a predicate.
 //   * `drop(a, n)` - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.
@@ -13,7 +14,6 @@
 //   * `dropWhile(a, f)` - Returns the longest suffix of this array whose first element does not satisfy the predicate.
 //   * `exists(a, f)` - Tests the existence in this array of an element that satisfies the predicate.
 //   * `filter(a, f)` - Returns all the elements of this array that satisfy the predicate p.
-//   * `flatMap(a, f)` - Applies the given function f to each element of this array, then concatenates the results.
 //   * `flatten(a)` - Concatenate the elements of this array.
 //   * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.
 //   * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from Right to Left, and starting with the value v.
@@ -45,6 +45,24 @@ var ap = curry(function(a, b) {
         for(j = 0; j < y; j++) {
             accum.push(a[i](b[j]));
         }
+    }
+
+    return accum;
+});
+
+//
+//  ### chain(f)
+//
+//  Applies the given function f to each element of this array, then
+//  concatenates the results.
+//
+var chain = curry(function(a, f) {
+    var accum = [],
+        total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        accum = accum.concat(f(a[i]));
     }
 
     return accum;
@@ -150,24 +168,6 @@ var filter = curry(function(a, f) {
         if (f(a[i])) {
             accum.push(a[i]);
         }
-    }
-
-    return accum;
-});
-
-//
-//  ### flatMap(f)
-//
-//  Applies the given function f to each element of this array, then
-//  concatenates the results.
-//
-var flatMap = curry(function(a, f) {
-    var accum = [],
-        total,
-        i;
-
-    for (i = 0, total = a.length; i < total; i++) {
-        accum = accum.concat(f(a[i]));
     }
 
     return accum;
@@ -358,6 +358,7 @@ var zipWithIndex = curry(function(a) {
 //
 squishy = squishy
     .method('ap', isArray, ap)
+    .method('chain', isArray, chain)
     .method('concat', isArray, concat)
     .method('count', isArray, count)
     .method('drop', isArray, drop)
@@ -365,7 +366,6 @@ squishy = squishy
     .method('dropWhile', isArray, dropWhile)
     .method('exists', isArray, exists)
     .method('filter', isArray, filter)
-    .method('flatMap', isArray, flatMap)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
     .method('map', isArray, map)

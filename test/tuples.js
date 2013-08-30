@@ -30,9 +30,9 @@ exports.tuple2 = {
         },
         [_.tuple2Of(_.AnyVal, _.AnyVal), _.tuple2Of(_.AnyVal, _.AnyVal)]
     ),
-    'when testing tuple2 and calling flatMap should have correct arguments': _.check(
+    'when testing tuple2 and calling chain should have correct arguments': _.check(
         function(a, b) {
-            return _.expect(a.flatMap(
+            return _.expect(a.chain(
                     function() {
                         return b;
                     }
@@ -67,9 +67,9 @@ exports.tuple3 = {
         },
         [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
     ),
-    'when testing tuple3 and calling flatMap should have correct arguments': _.check(
+    'when testing tuple3 and calling chain should have correct arguments': _.check(
         function(a, b) {
-            return _.expect(a.flatMap(
+            return _.expect(a.chain(
                     function() {
                         return b;
                     }
@@ -105,9 +105,9 @@ exports.tuple4 = {
         },
         [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
-    'when testing tuple4 and calling flatMap should have correct arguments': _.check(
+    'when testing tuple4 and calling chain should have correct arguments': _.check(
         function(a, b) {
-            return _.expect(a.flatMap(
+            return _.expect(a.chain(
                     function() {
                         return b;
                     }
@@ -144,9 +144,9 @@ exports.tuple5 = {
         },
         [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
     ),
-    'when testing tuple5 and calling flatMap should have correct arguments': _.check(
+    'when testing tuple5 and calling chain should have correct arguments': _.check(
         function(a, b) {
-            return _.expect(a.flatMap(
+            return _.expect(a.chain(
                     function() {
                         return b;
                     }

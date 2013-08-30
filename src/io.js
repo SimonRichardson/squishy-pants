@@ -53,10 +53,10 @@ squishy = squishy
         return IO.of(a);
     })
     .method('ap', isIO, function(a, b) {
-        return a.flatMap(b);
+        return a.ap(b);
     })
     .method('chain', isIO, function(a, b) {
-        return a.flatMap(b);
+        return a.chain(b);
     })
     .method('map', isIO, function(a, b) {
         return a.map(b);

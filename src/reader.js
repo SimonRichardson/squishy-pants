@@ -5,7 +5,7 @@
 //  function to functions.
 //
 //   * `ap(b, concat)` - Applicative ap(ply)
-//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `map(f)` - Functor map
 //
 var Reader = tagged('Reader', ['run']);
@@ -46,18 +46,18 @@ Reader.empty = function() {
 //  Applicative ap(ply)
 //
 Reader.prototype.ap = function(a) {
-    return this.flatMap(function(f) {
+    return this.chain(function(f) {
         return squishy.map(a, f);
     });
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Bind through the value of the reader
 //  Monadic flatMap/bind
 //
-Reader.prototype.flatMap = function(f) {
+Reader.prototype.chain = function(f) {
     var env = this;
     return Reader(function(e) {
         return f(env.run(e)).run(e);
@@ -71,7 +71,7 @@ Reader.prototype.flatMap = function(f) {
 //  Functor map
 //
 Reader.prototype.map = function(f) {
-    return this.flatMap(function(a) {
+    return this.chain(function(a) {
         return Reader.of(f(a));
     });
 };
@@ -117,8 +117,8 @@ squishy = squishy
     .method('empty', strictEquals(Reader), function() {
         return Reader.empty();
     })
-    .method('flatMap', isReader, function(a, b) {
-        return a.flatMap(b);
+    .method('chain', isReader, function(a, b) {
+        return a.chain(b);
     })
     .method('map', isReader, function(a, b) {
         return a.map(b);

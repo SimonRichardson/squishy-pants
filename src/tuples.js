@@ -24,7 +24,7 @@ var Tuple2 = tagged('Tuple2', ['_1', '_2']),
 //   * `flip()` - flip values
 //   * `concat()` - Semigroup (value must also be a Semigroup)
 //   * `equal(a)` -  `true` if `a` is equal to `this`
-//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `toArray()` - `[_1, _2]` of the tuple
 //
 
@@ -87,12 +87,12 @@ Tuple2.prototype.equal = function(b) {
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Bind through the tuple of the tuples
 //  Monadic flatMap/bind
 //
-Tuple2.prototype.flatMap = function(f) {
+Tuple2.prototype.chain = function(f) {
     return f(this);
 };
 
@@ -110,7 +110,7 @@ Tuple2.prototype.toArray = function() {
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
 //   * `equal(a)` -  `true` if `a` is equal to `this`
-//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `toArray()` - `[_1, _2, _3]` of the tuple
 //
 
@@ -147,12 +147,12 @@ Tuple3.prototype.equal = function(b) {
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Bind through the tuple of the tuples
 //  Monadic flatMap/bind
 //
-Tuple3.prototype.flatMap = function(f) {
+Tuple3.prototype.chain = function(f) {
     return f(this);
 };
 
@@ -170,7 +170,7 @@ Tuple3.prototype.toArray = function() {
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
 //   * `equal(a)` -  `true` if `a` is equal to `this`
-//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `toArray()` - `[_1, _2, _3, _4]` of the tuple
 //
 
@@ -208,12 +208,12 @@ Tuple4.prototype.equal = function(b) {
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Bind through the tuple of the tuples
 //  Monadic flatMap/bind
 //
-Tuple4.prototype.flatMap = function(f) {
+Tuple4.prototype.chain = function(f) {
     return f(this);
 };
 
@@ -231,7 +231,7 @@ Tuple4.prototype.toArray = function() {
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
 //   * `equal(a)` -  `true` if `a` is equal to `this`
-//   * `flatMap(f)` - Monadic flatMap/bind
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `toArray()` - `[_1, _2, _3, _4, _5]` of the tuple
 //
 
@@ -270,12 +270,12 @@ Tuple5.prototype.equal = function(b) {
 };
 
 //
-//  ### flatMap(f)
+//  ### chain(f)
 //
 //  Bind through the tuple of the tuples
 //  Monadic flatMap/bind
 //
-Tuple5.prototype.flatMap = function(f) {
+Tuple5.prototype.chain = function(f) {
     return f(this);
 };
 
@@ -460,8 +460,8 @@ squishy = squishy
     .method('equal', isTuple, function(a, b) {
         return a.equal(b);
     })
-    .method('flatMap', isTuple, function(a, b) {
-        return a.flatMap(b);
+    .method('chain', isTuple, function(a, b) {
+        return a.chain(b);
     })
     .method('toArray', isTuple, function(a, b) {
         return a.toArray();

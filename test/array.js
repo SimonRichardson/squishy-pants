@@ -88,7 +88,7 @@ exports.array = {
         },
         [_.arrayOf(Number)]
     ),
-    'when testing flatMap with array should yield items': _.check(
+    'when testing chain with array should yield items': _.check(
         function(a) {
             var accum = [],
                 i;
@@ -97,7 +97,7 @@ exports.array = {
                 accum = accum.concat(a[i]);
             }
 
-            return _.expect(_.flatMap(a, _.identity)).toBe(accum);
+            return _.expect(_.chain(a, _.identity)).toBe(accum);
         },
         [_.arrayOf(_.arrayOf(_.AnyVal))]
     ),

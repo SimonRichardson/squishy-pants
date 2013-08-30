@@ -131,14 +131,14 @@ exports.either = {
         },
         [Number]
     ),
-    'when creating left and calling flatMap with right should be correct value': _.check(
+    'when creating left and calling chain with right should be correct value': _.check(
         function(a) {
             return _.expect(
-                _.Left(a).flatMap(
+                _.Left(a).chain(
                     function(x) {
                         return _.Right(x + 1);
                     }
-                ).flatMap(
+                ).chain(
                     function(x) {
                         return _.Right(x + 1);
                     }
@@ -150,14 +150,14 @@ exports.either = {
         },
         [Number]
     ),
-    'when creating right and calling flatMap with right should be correct value': _.check(
+    'when creating right and calling chain with right should be correct value': _.check(
         function(a) {
             return _.expect(
-                _.Right(a).flatMap(
+                _.Right(a).chain(
                     function(x) {
                         return _.Right(x + 1);
                     }
-                ).flatMap(
+                ).chain(
                     function(x) {
                         return _.Right(x + 1);
                     }
@@ -169,14 +169,14 @@ exports.either = {
         },
         [Number]
     ),
-    'when creating right and calling flatMap with left should be correct value': _.check(
+    'when creating right and calling chain with left should be correct value': _.check(
         function(a) {
             return _.expect(
-                _.Right(a).flatMap(
+                _.Right(a).chain(
                     function(x) {
                         return _.Left(x + 1);
                     }
-                ).flatMap(
+                ).chain(
                     function(x) {
                         return _.Right(x + 1);
                     }

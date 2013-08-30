@@ -22,9 +22,9 @@ exports.reader = {
         },
         [Number]
     ),
-    'when testing flatMap on the Reader should return the new value': _.check(
+    'when testing chain on the Reader should return the new value': _.check(
         function(a, b) {
-            return _.equal(a.length + b, _.Reader.ask.flatMap(function(s) {
+            return _.equal(a.length + b, _.Reader.ask.chain(function(s) {
                 return _.Reader.of(s.length + b);
             }).run(a));
         },

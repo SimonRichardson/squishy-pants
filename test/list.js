@@ -102,12 +102,12 @@ exports.list = {
         },
         [_.listOf(_.AnyVal)]
     ),
-    'when testing flatMap should return correct value': _.check(
+    'when testing chain should return correct value': _.check(
         function(a, b, c) {
             var list = _.Cons(b, _.Cons(a, _.Nil)),
                 expected = _.Cons(c, _.Cons(b,  _.Cons(c, _.Cons(a, _.Nil))));
 
-            return _.expect(list.flatMap(
+            return _.expect(list.chain(
                     function(a) {
                         return _.Cons(c, _.Cons(a, _.Nil));
                     }

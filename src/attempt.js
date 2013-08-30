@@ -25,9 +25,9 @@
 //   Represents a Failure.
 //
 //   * `ap(b, concat)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `equal(a)` - `true` if `a` is equal to `this`
 //   * `extract()` - extract the value from attempt
-//   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
 //   * `map(f)` - Functor map
 //   * `swap()` - Swap values
@@ -71,6 +71,21 @@ Attempt.prototype.ap = function(b, concat) {
 };
 
 //
+//  ### chain(f)
+//
+//  Bind through the success of the attempt
+//  Monadic flatMap/bind
+//
+Attempt.prototype.chain = function(f) {
+    return this.match({
+        Success: function(a) {
+            return f(a);
+        },
+        Failure: identity
+    });
+};
+
+//
 //  ### equal(a)
 //
 //  Compare two attempt values for equality
@@ -104,21 +119,6 @@ Attempt.prototype.equal = function(a) {
 Attempt.prototype.extract = function() {
     return this.match({
         Success: identity,
-        Failure: identity
-    });
-};
-
-//
-//  ### flatMap(f)
-//
-//  Bind through the success of the attempt
-//  Monadic flatMap/bind
-//
-Attempt.prototype.flatMap = function(f) {
-    return this.match({
-        Success: function(a) {
-            return f(a);
-        },
         Failure: identity
     });
 };
@@ -346,11 +346,11 @@ squishy = squishy
     .method('arb', isFailureOf, function(a, b) {
         return Attempt.Failure(this.arb(a.type, b - 1));
     })
+    .method('chain', isAttempt, function(a, b) {
+        return a.chain(b);
+    })
     .method('shrink', isAttempt, function(a) {
         return [];
-    })
-    .method('flatMap', isAttempt, function(a, b) {
-        return a.flatMap(b);
     })
     .method('equal', isAttempt, function(a, b) {
         return a.equal(b);

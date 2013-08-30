@@ -7,8 +7,8 @@
 //   `b`. Methods are Right-biased.
 //
 //   * `ap(e)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
 //   * `concat(s, f)` - Semigroup concat
-//   * `flatMap(f)` - Monadic flatMap/bind
 //   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
 //   * `map(f)` - Functor map
 //   * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
@@ -39,6 +39,19 @@ Either.prototype.ap = function(e) {
         Right: function(x) {
             return squishy.map(e, x);
         }
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the success of the either
+//  Monadic flatMap/bind
+//
+Either.prototype.chain = function(f) {
+    return this.match({
+        Left: constant(this),
+        Right: f
     });
 };
 
@@ -101,19 +114,6 @@ Either.prototype.extract = function() {
     return this.match({
         Left: identity,
         Right: identity
-    });
-};
-
-//
-//  ### flatMap(f)
-//
-//  Bind through the success of the either
-//  Monadic flatMap/bind
-//
-Either.prototype.flatMap = function(f) {
-    return this.match({
-        Left: constant(this),
-        Right: f
     });
 };
 
@@ -328,6 +328,9 @@ squishy = squishy
     .method('shrink', isEither, function(a) {
         return [];
     })
+    .method('chain', isEither, function(a, b) {
+        return a.chain(b);
+    })
     .method('concat', isEither, function(a, b) {
         return a.concat(b, this.concat);
     })
@@ -339,9 +342,6 @@ squishy = squishy
     })
     .method('fold', isEither, function(a, b, c) {
         return a.fold(b, c);
-    })
-    .method('flatMap', isEither, function(a, b) {
-        return a.flatMap(b);
     })
     .method('map', isEither, function(a, b) {
         return a.map(b);

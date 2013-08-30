@@ -24,6 +24,7 @@
 //         1  2 3  4
 //
 //   * `ap(a, b)` - Applicative ap(ply)
+//   * `chain(f)` - monadic flatMap
 //   * `concat(a)` - semigroup concat
 //   * `count(a, f)` - Count the number of elements in the list which satisfy a predicate.
 //   * `drop(a, n)` - Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
@@ -33,7 +34,6 @@
 //   * `equal(a)` -  `true` if `a` is equal to `this`
 //   * `fold(a, b)` - applies `a` to value if `Cons` or defaults to `b`
 //   * `map(f)` - functor map
-//   * `flatMap(f)` - monadic flatMap
 //   * `append(a)` - append
 //   * `appendAll(a)` - append values
 //   * `prepend(a)` - prepend value
@@ -136,6 +136,21 @@ List.prototype.appendAll = function(a) {
     }
 
     return accum;
+};
+
+//
+//  ### chain(f)
+//
+//  Applies the given function f to each element of this list, then
+//  concatenates the results.
+//
+List.prototype.chain = function(f) {
+    return this.fold(
+        List.Nil,
+        function(a, b) {
+            return a.appendAll(f(b));
+        }
+    );
 };
 
 //
@@ -292,21 +307,6 @@ List.prototype.filter = function(f) {
         });
     };
     return trampoline(rec(this, List.Nil)).reverse();
-};
-
-//
-//  ### flatMap(f)
-//
-//  Applies the given function f to each element of this list, then
-//  concatenates the results.
-//
-List.prototype.flatMap = function(f) {
-    return this.fold(
-        List.Nil,
-        function(a, b) {
-            return a.appendAll(f(b));
-        }
-    );
 };
 
 //
@@ -666,6 +666,9 @@ squishy = squishy
     .method('ap', isList, function(a, b) {
         return a.ap(b);
     })
+    .method('chain', isList, function(a, b) {
+        return a.chain(b);
+    })
     .method('concat', isList, function(a, b) {
         return a.concat(b);
     })
@@ -686,9 +689,6 @@ squishy = squishy
     })
     .method('exists', isList, function(a, f) {
         return a.exists(f);
-    })
-    .method('flatMap', isList, function(a, b) {
-        return a.flatMap(b);
     })
     .method('fold', isList, function(a, f, g) {
         return a.fold(f, g);
