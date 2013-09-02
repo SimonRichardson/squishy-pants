@@ -195,6 +195,47 @@ function constant(c) {
 }
 
 //
+//  ## access(p)(o)
+//
+//  Access a object property in a lazy fashion.
+//
+//      access('prop')(object) == object['prop']
+//
+var access = curry(function(p, o) {
+    return o[p];
+});
+
+//
+//  ## andThen(g)(f)
+//
+//  Lazy composition using currying.
+//  See: compose(f, g)
+//
+var andThen = curry(function(g) {
+    return compose(f, g);
+});
+
+//
+//  ## sequence(a)(b)
+//
+//  Lazy chaining of structures / containers together.
+//
+var sequence = curry(function(a, b) {
+    return squishy.chain(a, function() {
+        return b;
+    });
+});
+
+//
+//  ## minus(a)(b)
+//
+//  Lazy concatenation of structures / containers together with negate.
+//
+var minus = curry(function(a, b) {
+    return squishy.concat(a, squishy.negate(b));
+});
+
+//
 //  ## liftA2(f, a, b)
 //
 //  Lifts a curried, binary function `f` into the applicative passes
@@ -397,6 +438,10 @@ squishy = squishy
     .property('compose', compose)
     .property('identity', identity)
     .property('constant', constant)
+    .property('access', access)
+    .property('andThen', andThen)
+    .property('sequence', sequence)
+    .property('minus', minus)
     .property('liftA2', liftA2)
     .property('arrayOf', arrayOf)
     .property('objectLike', objectLike)

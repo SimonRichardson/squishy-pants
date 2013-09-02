@@ -83,32 +83,6 @@ function fo() {
         env.error('Expecting no arguments given to fo. Use fo()(arguments)');
     }
 
-    function access(p) {
-        return function(o) {
-            return o[p];
-        };
-    }
-
-    function andThen(g) {
-        return function(f) {
-            return f.compose(g);
-        };
-    }
-
-    function sequence(a) {
-        return function(b) {
-            return a.chain(function(ignored) {
-                return b;
-            });
-        };
-    }
-
-    function minus(a) {
-        return function(b) {
-            return a.concat(b.negate());
-        };
-    }
-
     foQueue = [];
 
     return function(n) {
