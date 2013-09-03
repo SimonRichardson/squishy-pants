@@ -4,3 +4,5 @@ bin
 coverage
 docs
 node_modules
+tags
+lib/squishy-pants*.js

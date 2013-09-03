@@ -21,5 +21,5 @@
     "grunt-parallel": "~0.2.0"
   },
   "main": "squishy-pants.js",
-  "version": "0.0.2"
+  "version": "0.0.3"
 }

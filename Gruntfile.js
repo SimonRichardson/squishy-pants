@@ -7,7 +7,7 @@ module.exports = function (grunt) {
                         banner: '/* Compiled : <%= grunt.template.today("yyyy-mm-dd HH:MM") %> */\n'
                     },
                     files: {
-                        'bin/squishy-pants.js': [
+                        'lib/squishy-pants.js': [
                             'lib/rigger/rigger.js'
                         ]
                     }
@@ -16,7 +16,7 @@ module.exports = function (grunt) {
             jshint: {
                 all: [
                     'Gruntfile.js',
-                    'bin/squishy-pants.js',
+                    'lib/squishy-pants.js',
                     'src/*.js',
                     'test/*.js'
                 ]
@@ -30,10 +30,10 @@ module.exports = function (grunt) {
                 all: {
                     options: {
                         beautify: false,
-                        sourceMap: 'bin/squishy-pants.min.map.js'
+                        sourceMap: 'lib/squishy-pants.min.map.js'
                     },
                     files: {
-                        'bin/squishy-pants.min.js': ['bin/squishy-pants.js']
+                        'lib/squishy-pants.min.js': ['lib/squishy-pants.js']
                     }
                 }
             },
