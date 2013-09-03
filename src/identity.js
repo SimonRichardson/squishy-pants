@@ -5,9 +5,10 @@
 //  strategy. It simply applies the bound function to its input without
 //  any modification.
 //
-//  * chain(f) - chain values
-//  * map(f) - functor map
 //  * ap(a) - applicative ap(ply)
+//  * chain(f) - chain values
+//  * `concat(s, plus)` - Semigroup concat
+//  * map(f) - functor map
 //
 //
 var Identity = tagged('Identity', ['x']);
@@ -27,7 +28,20 @@ Identity.of = Identity;
 //
 Identity.prototype.ap = function(a) {
     return this.chain(function(f) {
-        return a.map(f);
+        return squishy.map(a, f);
+    });
+};
+
+//
+//  ### concat(b)
+//
+//  Concatenate two identities associatively together.
+//  Semigroup concat
+//
+Identity.prototype.concat = function(a) {
+    var env = this;
+    return this.map(function(f) {
+        return squishy.concat(env.x, a.x);
     });
 };
 
@@ -59,6 +73,18 @@ Identity.prototype.equal = function(b) {
 Identity.prototype.map = function(f) {
     return this.chain(function(a) {
         return Identity.of(f(a));
+    });
+};
+
+//
+//  ### negate(b)
+//
+//  Negate two identities associatively together.
+//
+Identity.prototype.negate = function() {
+    var env = this;
+    return this.map(function(f) {
+        return squishy.negate(env.x);
     });
 };
 
@@ -191,6 +217,9 @@ squishy = squishy
     .method('ap', isIdentity, function(a, b) {
         return a.ap(b);
     })
+    .method('concat', isIdentity, function(a, b) {
+        return a.concat(b);
+    })
     .method('chain', isIdentity, function(a, b) {
         return a.chain(b);
     })
@@ -202,4 +231,7 @@ squishy = squishy
     })
     .method('map', isIdentity, function(a, b) {
         return a.map(b);
+    })
+    .method('negate', isIdentity, function(a) {
+        return a.negate();
     });

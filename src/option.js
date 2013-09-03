@@ -63,13 +63,13 @@ Option.prototype.chain = function(f) {
 //  Concatenate two options associatively together.
 //  Semigroup concat
 //
-Option.prototype.concat = function(s, f) {
+Option.prototype.concat = function(s) {
     return this.match({
         Some: function(x) {
             return squishy.map(
                 s,
                 function(y) {
-                    return f(x, y);
+                    return squishy.concat(x, y);
                 }
             );
         },
@@ -324,7 +324,7 @@ squishy = squishy
         return a.ap(b);
     })
     .method('concat', isOption, function(a, b) {
-        return a.concat(b, this.concat);
+        return a.concat(b);
     })
     .method('chain', isOption, function(a, b) {
         return a.chain(b);

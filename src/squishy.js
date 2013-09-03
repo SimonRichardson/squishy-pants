@@ -211,7 +211,7 @@ var access = curry(function(p, o) {
 //  Lazy composition using currying.
 //  See: compose(f, g)
 //
-var andThen = curry(function(g) {
+var andThen = curry(function(g, f) {
     return compose(f, g);
 });
 
@@ -300,6 +300,15 @@ var and = curry(function(a, b) {
 //
 var add = curry(function(a, b) {
     return a + b;
+});
+
+//
+//  ## times(a)(b)
+//
+//  Curried function for `+`.
+//
+var times = curry(function(a, b) {
+    return a * b;
 });
 
 //
@@ -448,6 +457,7 @@ squishy = squishy
     .property('or', or)
     .property('and', and)
     .property('add', add)
+    .property('times', times)
     .property('not', not)
     .property('error', error)
     .property('oneOf', oneOf)

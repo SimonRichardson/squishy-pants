@@ -31,7 +31,13 @@ squishy = squishy
     }))
     .method('map', squishy.liftA2(or, isNumber, isString), curry(function(a, b) {
         return b(a);
-    }));
+    }))
+    .method('negate', isBoolean, function(a) {
+        return !a;
+    })
+    .method('negate', isNumber, function(a) {
+        return -a;
+    });
 
 //
 //  ### equal(a, b)

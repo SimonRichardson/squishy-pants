@@ -80,10 +80,19 @@ function fo() {
         prevFoQueue = foQueue;
 
     if(arguments.length) {
-        env.error('Expecting no arguments given to fo. Use fo()(arguments)');
+        env.error('Expecting no arguments given to fo. Use fo()(arguments)')();
     }
 
     foQueue = [];
+
+    //
+    //  ## proxy(prop)(a)(b)
+    //
+    //  Lazy dynamic composing of structures / containers together via a property.
+    //
+    var proxy = curry(function(prop, a, b) {
+        return env[prop](a, b);
+    });
 
     return function(n) {
         var op,
@@ -95,46 +104,52 @@ function fo() {
         }
 
         // >= > === ==
-        if(n === false)
-            op = access('chain');
+        if(n === false) {
+            op = proxy('chain');
 
         // >> >>> &
-        else if(n === 0)
+        } else if(n === 0) {
             op = andThen;
 
         // <<
-        else if(n === Math.pow(2, (2 << foQueue.length) - 3))
-            op = access('compose');
+        } else if(n === Math.pow(2, (2 << foQueue.length) - 3)) {
+            op = proxy('compose');
 
         // *
-        else if(n === Math.pow(2, foQueue.length * (foQueue.length + 1) / 2))
-            op = access('ap');
+        } else if(n === Math.pow(2, foQueue.length * (foQueue.length + 1) / 2)) {
+            op = proxy('ap');
 
         // + | ^
-        else if(n === (2 << foQueue.length) - 2)
-            op = access('concat');
+        } else if(n === (2 << foQueue.length) - 2) {
+            op = proxy('concat');
 
         // %
-        else if(n === 2)
-            op = access('map');
+        } else if(n === 2) {
+            op = proxy('map');
 
         // -
-        else if(n < 0)
+        } else if(n < 0) {
             op = minus;
 
         // < <= !== !=
-        else if(n === true)
+        } else if(n === true) {
             op = sequence;
 
-        else {
+        } else {
             foQueue = prevFoQueue;
-            env.error("Couldn't determine operation. Has fo.unsafeSetValueOf been called for all operands?");
+            env.error("Couldn't determine operation. Has fo.unsafeSetValueOf been called for all operands?")();
         }
 
-        x = env.reduce(foQueue, function(r, q) {
-            return op(r).call(r, isFunction(q) ? q : q.value);
+        x = env.reduce(foQueue, function(a, b) {
+            /* Unwrap a overload if it is wrapped in */
+            var left = isWrap(a) ? a.value : a,
+                right = isWrap(b) ? b.value : b;
+
+            return op(left).call(left, right);
         });
+
         foQueue = prevFoQueue;
+
         return x;
     };
 }
@@ -153,17 +168,45 @@ function fo() {
 fo.unsafeSetValueOf = function(proto) {
     var prev = proto.valueOf;
     proto.valueOf = function() {
+
         if(foQueue === void(0)) {
             return prev.call(this);
         }
 
         foQueue.push(this);
+
         return 1 << foQueue.length;
     };
 };
 
 //
+//  ## Function wrapper
+//
+//  This wraps a function so we can extract it later, ideal for for
+//  chaining functions (see fo.chain).
+//
+/*
+    This is an alternative for overriding `fo.unsafeSetValueOf(Function.prototype)`,
+    which obviously is not what we want to do if the library is interfacing with
+    other external sources. So we wrap the function so we can later test against it.
+*/
+var wrap = tagged('wrap', ['value']);
+
+//
+//  ## isWrap(a)
+//
+//  Returns `true` if `a` is an instance of `wrap`.
+//
+var isWrap = isInstanceOf(wrap);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(wrap.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
-    .property('fo', fo);
+    .property('fo', fo)
+    .property('wrap', wrap);
