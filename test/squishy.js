@@ -161,12 +161,112 @@ exports.compose = {
     }
 };
 
+exports.identity = {
+    testIdentity: function(test) {
+        test.equal(_.identity(1), 1);
+        test.done();
+    }
+};
+
+exports.constant = {
+    testConstant: function(test) {
+        test.equal(_.constant(1)(), 1);
+        test.done();
+    }
+};
+
+exports.access = {
+    testAccess: function(test) {
+        test.equal(_.access('a')(_.singleton('a', 1)), 1);
+        test.done();
+    }
+};
+
+exports.andThen = {
+    testAndThen: function(test) {
+        function f(x) {
+            return x + 1;
+        }
+        function g(x) {
+            return x + 2;
+        }
+
+        test.equal(_.andThen(g, f)(1), f(g(1)));
+        test.done();
+    }
+};
+
+exports.sequence = {
+    testSequence: function(test) {
+        test.equal(_.sequence(_.Identity(1), _.Identity(2)).x, 2);
+        test.done();
+    }
+};
+
 exports.liftA2 = {
     testliftA2: function(test) {
         function f(x) {
             return x;
         }
         test.equal(_.liftA2(_.add, f, f)(1), 2);
+        test.done();
+    }
+};
+
+exports.arrayOf = {
+    testArrayOf: function(test) {
+        test.equal(_.arrayOf(Number).type, Number);
+        test.done();
+    }
+};
+
+exports.objectLike = {
+    testObjectLike: function(test) {
+        test.equal(_.objectLike({age: Number}).props.age, Number);
+        test.done();
+    }
+};
+
+exports.or = {
+    testOr: function(test) {
+        test.equal(_.or(0, 1), 1);
+        test.done();
+    }
+};
+
+exports.and = {
+    testAnd: function(test) {
+        test.equal(_.and(0, 1), false);
+        test.done();
+    }
+};
+
+exports.add = {
+    testAdd: function(test) {
+        test.equal(_.add(2, 1), 3);
+        test.done();
+    }
+};
+
+exports.times = {
+    testTimes: function(test) {
+        test.equal(_.times(2, 3), 6);
+        test.done();
+    }
+};
+
+exports.strictEquals = {
+    testStrictEquals: function(test) {
+        var a = {};
+        test.equal(_.strictEquals(a, a), true);
+        test.equal(_.strictEquals(a, {}), false);
+        test.done();
+    }
+};
+
+exports.not = {
+    testNot: function(test) {
+        test.equal(_.not(true), false);
         test.done();
     }
 };

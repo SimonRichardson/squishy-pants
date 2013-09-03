@@ -401,11 +401,17 @@ function dec(x) {
     return x - 1;
 }
 
+//
+//  ## point
+//
 function point(a) {
     return a.of || a.constructor.of;
 }
 
-function empty(a) {
+//
+//  ## zero
+//
+function zero(a) {
     return a.empty || a.constructor.empty;
 }
 
@@ -457,6 +463,7 @@ squishy = squishy
     .property('or', or)
     .property('and', and)
     .property('add', add)
+    .property('strictEquals', strictEquals)
     .property('times', times)
     .property('not', not)
     .property('error', error)
@@ -465,4 +472,6 @@ squishy = squishy
     .property('range', range)
     .property('randomRange', randomRange)
     .property('inc', inc)
-    .property('dec', dec);
+    .property('dec', dec)
+    .property('point', point)
+    .property('zero', zero);
