@@ -11,6 +11,80 @@ Semi-serious functional programming library.
 
 Alpha documentation is found [here](http://simonrichardson.github.io/squishy-pants/)
 
+## Examples
+
+### Attempt
+```javascript
+squishy.Attempt.Success(1).map(
+  function(a) {
+    return a + 1;
+  }
+).toOption().getOrElse(
+  function() {
+    return 0;
+  }
+);
+// Outputs: 2
+```
+
+### Option
+```javascript
+squishy.Option.Some(1).map(
+  function(a) {
+    return a + 1;
+  }
+).getOrElse(
+  function() {
+    return 0;
+  }
+);
+// Outputs: 2
+```
+
+### Promise
+```javascript
+squishy.Promise.of(1).map(
+  function(a) {
+    return a + 1;
+  }
+).fork(console.log);
+// Outputs: 2
+```
+
+### Stream
+```javascript
+squishy.Stream.fromArray([1, 2, 3, 4]).map(
+  function(a) {
+    return a + 1;
+  }
+).zipWithIndex().fork(console.log);
+// Outputs: Tuple2(2, 0), Tuple2(3, 1), Tuple2(4, 2), Tuple2(5, 3)
+```
+
+### More:
+
+* [Array methods](src/array.js)
+* [Attempt](src/attempt.js)
+* [Check (similar to ScalaCheck and QuickCheck)](src/check.js)
+* [Either](src/either.js)
+* [Environment](src/environment.js)
+* [FO - Fantasy Overloading](src/fo.js)
+* [Identity](src/identity.js)
+* [IO](src/io.js)
+* [Lazy](src/lazy.js)
+* [Lens](src/lens.js)
+* [List](src/list.js)
+* [Option](src/option.js)
+* [Partial](src/partial.js)
+* [Promise](src/promise.js)
+* [Reader](src/reader.js)
+* [State](src/state.js)
+* [Store](src/store.js)
+* [Stream](src/stream.js)
+* [Trampoline](src/trampoline.js)
+* [Tuples (from 2 to 5)](src/tuples.js)
+* [Writer](src/writer.js)
+
 ## Building
 
 Install the development dependencies with [npm](https://npmjs.org/):
