@@ -100,7 +100,7 @@ function bind(f) {
         if(f.bind) g = f.bind.apply(f, [o].concat(args));
         else {
             g = function() {
-                return f.apply(o, args.concat([].slice.call(arguments)));
+                return f.apply(o, args.concat(rest(arguments)));
             };
         }
 
@@ -139,7 +139,7 @@ function bind(f) {
 //
 function curry(f) {
     var a = function() {
-        var g = bind(f).apply(f, [this].concat([].slice.call(arguments)));
+        var g = bind(f).apply(f, [this].concat(rest(arguments)));
 
         if(!functionLength(g)) return g();
         else return curry(g);
@@ -165,7 +165,7 @@ function curry(f) {
 //
 function compose(f, g) {
     return function() {
-        return f(g.apply(this, [].slice.call(arguments)));
+        return f(g.apply(this, rest(arguments)));
     };
 }
 
@@ -416,6 +416,15 @@ function zero(a) {
 }
 
 //
+//  ## rest
+//
+//  Convert the rest of the arguments to an array
+//
+function rest(args) {
+    return [].slice.call(args);
+}
+
+//
 //  ## optional
 //
 //  Optionally calls the function passed if it's not null. This is glue
@@ -426,7 +435,7 @@ function zero(a) {
 /* Internal use only - not exposed */
 function optional(f) {
     return function() {
-        return f ? f.apply(null, [].slice.call(arguments)) : null;
+        return f ? f.apply(null, rest(arguments)) : null;
     };
 }
 
@@ -474,4 +483,5 @@ squishy = squishy
     .property('inc', inc)
     .property('dec', dec)
     .property('point', point)
-    .property('zero', zero);
+    .property('zero', zero)
+    .property('rest', rest);

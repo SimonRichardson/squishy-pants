@@ -15,7 +15,7 @@
 /* Use with care */
 function once(f) {
     /* Create a special lock so we don't have to look for undefined */
-    var args = [].slice.call(arguments).slice(1),
+    var args = rest(arguments).slice(1),
         lock = {},
         val = lock;
 
@@ -43,7 +43,7 @@ function once(f) {
 /* This is really stateful and we should really consider its use. */
 /* Use with care */
 function asyncOnce(f) {
-    var args = [].slice.call(arguments).slice(1),
+    var args = rest(arguments).slice(1),
         resolves = [],
         stateful = function(args) {
             captured = args;
@@ -58,7 +58,7 @@ function asyncOnce(f) {
         deferred = once(function() {
             f.apply(null, [
                 function() {
-                    var args = [].slice.call(arguments);
+                    var args = rest(arguments);
 
                     stateful(args);
                     invoke(args);

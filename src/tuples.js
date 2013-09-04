@@ -356,7 +356,7 @@ var arbTuple = curry(function(t, n) {
 //
 function tuple2Of(a, b) {
     var self = getInstance(this, tuple2Of);
-    self.types = [].slice.call(arguments);
+    self.types = rest(arguments);
     return self;
 }
 
@@ -376,7 +376,7 @@ var isTuple2Of = isInstanceOf(tuple2Of);
 //
 function tuple3Of(a, b, c) {
     var self = getInstance(this, tuple3Of);
-    self.types = [].slice.call(arguments);
+    self.types = rest(arguments);
     return self;
 }
 
@@ -396,7 +396,7 @@ var isTuple3Of = isInstanceOf(tuple3Of);
 //
 function tuple4Of(a, b, c, d) {
     var self = getInstance(this, tuple4Of);
-    self.types = [].slice.call(arguments);
+    self.types = rest(arguments);
     return self;
 }
 
@@ -416,7 +416,7 @@ var isTuple4Of = isInstanceOf(tuple4Of);
 //
 function tuple5Of(a, b, c, d, e) {
     var self = getInstance(this, tuple5Of);
-    self.types = [].slice.call(arguments);
+    self.types = rest(arguments);
     return self;
 }
 

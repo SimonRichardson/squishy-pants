@@ -34,7 +34,7 @@ function partial(methods) {
     };
 
     self.isDefinedAt = function() {
-        var args = [].slice.call(arguments);
+        var args = rest(arguments);
         return exists(methods, function(m) {
             return m.predicate.apply(null, args);
         });
@@ -42,7 +42,7 @@ function partial(methods) {
 
     /* Override function call to mask as a real function */
     self.call = function(scope) {
-        return self.apply(scope, [].slice.call(arguments).slice(1));
+        return self.apply(scope, rest(arguments).slice(1));
     };
 
     /* Override function apply to mask as a real function */
