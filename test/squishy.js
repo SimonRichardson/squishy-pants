@@ -1,4 +1,4 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
     A = function() {},
     B = function() {},
     C = function() {};
