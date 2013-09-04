@@ -257,6 +257,15 @@ exports.sequence = {
     }
 };
 
+exports.flatten = {
+    'when call flatten and checking that arguments passed are correct': _.check(
+        function(a, b) {
+            return _.expect(_.flatten(_.add, [a, b]), _.add(a, b));
+        },
+        [_.Integer, _.Integer]
+    )
+};
+
 exports.liftA2 = {
     testliftA2: function(test) {
         function f(x) {

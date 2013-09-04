@@ -236,6 +236,17 @@ var minus = curry(function(a, b) {
 });
 
 //
+//  ## flatten(a, [b])
+//
+//  Flatten arguments passed via flatten into the function
+//
+//      flatten(f, [1, 2]) == f.apply(null, [1, 2])
+//
+var flatten = curry(function(f, b) {
+    return f.apply(null, b);
+});
+
+//
 //  ## liftA2(f, a, b)
 //
 //  Lifts a curried, binary function `f` into the applicative passes
@@ -466,6 +477,7 @@ squishy = squishy
     .property('andThen', andThen)
     .property('sequence', sequence)
     .property('minus', minus)
+    .property('flatten', flatten)
     .property('liftA2', liftA2)
     .property('arrayOf', arrayOf)
     .property('objectLike', objectLike)
