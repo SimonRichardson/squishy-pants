@@ -304,7 +304,7 @@ Stream.prototype.zip = function(a) {
         function(next, done) {
             var left = [],
                 right = [],
-                end = lazy(done);
+                end = once(done);
 
             env.fork(
                 function(a) {

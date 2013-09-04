@@ -4,7 +4,7 @@
     <title>Promise with squishy-pants.js</title>
     <meta charset="utf-8" />
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-    <script src="../bin/squishy-pants.js"></script>
+    <script src="../lib/squishy-pants.js"></script>
     <script>
       function event(element, name, callback) {
           if(element.addEventListener) {
@@ -30,25 +30,27 @@
                   }, 100);
               }),
 
-              // Lazy promise with stateful deferred
-              lazy = _.lazy(
+              // Once promise with stateful deferred
+              once = _.once(
                   function() {
                       return _.arb(String, 20);
                   }
               ),
-              lazyPromise = _.Promise(function(resolve, reject) {
-                  resolve(lazy());
+              oncePromise = _.Promise(function(resolve, reject) {
+                  resolve(once());
               });
 
-              // Lazy async promise with stateful deferred
-              lazyAsync = _.lazyAsync(
-                  function(resolve, reject) {
+              // Once async promise with stateful deferred
+              asyncOnce = _.asyncOnce(
+                  function(resolve) {
                       setTimeout(function() {
                           resolve(_.arb(String, 20));
                       }, 100);
                   }
               ),
-              lazyAsyncPromise = _.Promise(lazyAsync);
+              asyncOncePromise = _.Promise(function(resolve, reject) {
+                  asyncOnce(resolve);
+              });
 
           // Normal promise listener
           promise.fork(
@@ -56,16 +58,16 @@
               logger('A - Normal Immediate failure')
           );
 
-          // Lazy promise listener
-          lazyPromise.fork(
-              logger('B - Lazy Immediate success'),
-              logger('B - Lazy Immediate failure')
+          // Once promise listener
+          oncePromise.fork(
+              logger('B - Once Immediate success'),
+              logger('B - Once Immediate failure')
           );
 
-          // Lazy async promise listener
-          lazyAsyncPromise.fork(
-              logger('C - Lazy Async Immediate success'),
-              logger('C - Lazy Async Immediate failure')
+          // Once async promise listener
+          asyncOncePromise.fork(
+              logger('C - Once Async Immediate success'),
+              logger('C - Once Async Immediate failure')
           );
 
           // Wait to call again
@@ -76,14 +78,14 @@
                   logger('A - Normal Asynchronous failure')
               );
 
-              lazyPromise.fork(
-                  logger('B - Lazy Asynchronous success'),
-                  logger('B - Lazy Asynchronous failure')
+              oncePromise.fork(
+                  logger('B - Once Asynchronous success'),
+                  logger('B - Once Asynchronous failure')
               );
 
-              lazyAsyncPromise.fork(
-                  logger('C - Lazy Async Asynchronous success'),
-                  logger('C - Lazy Async Asynchronous failure')
+              asyncOncePromise.fork(
+                  logger('C - Once Async Asynchronous success'),
+                  logger('C - Once Async Asynchronous failure')
               );
 
           }, 200);
@@ -100,7 +102,7 @@
           <hr />
           <div class="alert">
               <p>
-                Note: The lazy &amp; lazyAsync deferred is only called once, where as the normal
+                Note: The once &amp; asyncOnce deferred is only called once, where as the normal
                 deferred is called each time the fork is called. With this in mind each resulting
                 string for normal deferred is then different.
               </p>
