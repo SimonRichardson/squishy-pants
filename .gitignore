@@ -3,3 +3,5 @@ bin
 node_modules
 src
 test
+docs
+lib

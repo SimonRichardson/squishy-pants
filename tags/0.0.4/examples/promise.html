@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Promise with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../lib/squishy-pants.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML += x + '<br />';
+              })),
+              logger = _.curry(function(prefix, value) {
+                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              }),
+
+              // Normal promise
+              promise = _.Promise(function(resolve, reject) {
+                  setTimeout(function() {
+                      resolve(_.arb(String, 20));
+                  }, 100);
+              }),
+
+              // Once promise with stateful deferred
+              once = _.once(
+                  function() {
+                      return _.arb(String, 20);
+                  }
+              ),
+              oncePromise = _.Promise(function(resolve, reject) {
+                  resolve(once());
+              });
+
+              // Once async promise with stateful deferred
+              asyncOnce = _.asyncOnce(
+                  function(resolve) {
+                      setTimeout(function() {
+                          resolve(_.arb(String, 20));
+                      }, 100);
+                  }
+              ),
+              asyncOncePromise = _.Promise(function(resolve, reject) {
+                  asyncOnce(resolve);
+              });
+
+          // Normal promise listener
+          promise.fork(
+              logger('A - Normal Immediate success'),
+              logger('A - Normal Immediate failure')
+          );
+
+          // Once promise listener
+          oncePromise.fork(
+              logger('B - Once Immediate success'),
+              logger('B - Once Immediate failure')
+          );
+
+          // Once async promise listener
+          asyncOncePromise.fork(
+              logger('C - Once Async Immediate success'),
+              logger('C - Once Async Immediate failure')
+          );
+
+          // Wait to call again
+          setTimeout(function() {
+
+              promise.fork(
+                  logger('A - Normal Asynchronous success'),
+                  logger('A - Normal Asynchronous failure')
+              );
+
+              oncePromise.fork(
+                  logger('B - Once Asynchronous success'),
+                  logger('B - Once Asynchronous failure')
+              );
+
+              asyncOncePromise.fork(
+                  logger('C - Once Async Asynchronous success'),
+                  logger('C - Once Async Asynchronous failure')
+              );
+
+          }, 200);
+
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>Promise using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert">
+              <p>
+                Note: The once &amp; asyncOnce deferred is only called once, where as the normal
+                deferred is called each time the fork is called. With this in mind each resulting
+                string for normal deferred is then different.
+              </p>
+          </div>
+          <hr />
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
