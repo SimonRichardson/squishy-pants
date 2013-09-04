@@ -47,9 +47,7 @@
                   self.routes = routes || _.partial();
 
                   self.route = function(path, f) {
-                      var predicate = function() {
-                              return _.andThen(format, toRegExp)(path());
-                          },
+                      var predicate = _.constant(_.andThen(format, toRegExp)(path())),
                           callback = _.andThen(perform(predicate), _.flatten(f));
 
                       return router(self.routes.method(is(predicate), callback));
