@@ -213,6 +213,11 @@ var isPartial = function(a) {
 };
 
 //
+//  ## isComparable(a)
+//
+var isComparable = flip(has)('equal');
+
+//
 //  ### isEmpty(a)
 //
 //  Checks to see if a value is empty or not.
@@ -264,5 +269,8 @@ squishy = squishy
     .property('isObjectLike', isObjectLike)
     .property('isAnyOf', isAnyOf)
     .property('isAnyTypeOf', isAnyTypeOf)
-    .property('isAnyInstanceOf', isAnyInstanceOf);
+    .property('isAnyInstanceOf', isAnyInstanceOf)
+    .property('isEnvironment', isEnvironment)
+    .property('isPartial', isPartial)
+    .property('isComparable', isComparable);
 

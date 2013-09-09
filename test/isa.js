@@ -193,3 +193,18 @@ exports.isObjectLike = {
     }
 };
 
+exports.isComparable = {
+    'when testing isComparable should return true if has equal method': function(test) {
+        test.ok(_.isComparable({
+            equal: function() {}
+        }));
+        test.done();
+    },
+    'when testing isComparable should return false if has no equal method': function(test) {
+        test.ok(!_.isComparable({
+            equals: function() {}
+        }));
+        test.done();
+    }
+};
+

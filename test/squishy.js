@@ -371,6 +371,35 @@ exports.curry = {
     }
 };
 
+exports.flip = {
+    'when testing flip should return the first two flipped arguments': _.check(
+        function(a, b) {
+            var called,
+                r = _.flip(
+                function(x, y) {
+                    called = [x, y];
+                }
+            )(a)(b);
+
+            return _.expect(called).toBe([b, a]);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when testing flip should return the first two flipped arguments and pass the rest': _.check(
+        function(a, b, c, d) {
+            var called,
+                r = _.flip(
+                function(x, y) {
+                    called = [x, y].concat(_.rest(arguments).slice(2));
+                }
+            )(a)(b, c, d);
+
+            return _.expect(called).toBe([b, a, c, d]);
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal]
+    )
+};
+
 exports.oneOf = {
     testOneOf: function(test) {
         var a = ['boolean', 'number', 'string'];

@@ -332,6 +332,17 @@ var strictEquals = curry(function(a, b) {
 });
 
 //
+//  ## has(a)(b)
+//
+//  Has a object got a property
+//
+//        squishy.has(o, 'p');
+//
+var has = curry(function(a, b) {
+    return b in a;
+});
+
+//
 //  ## not(a)
 //
 //  Returns `true` if `a` is not a valid value.
@@ -386,7 +397,7 @@ function range(a, b) {
 }
 
 //
-//  ## randomRange
+//  ## randomRange(a, b)
 //
 //  Returns a random number between the range.
 //
@@ -395,7 +406,7 @@ function randomRange(a, b) {
 }
 
 //
-//  ## inc
+//  ## inc(a)
 //
 //  Increments the number by 1
 //
@@ -404,7 +415,7 @@ function inc(x) {
 }
 
 //
-//  ## dec
+//  ## dec(a)
 //
 //  Decrement the number by 1
 //
@@ -413,26 +424,39 @@ function dec(x) {
 }
 
 //
-//  ## point
+//  ## point(a)
 //
 function point(a) {
     return a.of || a.constructor.of;
 }
 
 //
-//  ## zero
+//  ## zero(a)
 //
 function zero(a) {
     return a.empty || a.constructor.empty;
 }
 
 //
-//  ## rest
+//  ## rest(...)
 //
 //  Convert the rest of the arguments to an array
 //
 function rest(args) {
     return [].slice.call(args);
+}
+
+//
+//  ## flip(a)
+//
+//  Flip the first two arguments of a functions arguments.
+//
+function flip(f) {
+    return curry(function(a, b) {
+        var args = rest(arguments).slice(2);
+
+        return f.apply(null, [b, a].concat(args));
+    });
 }
 
 //
@@ -484,8 +508,9 @@ squishy = squishy
     .property('or', or)
     .property('and', and)
     .property('add', add)
-    .property('strictEquals', strictEquals)
     .property('times', times)
+    .property('strictEquals', strictEquals)
+    .property('has', has)
     .property('not', not)
     .property('error', error)
     .property('oneOf', oneOf)
@@ -496,4 +521,5 @@ squishy = squishy
     .property('dec', dec)
     .property('point', point)
     .property('zero', zero)
-    .property('rest', rest);
+    .property('rest', rest)
+    .property('flip', flip);

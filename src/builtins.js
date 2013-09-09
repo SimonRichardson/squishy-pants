@@ -62,6 +62,24 @@ squishy = squishy
         return false;
     })
     .method('equal', strictEquals(undefined), strictEquals)
+    .method('equal', squishy.liftA2(and, isObject, andThen(isComparable, not)), function(a, b) {
+        var i;
+        /* We need to be sure that the there is an `a` and a `b` here. */
+        if (and(a, b) && isObject(b)) {
+            /* This would be better if we turn objects into ordered
+               arrays so we can pass it through equal(a, b) */
+            for (i in a) {
+                if (!squishy.equal(a[i], b[i]))
+                    return false;
+            }
+            for (i in b) {
+                if (!squishy.equal(b[i], a[i]))
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    })
     .property('expect', function(a) {
         var env = this;
         return singleton('toBe',
