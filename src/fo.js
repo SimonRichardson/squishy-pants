@@ -142,8 +142,8 @@ function fo() {
 
         x = env.reduce(foQueue, function(a, b) {
             /* Unbox a overload if it is wrapped in */
-            var left = isBox(a) ? a.unbox() : a,
-                right = isBox(b) ? b.unbox() : b;
+            var left = isBox(a) ? a.extract() : a,
+                right = isBox(b) ? b.extract() : b;
 
             return op(left).call(left, right);
         });
@@ -192,7 +192,7 @@ fo.unsafeSetValueOf = function(proto) {
 */
 var Box = tagged('Box', ['value']);
 
-Box.prototype.unbox = function() {
+Box.prototype.extract = function() {
     return this.value;
 };
 
