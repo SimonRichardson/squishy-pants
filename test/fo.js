@@ -5,7 +5,7 @@ exports.fo = {
         function(a) {
             return _.expect(
                     _.fo()(
-                        _.Identity(a) >= _.wrap(function(x) {
+                        _.Identity(a) >= _.Box(function(x) {
                             return _.Identity(x + 1);
                         })
                     )
@@ -17,7 +17,7 @@ exports.fo = {
         function(a, b) {
             return _.expect(
                     _.fo()(
-                        _.wrap(_.add(a)) >> _.wrap(_.times(2)) >> _.wrap(_.add(3))
+                        _.Box(_.add(a)) >> _.Box(_.times(2)) >> _.Box(_.add(3))
                     )(b)
                 ).toBe(((a + b) * 2) + 3);
         },
@@ -27,7 +27,7 @@ exports.fo = {
         function(a, b) {
             return _.expect(
                     _.fo()(
-                        _.wrap(_.add(a)) << _.wrap(_.times(2)) << _.wrap(_.add(3))
+                        _.Box(_.add(a)) << _.Box(_.times(2)) << _.Box(_.add(3))
                     )(b)
                 ).toBe(((3 + b) * 2) + a);
         },
@@ -57,7 +57,7 @@ exports.fo = {
         function(a, b, c) {
             return _.expect(
                     _.fo()(
-                        _.Identity(a) % _.wrap(_.add(b)) % _.wrap(_.add(c))
+                        _.Identity(a) % _.Box(_.add(b)) % _.Box(_.add(c))
                     )
                 ).toBe(_.Identity(a + b + c));
         },

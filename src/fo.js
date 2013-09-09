@@ -141,9 +141,9 @@ function fo() {
         }
 
         x = env.reduce(foQueue, function(a, b) {
-            /* Unwrap a overload if it is wrapped in */
-            var left = isWrap(a) ? a.value : a,
-                right = isWrap(b) ? b.value : b;
+            /* Unbox a overload if it is wrapped in */
+            var left = isBox(a) ? a.unbox() : a,
+                right = isBox(b) ? b.unbox() : b;
 
             return op(left).call(left, right);
         });
@@ -188,25 +188,29 @@ fo.unsafeSetValueOf = function(proto) {
 /*
     This is an alternative for overriding `fo.unsafeSetValueOf(Function.prototype)`,
     which obviously is not what we want to do if the library is interfacing with
-    other external sources. So we wrap the function so we can later test against it.
+    other external sources. So we Box the function so we can later test against it.
 */
-var wrap = tagged('wrap', ['value']);
+var Box = tagged('Box', ['value']);
+
+Box.prototype.unbox = function() {
+    return this.value;
+};
 
 //
-//  ## isWrap(a)
+//  ## isBox(a)
 //
-//  Returns `true` if `a` is an instance of `wrap`.
+//  Returns `true` if `a` is an instance of `Box`.
 //
-var isWrap = isInstanceOf(wrap);
+var isBox = isInstanceOf(Box);
 
 //
 //  ### Fantasy Overload
 //
-fo.unsafeSetValueOf(wrap.prototype);
+fo.unsafeSetValueOf(Box.prototype);
 
 //
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('fo', fo)
-    .property('wrap', wrap);
+    .property('Box', Box);
