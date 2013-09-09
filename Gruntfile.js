@@ -90,5 +90,10 @@ module.exports = function (grunt) {
         grunt.task.run(['rig', 'jshint', 'parallel']);
     });
 
+    grunt.registerMultiTask('sweet', 'Run macro sweet.js unit tests with nodeunit.', function() {
+
+        grunt.task.run(['rig', 'concat', 'sjs', 'jshint', 'nodeunit']);
+    });
+
     grunt.registerTask('default', ['rig', 'jshint', 'nodeunit', 'uglify']);
 };
