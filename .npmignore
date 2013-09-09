@@ -1,8 +1,12 @@
+*.gitignore
+*.travis.yml
 *.log
 .DS_Store
+Gruntfile.js
 coverage
 docs
 node_modules
 tags
+lib/rigger
 src
 test

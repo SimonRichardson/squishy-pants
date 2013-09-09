@@ -29,11 +29,10 @@ module.exports = function (grunt) {
             uglify: {
                 all: {
                     options: {
-                        beautify: false,
-                        sourceMap: 'lib/squishy-pants.min.map.js'
+                        beautify: false
                     },
                     files: {
-                        'lib/squishy-pants.min.js': ['lib/squishy-pants.js']
+                        'squishy-pants.js': ['lib/squishy-pants.js']
                     }
                 }
             },
