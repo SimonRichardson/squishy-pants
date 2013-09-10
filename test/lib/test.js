@@ -1,4 +1,4 @@
-var _ = require('../../lib/squishy-pants');
+var _ = require('../../bin/squishy-pants');
 
 _ = _
     .property('check', _.curry(function(property, args, test) {

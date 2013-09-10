@@ -234,4 +234,7 @@ squishy = squishy
     })
     .method('negate', isIdentity, function(a) {
         return a.negate();
+    })
+    .method('shrink', isIdentity, function(a) {
+        return [];
     });

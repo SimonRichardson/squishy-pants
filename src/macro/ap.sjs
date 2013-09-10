@@ -18,10 +18,13 @@
 //        f(100).ap(x).ap(y).ap(z)
 //
 macro $ap {
-    case $f:ident($x:expr (,) ...) => {
-        $f $(.ap($x)) ...
+    case {_ $f:ident ($x:expr (,) ...) } => {
+      return #{$f $(.ap($x)) ...};
+   }
+   case {_ ($f:expr)($x:expr (,) ...) } => {
+         return #{$f $(.ap($x)) ...};
     }
-    case ($f:expr)($x:expr (,) ...) => {
-        $f $(.ap($x)) ...
+    case {_ ($f:expr) } => {
+         return #{$ap $f};
     }
 }

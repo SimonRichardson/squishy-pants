@@ -7,7 +7,7 @@ module.exports = function (grunt) {
                         banner: '/* Compiled : <%= grunt.template.today("yyyy-mm-dd HH:MM") %> */\n'
                     },
                     files: {
-                        'lib/squishy-pants.js': [
+                        'bin/squishy-pants.js': [
                             'lib/rigger/rigger.js'
                         ]
                     }
@@ -16,14 +16,17 @@ module.exports = function (grunt) {
             jshint: {
                 all: [
                     'Gruntfile.js',
-                    'lib/squishy-pants.js',
+                    'bin/squishy-pants.js',
                     'src/*.js',
                     'test/*.js'
                 ]
             },
             nodeunit: {
-                all: [
+                test: [
                     'test/*.js'
+                ],
+                macro: [
+                    'bin/test.js'
                 ]
             },
             uglify: {
@@ -32,7 +35,7 @@ module.exports = function (grunt) {
                         beautify: false
                     },
                     files: {
-                        'squishy-pants.js': ['lib/squishy-pants.js']
+                        'squishy-pants.js': ['bin/squishy-pants.js']
                     }
                 }
             },
@@ -46,12 +49,35 @@ module.exports = function (grunt) {
                     dest: 'test',
                     numOfParallel: 2
                 }
+            },
+            concat: {
+                srcMacros: {
+                    src: ['src/macro/*.sjs'],
+                    dest: 'bin/src.sjs'
+                },
+                testMacros: {
+                    src: ['test/macro/*.sjs', 'bin/src.sjs'],
+                    dest: 'bin/test.sjs'
+                },
+                test: {
+                    src: ['bin/squishy-pants.js', 'bin/macros.js'],
+                    dest: 'bin/squishy-pants.js'
+                }
+            },
+            macro: {
+                all: {
+                }
+            },
+            sweet: {
+                all: {
+                }
             }
         };
 
     grunt.initConfig(config);
 
     grunt.loadNpmTasks('grunt-rigger');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -90,10 +116,19 @@ module.exports = function (grunt) {
         grunt.task.run(['rig', 'jshint', 'parallel']);
     });
 
-    grunt.registerMultiTask('sweet', 'Run macro sweet.js unit tests with nodeunit.', function() {
-
-        grunt.task.run(['rig', 'concat', 'sjs', 'jshint', 'nodeunit']);
+    grunt.registerMultiTask('macro', 'Run macro sweet.js unit tests with nodeunit.', function() {
+        grunt.task.run([    'default',
+                            'concat:srcMacros',
+                            'concat:testMacros',
+                            'sweet',
+                            'nodeunit:macro'
+                        ]);
     });
 
-    grunt.registerTask('default', ['rig', 'jshint', 'nodeunit', 'uglify']);
+    grunt.registerMultiTask('sweet', 'Run sweet.js', function() {
+        var shell = require('shelljs');
+        shell.exec('sjs -o bin/test.js bin/test.sjs');
+    });
+
+    grunt.registerTask('default', ['rig', 'jshint', 'nodeunit:test', 'uglify']);
 };

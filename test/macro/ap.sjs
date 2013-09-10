@@ -1,4 +1,4 @@
-var _ = require('./lib/test');
+var _ = require('../test/lib/test');
 
 exports.ap_macro = {
     'applying ap should return the correct value': _.check(
@@ -8,7 +8,7 @@ exports.ap_macro = {
                 })),
                 sum = $ap f(a, b);
 
-            return _.expect(sum.value).toBe(a.value + b.value);
+            return _.expect(sum.x).toBe(a.x + b.x);
         },
         [_.identityOf(Number), _.identityOf(Number)]
     ),
@@ -19,7 +19,7 @@ exports.ap_macro = {
                 })),
                 sum = $ap f(a, $ap f(a, b));
 
-            return _.expect(sum.value).toBe(a.value + a.value + b.value);
+            return _.expect(sum.x).toBe(a.x + a.x + b.x);
         },
         [_.identityOf(Number), _.identityOf(Number)]
     ),
@@ -30,7 +30,7 @@ exports.ap_macro = {
                 })),
                 sum = $ap (f(a, b));
 
-            return _.expect(sum.value).toBe(a.value + b.value);
+            return _.expect(sum.x).toBe(a.x + b.x);
         },
         [_.identityOf(Number), _.identityOf(Number)]
     ),
@@ -40,7 +40,7 @@ exports.ap_macro = {
                     return x + y;
                 })))(a, b);
 
-            return _.expect(sum.value).toBe(a.value + b.value);
+            return _.expect(sum.x).toBe(a.x + b.x);
         },
         [_.identityOf(Number), _.identityOf(Number)]
     )
