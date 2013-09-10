@@ -9,7 +9,7 @@
     "url": "https://github.com/SimonRichardson/squishy-pants.git"
   },
   "scripts": {
-    "test": "grunt rig jshint nodeunit uglify"
+    "test": "grunt macro"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
