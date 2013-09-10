@@ -1,5 +1,3 @@
-var _ = require('../test/lib/test');
-
 exports.concat_macro = {
     'applying concat should return the correct value': _.check(
         function(a, b) {
@@ -7,7 +5,7 @@ exports.concat_macro = {
 
             return _.expect(sum.x).toBe(a.x + b.x);
         },
-        [_.identityOf(Number), _.identityOf(Number)]
+        [_.identityOf(String), _.identityOf(String)]
     ),
     'applying concat multiple times should return the correct value': _.check(
         function(a, b, c) {
@@ -15,6 +13,6 @@ exports.concat_macro = {
 
             return _.expect(sum.x).toBe(a.x + b.x + c.x);
         },
-        [_.identityOf(Number), _.identityOf(Number), _.identityOf(Number)]
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };

@@ -37,7 +37,7 @@
 //       }
 //
 macro $do {
-   case {_ {$x:ident <- $m:expr = $y:expr }} => {
+    case {_ {$x:ident <- $m:expr return $y:expr }} => {
        return #{
             $m.map(
                 function($x) {
@@ -45,8 +45,8 @@ macro $do {
                 }
             );
         }
-   }
-   case {_ {$m:expr = $b:expr }} => {
+    }
+    case {_ {$m:expr return $b:expr }} => {
        return #{
             $m.map(
                 function() {
@@ -54,7 +54,15 @@ macro $do {
                 }
             );
         }
-   }
+    }
+    case {_ {$x:ident = $y:expr $rest ... }} => {
+        return #{
+            (function() {
+                var $x = $y;
+                return $do { $rest ... }
+            })();
+        }
+    }
     case {_ {$x:ident <- $m:expr $rest ... }} => {
         return #{
             $m.chain(

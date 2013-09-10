@@ -56,7 +56,7 @@ module.exports = function (grunt) {
                     dest: 'bin/src.sjs'
                 },
                 testMacros: {
-                    src: ['test/macro/*.sjs', 'bin/src.sjs'],
+                    src: ['lib/concat/macro/test.js', 'test/macro/*.sjs', 'bin/src.sjs'],
                     dest: 'bin/test.sjs'
                 },
                 test: {
@@ -65,6 +65,10 @@ module.exports = function (grunt) {
                 }
             },
             macro: {
+                all: {
+                }
+            },
+            clean: {
                 all: {
                 }
             },
@@ -125,10 +129,15 @@ module.exports = function (grunt) {
                         ]);
     });
 
+    grunt.registerMultiTask('clean', 'Clean bin folder', function() {
+        var shell = require('shelljs');
+        shell.rm('-rf', 'bin');
+    });
+
     grunt.registerMultiTask('sweet', 'Run sweet.js', function() {
         var shell = require('shelljs');
         shell.exec('sjs -o bin/test.js bin/test.sjs');
     });
 
-    grunt.registerTask('default', ['rig', 'jshint', 'nodeunit:test', 'uglify']);
+    grunt.registerTask('default', ['clean', 'rig', 'jshint', 'nodeunit:test', 'uglify']);
 };
