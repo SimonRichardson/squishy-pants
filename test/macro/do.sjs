@@ -72,7 +72,7 @@ exports.do_macro = {
                 return x + y
             };
 
-            return _.expect(result).toBe(_.Identity(c.x));
+            return _.expect(result).toBe(_.Identity(c));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -88,7 +88,7 @@ exports.do_macro = {
                 return x + y
             };
 
-            return _.expect(result).toBe(_.Identity(a.x + b.x));
+            return _.expect(result).toBe(_.Identity(_.Identity(a.x + b.x)));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -102,7 +102,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(_.Identity(b.x));
+            return _.expect(result).toBe(_.Identity(b));
         },
         [_.identityOf(String), _.identityOf(String)]
     ),
@@ -116,7 +116,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(null);
+            return _.expect(result).toBe(_.Identity(null));
         },
         [_.identityOf(String), _.identityOf(String)]
     ),
@@ -133,7 +133,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(_.Identity(b.x));
+            return _.expect(result).toBe(_.Identity(b));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -150,7 +150,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(_.Identity(c.x));
+            return _.expect(result).toBe(_.Identity(c));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -167,7 +167,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(_.Identity(c.x));
+            return _.expect(result).toBe(_.Identity(c));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -187,7 +187,7 @@ exports.do_macro = {
                 }
             };
 
-            return _.expect(result).toBe(_.Identity(c.x));
+            return _.expect(result).toBe(_.Identity(c));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
@@ -208,7 +208,7 @@ exports.do_macro = {
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
-    'when testing nesting do should return correct result': _.check(
+    'when testing nesting do with if..elseif should return correct result': _.check(
         function(a, b, c, d) {
             var result = $do {
                 x <- a
@@ -223,11 +223,29 @@ exports.do_macro = {
                     }
                 }
                 z <- d
-                return x + y.x + z
+                return x + y.x.x + z
             };
 
             return _.expect(result).toBe(_.Identity(a.x + c.x + d.x));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+        'when testing do with bypassing all if...elseif with statements should return correct result': _.check(
+        function(a, b, c) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                } else if (x === {}) {
+                    z <- c
+                    return z
+                }
+                return x
+            };
+
+            return _.expect(result).toBe(_.Identity(a.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };

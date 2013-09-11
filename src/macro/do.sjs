@@ -55,14 +55,14 @@
 macro $do {
     case {_ { $x:ident <- $m:expr if $rest ... }} => {
         return #{
-            $m.chain(
+            $m.map(
                 function($x) {
                     $ifelsedo { if $rest ... }
                 }
             );
         }
     }
-    case {_ {$x:ident <- $m:expr return $y:expr }} => {
+    case {_ { $x:ident <- $m:expr return $y:expr }} => {
         return #{
             $m.map(
                 function($x) {
@@ -71,7 +71,7 @@ macro $do {
         );
       }
     }
-    case {_ {$m:expr return $b:expr }} => {
+    case {_ { $m:expr return $b:expr }} => {
         return #{
             $m.map(
                 function() {
@@ -80,7 +80,7 @@ macro $do {
             );
         }
     }
-    case {_ {$x:ident = $do { $block ... } $rest ... }} => {
+    case {_ { $x:ident = $do { $block ... } $rest ... }} => {
         return #{
             (function() {
                 var $x = (function() {
@@ -90,7 +90,7 @@ macro $do {
             })()
         }
     }
-    case {_ {$x:ident = $y:expr $rest ... }} => {
+    case {_ { $x:ident = $y:expr $rest ... }} => {
         return #{
             (function() {
                 var $x = $y;
@@ -98,7 +98,7 @@ macro $do {
             })();
         }
     }
-    case {_ {$x:ident <- $m:expr $rest ... }} => {
+    case {_ { $x:ident <- $m:expr $rest ... }} => {
         return #{
             $m.chain(
                 function($x) {
@@ -106,6 +106,15 @@ macro $do {
                 }
             );
         }
+    }
+    case {_ { return $x:expr }} => {
+        return #{ $do { $x }}
+    }
+    case {_ { return $x:ident }} => {
+        return #{$x}
+    }
+    case {_ { $x:expr }} => {
+        return #{ $x }
     }
     case {_ {}} => {
         return #{null}
