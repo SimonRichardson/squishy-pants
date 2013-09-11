@@ -190,5 +190,44 @@ exports.do_macro = {
             return _.expect(result).toBe(_.Identity(c.x));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing nesting do should return correct result': _.check(
+        function(a, b, c, d) {
+            var result = $do {
+                x <- a
+                y = $do {
+                    i <- b
+                    j <- c
+                    return i + j
+                }
+                z <- d
+                return x + y.x + z
+            };
+
+            return _.expect(result).toBe(_.Identity(a.x + b.x + c.x + d.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing nesting do should return correct result': _.check(
+        function(a, b, c, d) {
+            var result = $do {
+                x <- a
+                y = $do {
+                    i <- b
+                    if (i === {}) {
+                        junk <- d
+                        return junk
+                    } else if (i === b.x) {
+                        j <- c
+                        return j
+                    }
+                }
+                z <- d
+                return x + y.x + z
+            };
+
+            return _.expect(result).toBe(_.Identity(a.x + c.x + d.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };

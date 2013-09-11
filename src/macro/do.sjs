@@ -1,6 +1,10 @@
 //
 //  ## Do
 //
+//  ### $do
+//
+//  Do notation alternative syntax for chaining structures together.
+//
 //       $do {
 //         x <- foo
 //         y <- bar
@@ -34,6 +38,18 @@
 //         putStrLn("Hello friend! What's your name?")
 //         name <- readLine()
 //         return name
+//       }
+//
+//  Nesting do notation blocks are also allowed - consider the following:
+//
+//       $do {
+//         x <- foo
+//         y = $do {
+//            i <- blah
+//            return i
+//         }
+//         z <- baz
+//         return x * y * z
 //       }
 //
 macro $do {
@@ -97,7 +113,39 @@ macro $do {
 }
 
 
-
+//
+//  ### $ifelsedo
+//
+//  Allowing if statements in a do notation block.
+//  Anything found after a else block is ignored and not outputted once run
+//  through sweet.js
+//
+//       $do {
+//         a <- foo
+//         if (a == 1) {
+//           b <- bar
+//           return b
+//         } else {
+//           c <- quux
+//           return c
+//         }
+//       }
+//
+//  De-sugars into:
+//
+//       foo.map(function (a$2) {
+//         if (a$2 == 1) {
+//           return bar.map(function (b$6) {
+//             return b$6;
+//           });
+//         } else {
+//           return quux.map(function (c$9) {
+//             return c$9;
+//           });
+//         }
+//       });
+//
+//
 macro $ifelsedo {
     case {_ { if $e:expr { $left ... } else return $right:expr }} => {
         return #{
