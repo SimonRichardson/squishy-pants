@@ -37,22 +37,41 @@
 //       }
 //
 macro $do {
-    case {_ {$x:ident <- $m:expr return $y:expr }} => {
-       return #{
+    case {_ { $x:ident <- $m:expr if $rest ... }} => {
+        return #{
             $m.map(
                 function($x) {
-                    return $y;
+                    $ifelsedo { if $rest ... }
                 }
             );
         }
     }
+    case {_ {$x:ident <- $m:expr return $y:expr }} => {
+        return #{
+            $m.map(
+                function($x) {
+                    return $y;
+            }
+        );
+      }
+    }
     case {_ {$m:expr return $b:expr }} => {
-       return #{
+        return #{
             $m.map(
                 function() {
                     return $b;
                 }
             );
+        }
+    }
+    case {_ {$x:ident = $do { $block ... } $rest ... }} => {
+        return #{
+            (function() {
+                var $x = (function() {
+                    return $do { $block ... }
+                })();
+                return $do { $rest ... }
+            })()
         }
     }
     case {_ {$x:ident = $y:expr $rest ... }} => {
@@ -70,6 +89,43 @@ macro $do {
                     return $do { $rest ... }
                 }
             );
+        }
+    }
+}
+
+macro $ifelsedo {
+    case {_ { if $e:expr { $left ... } else return $right:expr }} => {
+        return #{
+            if ($e) {
+                return $do { $left ... }
+            } else {
+                return $right
+            }
+        }
+    }
+    case {_ { if $e:expr return $left:expr else { $right ... } }} => {
+        return #{
+            if ($e) {
+                return $left
+            } else {
+                return $do { $right ... }
+            }
+        }
+    }
+    case {_ { if $e:expr { $left ... } else { $right ... } }} => {
+        return #{
+            if ($e) {
+                return $do { $left ... }
+            } else {
+                return $do { $right ... }
+            }
+        }
+    }
+    case {_ { if $e:expr { $left ... } else if $rest ... }} => {
+        return #{
+            if ($e) {
+                return $do { $left ... }
+            } else $ifelsedo { if $rest ... }
         }
     }
 }

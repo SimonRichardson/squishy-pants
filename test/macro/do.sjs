@@ -61,5 +61,21 @@ exports.do_macro = {
             return _.expect(result).toBe(_.Identity(a.x + b.x + c + d));
         },
         [_.identityOf(String), _.identityOf(String), String, String]
+    ),
+    'when testing do with if should return correct result': _.check(
+        function(a, b, c, d) {
+            var result = $do {
+                x <- a
+                if (x === a.x) {
+                    z <- c
+                    return z
+                }
+                y <- b
+                return x + y + z
+            };
+
+            return _.expect(result).toBe(_.Identity(a.x + b.x + c.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };
