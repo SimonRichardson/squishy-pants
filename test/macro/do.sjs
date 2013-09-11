@@ -106,7 +106,7 @@ exports.do_macro = {
         },
         [_.identityOf(String), _.identityOf(String)]
     ),
-    'when testing do with entering if without anymore statements should return correct result': _.check(
+    'when testing do with bypassing if without anymore statements should return correct result': _.check(
         function(a, b) {
             var result = $do {
                 x <- a
@@ -119,5 +119,76 @@ exports.do_macro = {
             return _.expect(result).toBe(null);
         },
         [_.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with entering if...else without anymore statements should return correct result': _.check(
+        function(a, b, c) {
+            var result = $do {
+                x <- a
+                if (x === a.x) {
+                    z <- b
+                    return z
+                } else {
+                    z <- c
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(_.Identity(b.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with bypassing if...else without anymore statements should return correct result': _.check(
+        function(a, b, c) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                } else {
+                    z <- c
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(_.Identity(c.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with entering if...elseif without anymore statements should return correct result': _.check(
+        function(a, b, c) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                } else if (x === a.x) {
+                    z <- c
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(_.Identity(c.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with entering if...elseif...else without anymore statements should return correct result': _.check(
+        function(a, b, c, d) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                } else if (x === a.x) {
+                    z <- c
+                    return z
+                } else {
+                    z <- d
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(_.Identity(c.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };
