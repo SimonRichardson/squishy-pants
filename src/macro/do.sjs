@@ -39,7 +39,7 @@
 macro $do {
     case {_ { $x:ident <- $m:expr if $rest ... }} => {
         return #{
-            $m.map(
+            $m.chain(
                 function($x) {
                     $ifelsedo { if $rest ... }
                 }
@@ -91,7 +91,12 @@ macro $do {
             );
         }
     }
+    case {_ {}} => {
+        return #{null}
+    }
 }
+
+
 
 macro $ifelsedo {
     case {_ { if $e:expr { $left ... } else return $right:expr }} => {
@@ -112,7 +117,7 @@ macro $ifelsedo {
             }
         }
     }
-    case {_ { if $e:expr { $left ... } else { $right ... } }} => {
+    case {_ { if $e:expr { $left ... } else { $right ... } $rest ... }} => {
         return #{
             if ($e) {
                 return $do { $left ... }
@@ -126,6 +131,14 @@ macro $ifelsedo {
             if ($e) {
                 return $do { $left ... }
             } else $ifelsedo { if $rest ... }
+        }
+    }
+    case {_ { if $e:expr { $left ... } $rest ... }} => {
+        return #{
+            if ($e) {
+                return $do { $left ... }
+            }
+            return $do { $rest ... }
         }
     }
 }

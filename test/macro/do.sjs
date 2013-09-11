@@ -1,5 +1,3 @@
-var _ = require('../test/lib/test');
-
 exports.do_macro = {
     'when testing do with one identity should return correct result': _.check(
         function(a) {
@@ -62,8 +60,8 @@ exports.do_macro = {
         },
         [_.identityOf(String), _.identityOf(String), String, String]
     ),
-    'when testing do with if should return correct result': _.check(
-        function(a, b, c, d) {
+    'when testing do with entering if should return correct result': _.check(
+        function(a, b, c) {
             var result = $do {
                 x <- a
                 if (x === a.x) {
@@ -71,11 +69,55 @@ exports.do_macro = {
                     return z
                 }
                 y <- b
-                return x + y + z
+                return x + y
             };
 
-            return _.expect(result).toBe(_.Identity(a.x + b.x + c.x));
+            return _.expect(result).toBe(_.Identity(c.x));
         },
-        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with bypassing if should return correct result': _.check(
+        function(a, b, c) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- c
+                    return z
+                }
+                y <- b
+                return x + y
+            };
+
+            return _.expect(result).toBe(_.Identity(a.x + b.x));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with entering if without anymore statements should return correct result': _.check(
+        function(a, b) {
+            var result = $do {
+                x <- a
+                if (x === a.x) {
+                    z <- b
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(_.Identity(b.x));
+        },
+        [_.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with entering if without anymore statements should return correct result': _.check(
+        function(a, b) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                }
+            };
+
+            return _.expect(result).toBe(null);
+        },
+        [_.identityOf(String), _.identityOf(String)]
     )
 };
