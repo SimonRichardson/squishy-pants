@@ -230,7 +230,7 @@ exports.do_macro = {
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     ),
-        'when testing do with bypassing all if...elseif with statements should return correct result': _.check(
+    'when testing do with bypassing all if...elseif with statements should return correct result': _.check(
         function(a, b, c) {
             var result = $do {
                 x <- a
@@ -247,5 +247,24 @@ exports.do_macro = {
             return _.expect(result).toBe(_.Identity(a.x));
         },
         [_.identityOf(String), _.identityOf(String), _.identityOf(String)]
+    ),
+    'when testing do with bypassing all if...elseif with more statements should return correct result': _.check(
+        function(a, b, c, d) {
+            var result = $do {
+                x <- a
+                if (x === {}) {
+                    z <- b
+                    return z
+                } else if (x === {}) {
+                    z <- c
+                    return z
+                }
+                y <- d
+                return x + y
+            };
+
+            return _.expect(result).toBe(_.Identity(_.Identity(a.x + d.x)));
+        },
+        [_.identityOf(String), _.identityOf(String), _.identityOf(String), _.identityOf(String)]
     )
 };
