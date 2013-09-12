@@ -18,13 +18,13 @@
 //        f(100).ap(x).ap(y).ap(z)
 //
 macro $ap {
-    case {_ $f:ident ($x:expr (,) ...) } => {
-      return #{$f $(.ap($x)) ...};
-   }
-   case {_ ($f:expr)($x:expr (,) ...) } => {
-         return #{$f $(.ap($x)) ...};
+    case {_ $f ($x, $rest ...) } => {
+        return #{ $ap (squishy.ap($f, $x)) $($rest ...) }
+    }
+    case {_ $x($rest ...) } => {
+        return #{ squishy.ap($x, $rest ...) }
     }
     case {_ ($f:expr) } => {
-         return #{$ap $f};
+        return #{$ap $f};
     }
 }
