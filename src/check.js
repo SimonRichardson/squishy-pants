@@ -135,6 +135,13 @@ var Char = {};
 //
 var Integer = {};
 
+//
+//  # Random
+//  
+//  Sentinel value for when a random value is needed.
+//
+var Rand = {};
+
 squishy = squishy
     .property('generateInputs', generateInputs)
     .property('failureReporter', failureReporter)
@@ -143,7 +150,8 @@ squishy = squishy
     .property('AnyVal', AnyVal)
     .property('OptionalVal', OptionalVal)
     .property('Char', Char)
-    .property('Integer', Integer);
+    .property('Integer', Integer)
+    .property('Rand', Rand);
 
 //
 //  ### arbitrary values
@@ -170,6 +178,9 @@ squishy = squishy
     .method('arb', strictEquals(Integer), function(a, s) {
         var variance = Math.pow(2, 32) - 1;
         return Math.floor(this.randomRange(-variance, variance));
+    })
+    .method('arb', strictEquals(Rand), function(a, s) {
+        return Math.random() * s - 1;
     })
     .method('arb', strictEquals(Function), function(a, s) {
         return nothing;
