@@ -215,7 +215,34 @@ var isPartial = function(a) {
 //
 //  ## isComparable(a)
 //
+//  Returns `true` if `a` has a method called `equal`
+//
 var isComparable = flip(has)('equal');
+
+//
+//  ## isPlainObject(a)
+//
+//  Returns `true` if `a` is a plain object
+//
+/* We need a secure stateless object to test against */
+var own = {};
+
+function isPlainObject(a) {
+    if(!isObject(a)) {
+        return false;
+    }
+
+    /* Trap any errors that we can receive from testing host objects */
+    try {
+        if (a.constructor && !own.hasOwnProperty.call(a.constructor.prototype, 'isPrototypeOf')) {
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+
+    return true;
+}
 
 //
 //  ### isEmpty(a)
@@ -272,5 +299,6 @@ squishy = squishy
     .property('isAnyInstanceOf', isAnyInstanceOf)
     .property('isEnvironment', isEnvironment)
     .property('isPartial', isPartial)
-    .property('isComparable', isComparable);
+    .property('isComparable', isComparable)
+    .property('isPlainObject', isPlainObject);
 

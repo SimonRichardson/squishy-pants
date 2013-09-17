@@ -137,7 +137,7 @@ var Integer = {};
 
 //
 //  # Random
-//  
+//
 //  Sentinel value for when a random value is needed.
 //
 var Rand = {};
@@ -283,4 +283,7 @@ squishy = squishy
         }
 
         return accum;
+    })
+    .method('shrink', isPlainObject, function(s) {
+        return [];
     });
