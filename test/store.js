@@ -41,14 +41,12 @@ exports.store = {
         function(a) {
             var store = _.Store(
                     function(v) {
-                        this.value = v;
+                        return v + 1;
                     },
                     function() {
-                        return this.value;
+                        return a;
                     }
                 );
-
-            store.set(a);
 
             return _.expect(store.get()).toBe(a);
         },
@@ -58,11 +56,10 @@ exports.store = {
         function(a) {
             var store = _.Store(
                     function(v) {
-                        this.value = v;
                         return v;
                     },
                     function() {
-                        return this.value;
+                        return a;
                     }
                 ),
                 newStore = store.map(
@@ -71,9 +68,27 @@ exports.store = {
                     }
                 );
 
-            newStore.set(a);
+            return _.expect(newStore.extract()).toBe(a + 1);
+        },
+        [Number]
+    ),
+    'when testing store using set plus one with map should return correct value': _.check(
+        function(a) {
+            var store = _.Store(
+                    function(v) {
+                        return v + 1;
+                    },
+                    function() {
+                        return a;
+                    }
+                ),
+                newStore = store.map(
+                    function(a) {
+                        return a + 1;
+                    }
+                );
 
-            return _.expect(newStore.get()).toBe(a + 1);
+            return _.expect(newStore.extract()).toBe(a + 2);
         },
         [Number]
     )

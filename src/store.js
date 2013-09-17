@@ -25,15 +25,14 @@ Store.prototype.extend = function(f) {
     var env = this;
     return Store(
         function(k) {
-            env.set(f(Store(
+            return f(Store(
                 env.set,
-                constant(k)
-            )));
-            return env.get();
+                function() {
+                    return k;
+                }
+            ));
         },
-        function() {
-            return env.get();
-        }
+        this.get
     );
 };
 
@@ -43,7 +42,6 @@ Store.prototype.extend = function(f) {
 //  Returns a new state that evaluates `f` on a value and passes it through.
 //
 Store.prototype.map = function(f) {
-    var self = this;
     return this.extend(function(c) {
         return f(c.extract());
     });
