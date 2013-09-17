@@ -208,3 +208,45 @@ exports.isComparable = {
     }
 };
 
+exports.isPlainObject = {
+    'when testing isPlainObject should return true if plain': _.check(
+        function(a) {
+            return _.isPlainObject(a);
+        },
+        [
+            _.objectLike({
+                a: String,
+                b: Number,
+                c: _.objectLike({
+                    x: String,
+                    y: Array,
+                    z: _.objectLike({
+                        i: Number,
+                        j: Boolean
+                    })
+                })
+            })
+        ]
+    ),
+    'when testing isPlainObject should return false if not plain': _.check(
+        function(a) {
+            return !_.isPlainObject(a);
+        },
+        [
+            _.identityOf(
+                _.objectLike({
+                    a: String,
+                    b: Number,
+                    c: _.objectLike({
+                        x: String,
+                        y: Array,
+                        z: _.objectLike({
+                            i: Number,
+                            j: Boolean
+                        })
+                    })
+                })
+            )
+        ]
+    )
+};
