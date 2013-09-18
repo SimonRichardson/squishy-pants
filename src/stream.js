@@ -67,6 +67,39 @@ Stream.prototype.ap = function(a) {
 };
 
 //
+//  ### append(a, f)
+//
+//  Append two streams together and accumulatively call `f` on the
+//  results together.
+//  Note: This is stateful.
+//
+Stream.prototype.append = function(a, f) {
+    var env = this,
+        current;
+
+    return Stream(function(next, done) {
+        return env.fork(
+            function(v) {
+                if (!current) {
+                    current = v;
+                    next(current);
+                } else {
+                    next(f(current, v));
+                }
+            },
+            function() {
+                return a.fork(
+                    function(v) {
+                        next(f(current, v));
+                    },
+                    done
+                );
+            }
+        );
+    });
+};
+
+//
 //  ### chain(f)
 //
 //  Returns a new stream that evaluates `f` when the current stream
