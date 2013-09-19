@@ -55,7 +55,8 @@
 macro $do {
     case {_ { $x:ident <- $m:expr if $rest ... }} => {
         return #{
-            $m.map(
+            squishy.map(
+                $m,
                 function($x) {
                     $ifelsedo { if $rest ... }
                 }
@@ -64,7 +65,8 @@ macro $do {
     }
     case {_ { $x:ident <- $m:expr return $y:expr }} => {
         return #{
-            $m.map(
+            squishy.map(
+                $m,
                 function($x) {
                     return $y;
             }
@@ -73,7 +75,8 @@ macro $do {
     }
     case {_ { $m:expr return $b:expr }} => {
         return #{
-            $m.map(
+            squishy.map(
+                $m,
                 function() {
                     return $b;
                 }
@@ -100,7 +103,8 @@ macro $do {
     }
     case {_ { $x:ident <- $m:expr $rest ... }} => {
         return #{
-            $m.chain(
+            squishy.chain(
+                $m,
                 function($x) {
                     return $do { $rest ... }
                 }
