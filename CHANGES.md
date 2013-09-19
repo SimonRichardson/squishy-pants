@@ -1,6 +1,18 @@
 Changes
 =======
 
+0.0.5 - 19/09/2013
+- #30 Implement do if expression macro
+- #29 Implement bracket less macro
+- #28 Implement list append macro
+- #27 Implement do notation macro
+- #26 Move squishy.equal(object) back to builtins
+
+0.0.4 - 04/09/2013
+- #25 Implement routing
+- #24 Rename lazy and lazyAsync to once
+- #6 Implement mixin constructors
+
 0.0.3 - 03/09/2013
 - #23 Fix downloading of npm releases.
 - #22 Implement Do types
