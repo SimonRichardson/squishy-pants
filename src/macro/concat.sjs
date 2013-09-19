@@ -7,11 +7,11 @@
 //
 //  De-sugars:
 //
-//       x.concat(y.concat(z))
+//       squishy.concat(x, squishy.concat(y, z))
 //
 macro $concat {
-    case {_ ($x + $rest ...) } => {
-        return #{$x.concat($concat ($rest ...))};
+    case {_ ($x + $inner ...) $rest ... } => {
+        return #{squishy.concat($x, $concat ($inner ...)) $rest ...};
     }
     case {_ ($x)} => {
         return #{$x};
