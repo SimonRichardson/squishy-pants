@@ -77,6 +77,30 @@ exports.stream = {
         },
         [_.arrayOf(_.AnyVal)]
     ),
+    'when testing both with the stream should dispatch all items': _.checkStream(
+        function(a, b, t) {
+            var x = _.Stream.fromArray(a),
+                y = _.Stream.fromArray(b),
+                actual = x.both(y, t),
+                both = function(a, b, t) {
+                    var left = t._1,
+                        right = t._2,
+                        x = _.map(a, function(v) {
+                            left = v;
+                            return _.Tuple2.of(v, right);
+                        }),
+                        y = _.map(b, function(v) {
+                            right = v;
+                            return _.Tuple2.of(left, v);
+                        });
+                    return _.concat(x, y);
+                },
+                expected = _.Stream.fromArray(both(a, b, t));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal), _.tuple2Of(_.AnyVal, _.AnyVal)]
+    ),
     'when testing concat with the stream should dispatch all items': _.checkStream(
         function(a, b) {
             var x = _.Stream.fromArray(a),

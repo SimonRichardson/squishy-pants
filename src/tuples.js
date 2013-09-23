@@ -428,6 +428,54 @@ function tuple5Of(a, b, c, d, e) {
 var isTuple5Of = isInstanceOf(tuple5Of);
 
 //
+//  ### lens
+//
+//  Lens access for a object at a given property.
+//
+var lens = curry(function(ctor, index) {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                var m = a.toArray();
+                m[index] = s;
+                return ctor.of.apply(null, m);
+            },
+            function() {
+                return a.toArray()[index];
+            }
+        );
+    });
+});
+
+//
+//  ### lens
+//
+//  Lens access for a object at a given property.
+//
+Tuple2.lens = lens(Tuple2);
+
+//
+//  ### lens
+//
+//  Lens access for a object at a given property.
+//
+Tuple3.lens = lens(Tuple3);
+
+//
+//  ### lens
+//
+//  Lens access for a object at a given property.
+//
+Tuple4.lens = lens(Tuple4);
+
+//
+//  ### lens
+//
+//  Lens access for a object at a given property.
+//
+Tuple5.lens = lens(Tuple5);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

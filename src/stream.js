@@ -67,36 +67,39 @@ Stream.prototype.ap = function(a) {
 };
 
 //
-//  ### append(a, f)
+//  ### both(a)
 //
-//  Append two streams together and accumulatively call `f` on the
-//  results together.
-//  Note: This is stateful.
+//  returns a stream formed from this stream and the specified stream that
+//  by associating each element to the current element.
 //
-Stream.prototype.append = function(a, f) {
+Stream.prototype.both = function(a, t) {
     var env = this,
-        current;
+        x = Tuple2.lens(0),
+        y = Tuple2.lens(1);
 
-    return Stream(function(next, done) {
-        return env.fork(
-            function(v) {
-                if (!current) {
-                    current = v;
-                    next(current);
-                } else {
-                    next(f(current, v));
-                }
-            },
-            function() {
-                return a.fork(
-                    function(v) {
-                        next(f(current, v));
-                    },
-                    done
-                );
-            }
-        );
-    });
+    return Stream(
+        function(next, done) {
+            var end = once(function() {
+                    return once(done);
+                });
+
+            env.fork(
+                function(v) {
+                    t = x.run(t).set(v);
+                    next(t);
+                },
+                end
+            );
+
+            a.fork(
+                function(v) {
+                    t = y.run(t).set(v);
+                    next(t);
+                },
+                end
+            );
+        }
+    );
 };
 
 //
@@ -258,14 +261,14 @@ Stream.prototype.map = function(f) {
 //  Merge the values of two streams in to one stream
 //
 Stream.prototype.merge = function(a) {
-    var resolver;
-
-    this.map(optional(resolver));
-    a.map(optional(resolver));
+    var env = this;
 
     return Stream(
         function(next, done) {
-            resolver = next;
+            var end = once(done);
+
+            env.fork(next, end);
+            a.fork(next, end);
         }
     );
 };
