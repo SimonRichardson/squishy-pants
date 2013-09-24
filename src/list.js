@@ -78,12 +78,11 @@ List.range = curry(function(a, b) {
 //  Returns a list from an array.
 //
 List.fromArray = function(array) {
-    var total = array.length,
-        accum = List.Nil,
-        i;
+    var index = array.length,
+        accum = List.Nil;
 
-    for(i = total - 1; i >= 0; --i) {
-        accum = accum.prepend(array[i]);
+    while(--index > -1) {
+        accum = accum.prepend(array[index]);
     }
 
     return accum;
@@ -636,6 +635,56 @@ var isListOf = isInstanceOf(listOf);
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(List.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an list at a given index.
+//
+List.lens = function(index) {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                var accum = List.Nil,
+                    lens = List.Cons.lens(),
+                    p = a;
+
+                while(p.isNonEmpty) {
+                    accum = List.Cons(p.head, accum);
+
+                    if (--index === -1) {
+                        accum = lens.run(accum).set(s);
+                    }
+
+                    p = p.tail;
+                }
+
+                return accum.reverse();
+            },
+            function() {
+                return a.get(index);
+            }
+        );
+    });
+};
+
+//
+//  ### lens
+//
+//  Lens access for an list.cons.
+//
+List.Cons.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return List.Cons(s, a.tail);
+            },
+            function() {
+                return a.head;
+            }
+        );
+    });
+};
 
 //
 //  append methods to the squishy environment.

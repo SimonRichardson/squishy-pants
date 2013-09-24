@@ -253,5 +253,17 @@ exports.either = {
             return _.expect(_.Right(a).concat(_.Right(a), _.concat).extract()).toBe(a.concat(a));
         },
         [_.arrayOf(_.AnyVal)]
+    ),
+    'when creating a left and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Either.lens().run(a).set(b)).toBe(_.Left(b));
+        },
+        [_.leftOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a right and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Either.lens().run(a).set(b)).toBe(_.Right(b));
+        },
+        [_.rightOf(_.AnyVal), _.AnyVal]
     )
 };

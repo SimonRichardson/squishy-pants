@@ -307,6 +307,34 @@ var isRightOf = isInstanceOf(rightOf);
 fo.unsafeSetValueOf(Either.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Either.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Left: function() {
+                        return Either.Left(s);
+                    },
+                    Right: function() {
+                        return Either.Right(s);
+                    }
+                });
+            },
+            function() {
+                return a.match({
+                    Left: identity,
+                    Right: identity
+                });
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

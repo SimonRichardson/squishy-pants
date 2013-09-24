@@ -164,6 +164,24 @@ var isPromiseOf = isInstanceOf(promiseOf);
 fo.unsafeSetValueOf(Promise.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an promise structure.
+//
+Promise.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Promise(s);
+            },
+            function() {
+                return a.fork;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

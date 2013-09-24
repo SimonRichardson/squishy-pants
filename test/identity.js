@@ -66,5 +66,11 @@ exports.identityT = {
             return _.expect(actual).toBe(expected);
         },
         [_.AnyVal, _.AnyVal]
+    ),
+    'when creating a identity and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Identity.lens().run(a).set(b)).toBe(_.Identity(b));
+        },
+        [_.identityOf(_.AnyVal), _.AnyVal]
     )
 };

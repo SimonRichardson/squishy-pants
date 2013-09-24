@@ -278,15 +278,14 @@ function someOf(type) {
 var isSomeOf = isInstanceOf(someOf);
 
 //
-//  ## noneOf(type)
+//  ## noneOf()
 //
-//  Sentinel value for when an none of a particular type is needed:
+//  Sentinel value for when an none is needed:
 //
-//       noneOf(Number)
+//       noneOf()
 //
-function noneOf(type) {
+function noneOf() {
     var self = getInstance(this, noneOf);
-    self.type = type;
     return self;
 }
 
@@ -301,6 +300,32 @@ var isNoneOf = isInstanceOf(noneOf);
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(Option.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an option structure.
+//
+Option.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Some: function() {
+                        return Option.Some(s);
+                    },
+                    None: constant(Option.None)
+                });
+            },
+            function() {
+                return a.match({
+                    Some: identity,
+                    None: identity
+                });
+            }
+        );
+    });
+};
 
 //
 //  append methods to the squishy environment.

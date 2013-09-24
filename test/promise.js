@@ -13,7 +13,7 @@ exports.promise = {
                     return _.expect(data).toBe(a);
                 },
                 function(errors) {
-                    _.error('Failed if called');
+                    _.error('Failed if called')();
                 }
             );
         },
@@ -36,7 +36,7 @@ exports.promise = {
                         return _.expect(data).toBe(a);
                     },
                     function(errors) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     }
                 );
             }
@@ -76,7 +76,7 @@ exports.promise = {
                     test.equal(expected, data);
                 },
                 function(errors) {
-                    test.ok(false, 'Failed if called');
+                    _.error('Failed if called')();
                 }
             );
         }
@@ -98,7 +98,7 @@ exports.promise = {
                     return _.expect(b).toBe(a);
                 },
                 function(errors) {
-                    _.error('Failed if called');
+                    _.error('Failed if called')();
                 }
             );
         },
@@ -108,7 +108,7 @@ exports.promise = {
         function(a) {
             return _.Promise.error(a).fork(
                 function(a) {
-                    _.error('Failed if called');
+                    _.error('Failed if called')();
                 },
                 function(b) {
                     return _.expect(b).toBe(a);
@@ -128,7 +128,7 @@ exports.promise = {
                         return _.expect(b).toBe(a + 1);
                     },
                     function(errors) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     }
                 );
         },
@@ -142,7 +142,7 @@ exports.promise = {
                     }
                 ).fork(
                     function(a) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     },
                     function(b) {
                         return _.expect(b).toBe(a + 1);
@@ -159,7 +159,7 @@ exports.promise = {
                     }
                 ).fork(
                     function(a) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     },
                     function(b) {
                         return _.expect(b).toBe(a + 1);
@@ -179,7 +179,7 @@ exports.promise = {
                         return _.expect(b).toBe(a + 1);
                     },
                     function(errors) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     }
                 );
         },
@@ -196,7 +196,7 @@ exports.promise = {
                         return _.expect(b).toBe(a + 1);
                     },
                     function(errors) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     }
                 );
         },
@@ -210,7 +210,7 @@ exports.promise = {
                     }
                 ).fork(
                     function(b) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     },
                     function(b) {
                         return _.expect(b).toBe(a);
@@ -230,7 +230,7 @@ exports.promise = {
                         return _.expect(b).toBe(a);
                     },
                     function(b) {
-                        _.error('Failed if called');
+                        _.error('Failed if called')();
                     }
                 );
         },
@@ -247,5 +247,23 @@ exports.promise = {
             return _.expect(_.Promise.error(a).extract()).toBe(a);
         },
         [_.AnyVal]
+    ),
+    'when creating a promise and using lens should be correct value': _.check(
+        function(a, b) {
+            var fork = function(resolve, reject) {
+                    return resolve(b);
+                },
+                promise = _.Promise.lens().run(a).set(fork);
+
+            return promise.fork(
+                function(x) {
+                    return _.expect(x).toBe(b);
+                },
+                function() {
+                    _.error('Failed if called')();
+                }
+            );
+        },
+        [_.promiseOf(_.AnyVal), _.AnyVal]
     )
 };

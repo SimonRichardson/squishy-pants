@@ -258,5 +258,22 @@ exports.list = {
             return _.expect(a.zipWithIndex()).toBe(expected);
         },
         [_.listOf(_.AnyVal)]
+    ),
+    'when using list lens with set then get should get correct value': _.check(
+        function(a, b) {
+            var index = Math.floor(_.randomRange(0, a.size())),
+                array = a.toArray(),
+                list = _.List.fromArray((function(array) {
+
+                    if (array.length > 0) {
+                        array[index] = b;
+                    }
+
+                    return array;
+                })(a.toArray()));
+
+            return _.expect(_.List.lens(index).run(a).set(b)).toBe(list);
+        },
+        [_.listOf(_.AnyVal), _.AnyVal]
     )
 };

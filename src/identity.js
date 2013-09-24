@@ -200,6 +200,24 @@ var isIdentityOf = isInstanceOf(identityOf);
 fo.unsafeSetValueOf(Identity.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Identity.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Identity.of(s);
+            },
+            function() {
+                return a.x;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

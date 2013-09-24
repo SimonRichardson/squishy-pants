@@ -197,5 +197,17 @@ exports.option = {
     'when testing none with extract should return correct value': function(test) {
         test.ok(_.None.extract() === null);
         test.done();
-    }
+    },
+    'when creating a some and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Option.lens().run(a).set(b)).toBe(_.Some(b));
+        },
+        [_.someOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a none and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Option.lens().run(a).set(b)).toBe(_.None);
+        },
+        [_.noneOf(), _.AnyVal]
+    )
 };
