@@ -7,6 +7,6 @@ coverage
 docs
 node_modules
 tags
-lib/rigger
+lib
 src
 test

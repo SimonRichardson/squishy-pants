@@ -45,6 +45,18 @@ exports.tuple2 = {
             return _.expect(a.toArray()).toBe([a._1, a._2]);
         },
         [_.tuple2Of(_.AnyVal, _.AnyVal)]
+    ),
+    'when testing Tuple2.lens should return correct value for index 0': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple2.lens(0).run(a).set(b)).toBe(_.Tuple2.of(b, a._2));
+        },
+        [_.tuple2Of(_.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple2.lens should return correct value for index 1': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple2.lens(1).run(a).set(b)).toBe(_.Tuple2.of(a._1, b));
+        },
+        [_.tuple2Of(_.AnyVal, _.AnyVal), _.AnyVal]
     )
 };
 
@@ -82,6 +94,24 @@ exports.tuple3 = {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3]);
         },
         [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing Tuple3.lens should return correct value for index 0': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple3.lens(0).run(a).set(b)).toBe(_.Tuple3.of(b, a._2, a._3));
+        },
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple3.lens should return correct value for index 1': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple3.lens(1).run(a).set(b)).toBe(_.Tuple3.of(a._1, b, a._3));
+        },
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple3.lens should return correct value for index 2': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple3.lens(2).run(a).set(b)).toBe(_.Tuple3.of(a._1, a._2, b));
+        },
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
     )
 };
 
@@ -120,6 +150,30 @@ exports.tuple4 = {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3, a._4]);
         },
         [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing Tuple4.lens should return correct value for index 0': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple4.lens(0).run(a).set(b)).toBe(_.Tuple4.of(b, a._2, a._3, a._4));
+        },
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple4.lens should return correct value for index 1': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple4.lens(1).run(a).set(b)).toBe(_.Tuple4.of(a._1, b, a._3, a._4));
+        },
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple4.lens should return correct value for index 2': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple4.lens(2).run(a).set(b)).toBe(_.Tuple4.of(a._1, a._2, b, a._4));
+        },
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple4.lens should return correct value for index 3': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple4.lens(3).run(a).set(b)).toBe(_.Tuple4.of(a._1, a._2, a._3, b));
+        },
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
     )
 };
 
@@ -159,6 +213,36 @@ exports.tuple5 = {
             return _.expect(a.toArray()).toBe([a._1, a._2, a._3, a._4, a._5]);
         },
         [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing Tuple5.lens should return correct value for index 0': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple5.lens(0).run(a).set(b)).toBe(_.Tuple5.of(b, a._2, a._3, a._4, a._5));
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple5.lens should return correct value for index 1': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple5.lens(1).run(a).set(b)).toBe(_.Tuple5.of(a._1, b, a._3, a._4, a._5));
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple5.lens should return correct value for index 2': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple5.lens(2).run(a).set(b)).toBe(_.Tuple5.of(a._1, a._2, b, a._4, a._5));
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple5.lens should return correct value for index 3': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple5.lens(3).run(a).set(b)).toBe(_.Tuple5.of(a._1, a._2, a._3, b, a._5));
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
+    ),
+    'when testing Tuple5.lens should return correct value for index 4': _.check(
+        function(a, b) {
+            return _.expect(_.Tuple5.lens(4).run(a).set(b)).toBe(_.Tuple5.of(a._1, a._2, a._3, a._4, b));
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal), _.AnyVal]
     )
 };
 
