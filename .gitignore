@@ -5,5 +5,5 @@ coverage
 docs
 node_modules
 tags
-squishy-pants*.js
+squishy-pants*js
 lib/squishy-pants*.js

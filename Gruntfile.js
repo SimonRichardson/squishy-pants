@@ -55,6 +55,10 @@ module.exports = function (grunt) {
                     src: ['src/macro/*.sjs'],
                     dest: 'bin/src.sjs'
                 },
+                distMacros: {
+                    src: ['src/macro/*.sjs'],
+                    dest: 'squishy-pants.macro.sjs'
+                },
                 testMacros: {
                     src: ['lib/concat/macro/test.js', 'test/macro/*.sjs', 'bin/src.sjs'],
                     dest: 'bin/test.sjs'
@@ -125,7 +129,8 @@ module.exports = function (grunt) {
                             'concat:srcMacros',
                             'concat:testMacros',
                             'sweet',
-                            'nodeunit:macro'
+                            'nodeunit:macro',
+                            'concat:distMacros'
                         ]);
     });
 
