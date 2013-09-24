@@ -116,11 +116,29 @@ var isWriterOf = isInstanceOf(writerOf);
 fo.unsafeSetValueOf(Writer.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an state structure.
+//
+Writer.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Writer(s);
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Writer', Writer)
-    .property('writerOf', Writer)
+    .property('writerOf', writerOf)
     .property('isWriter', isWriter)
     .property('isWriterOf', isWriterOf)
     .method('of', strictEquals(Writer), function(x) {

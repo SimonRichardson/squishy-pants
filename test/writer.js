@@ -47,5 +47,16 @@ exports.writer = {
             return _.expect(result).toBe(_.Tuple2(a + 1, b));
         },
         [_.Integer, String]
+    ),
+    'when creating a writer and using lens should be correct value': _.check(
+        function(a, b, c) {
+            var run = function(x) {
+                    return _.Tuple2.of(b, x);
+                },
+                writer = _.Writer.lens().run(a).set(run);
+
+            return _.expect(writer.run(c)).toBe(_.Tuple2.of(b, c));
+        },
+        [_.writerOf(_.AnyVal), _.AnyVal, _.AnyVal]
     )
 };

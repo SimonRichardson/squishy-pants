@@ -80,6 +80,27 @@ var isStoreOf = isInstanceOf(storeOf);
 fo.unsafeSetValueOf(Store.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an state structure.
+//
+Store.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Store(
+                    identity,
+                    constant(s)
+                );
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

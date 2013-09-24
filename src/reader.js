@@ -109,6 +109,24 @@ var isReaderOf = isInstanceOf(readerOf);
 fo.unsafeSetValueOf(Reader.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an reader structure.
+//
+Reader.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Reader(s);
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy

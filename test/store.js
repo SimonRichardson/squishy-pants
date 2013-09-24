@@ -91,5 +91,13 @@ exports.store = {
             return _.expect(newStore.extract()).toBe(a + 2);
         },
         [Number]
+    ),
+    'when creating a store and using lens should be correct value': _.check(
+        function(a, b) {
+            var store = _.Store.lens().run(a).set(b);
+
+            return _.expect(store.get()).toBe(b);
+        },
+        [_.storeOf(_.AnyVal), _.AnyVal]
     )
 };

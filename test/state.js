@@ -92,5 +92,16 @@ exports.state = {
 
         test.ok('/^(?:http)(?:s)?(?:\\:\\/\\/)(?:www\\.)?(?:[^\\ ]*)/gm' === result.toString());
         test.done();
-    }
+    },
+    'when creating a state and using lens should be correct value': _.check(
+        function(a, b, c) {
+            var run = function(x) {
+                    return _.Tuple2.of(b, x);
+                },
+                state = _.State.lens().run(a).set(run);
+
+            return _.expect(state.run(c)).toBe(_.Tuple2.of(b, c));
+        },
+        [_.stateOf(_.AnyVal), _.AnyVal, _.AnyVal]
+    )
 };

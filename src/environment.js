@@ -84,6 +84,7 @@ function makeMethod(name, registrations) {
 //   * `method(name, predicate, f)` - adds an multimethod implementation
 //   * `property(name, value)` - sets a property to value
 //   * `isDefined(name)` - is a multimethod implement defined
+//   * `isDefinedAt(name, ...rest)` - is a multimethod implemented with arguments
 //
 function environment(methods, properties) {
     var self = getInstance(this, environment),
@@ -107,6 +108,17 @@ function environment(methods, properties) {
 
     self.isDefined = function(name) {
         return self[name] && functionName(self[name]) === name;
+    };
+
+    self.isDefinedAt = function(name) {
+        var result = false,
+            args = rest(arguments).slice(1);
+
+        try {
+            result = !!findRegistered(name, methods[name], args);
+        } catch (e) {}
+
+        return result;
     };
 
     for(i in methods) {

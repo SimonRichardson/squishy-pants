@@ -244,5 +244,21 @@ exports.stream = {
             return actual.equal(expected);
         },
         [_.arrayOf(_.AnyVal)]
+    ),
+    'when creating a stream and using lens should be correct value': _.check(
+        function(a, b) {
+            var fork = function(next, done) {
+                    return done(b);
+                },
+                stream = _.Stream.lens().run(a).set(fork);
+
+            return stream.fork(
+                function(x) {},
+                function(x) {
+                    return _.expect(x).toBe(b);
+                }
+            );
+        },
+        [_.streamOf(_.AnyVal), _.AnyVal]
     )
 };

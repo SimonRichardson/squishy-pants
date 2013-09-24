@@ -37,5 +37,16 @@ exports.reader = {
             }).run(a)).toBe(a + 1);
         },
         [Number]
+    ),
+    'when creating a reader and using lens should be correct value': _.check(
+        function(a, b, c) {
+            var run = function() {
+                    return c;
+                },
+                reader = _.Reader.lens().run(a).set(run);
+
+            return _.expect(reader.run(b)).toBe(c);
+        },
+        [_.readerOf(_.AnyVal), _.AnyVal, _.AnyVal]
     )
 };

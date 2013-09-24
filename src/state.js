@@ -245,9 +245,47 @@ State.StateT = function(M) {
 var isState = isInstanceOf(State);
 
 //
+//  ## stateOf(type)
+//
+//  Sentinel value for when an state of a particular type is needed:
+//
+//       stateOf(Number)
+//
+function stateOf(type) {
+    var self = getInstance(this, stateOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStateOf(a)
+//
+//  Returns `true` if `a` is an instance of `stateOf`.
+//
+var isStateOf = isInstanceOf(stateOf);
+
+//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(State.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an state structure.
+//
+State.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return State(s);
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
 
 //
 //  append methods to the squishy environment.
@@ -255,6 +293,8 @@ fo.unsafeSetValueOf(State.prototype);
 squishy = squishy
     .property('State', State)
     .property('isState', isState)
+    .property('stateOf', stateOf)
+    .property('isStateOf', isStateOf)
     .method('of', strictEquals(State), function(x) {
         return State.of(x);
     })
@@ -266,4 +306,10 @@ squishy = squishy
     })
     .method('map', isState, function(a, b) {
         return a.map(b);
+    })
+    .method('arb', isStateOf, function(a, b) {
+        return State.of(this.arb(a.type, b - 1));
+    })
+    .method('shrink', isState, function(a, b) {
+        return [];
     });

@@ -429,6 +429,24 @@ var isStreamOf = isInstanceOf(streamOf);
 fo.unsafeSetValueOf(Stream.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an reader structure.
+//
+Stream.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Stream(s);
+            },
+            function() {
+                return a.fork;
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
