@@ -209,5 +209,17 @@ exports.attempt = {
             return _.expect(_.Failure(a).swap().extract()).toBe(a);
         },
         [_.AnyVal]
+    ),
+    'when creating a success and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Attempt.lens().run(a).set(b)).toBe(_.Success(b));
+        },
+        [_.successOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a failure and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Attempt.lens().run(a).set(b)).toBe(_.Failure(b));
+        },
+        [_.failureOf(_.AnyVal), _.AnyVal]
     )
 };

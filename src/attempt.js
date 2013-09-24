@@ -325,6 +325,34 @@ var isFailureOf = isInstanceOf(failureOf);
 fo.unsafeSetValueOf(Attempt.prototype);
 
 //
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Attempt.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Success: function() {
+                        return Attempt.of(s);
+                    },
+                    Failure: function() {
+                        return Attempt.Failure(s);
+                    }
+                });
+            },
+            function() {
+                return a.match({
+                    Success: identity,
+                    Failure: identity
+                });
+            }
+        );
+    });
+};
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
