@@ -28,6 +28,12 @@ exports.identity = {
             return _.expect(_.Identity(a).map(_.inc)).toBe(_.Identity(a + 1));
         },
         [Number]
+    ),
+    'when creating a identity and using lens should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Identity.lens().run(a).set(b)).toBe(_.Identity(b));
+        },
+        [_.identityOf(_.AnyVal), _.AnyVal]
     )
 };
 
@@ -67,10 +73,40 @@ exports.identityT = {
         },
         [_.AnyVal, _.AnyVal]
     ),
-    'when creating a identity and using lens should be correct value': _.check(
+    'when creating a identityT and using chain should be correct value': _.check(
         function(a, b) {
-            return _.expect(_.Identity.lens().run(a).set(b)).toBe(_.Identity(b));
+            var monad = _.Identity.of(1),
+                transformer = _.Identity.IdentityT(monad);
+
+            return _.expect(
+                transformer(_.Identity.of(b)).chain(function(x) {
+                    return _.Identity.IdentityT(monad).of(x + 1);
+                })
+            ).toBe(_.Identity.IdentityT(monad).of(b + 1));
         },
-        [_.identityOf(_.AnyVal), _.AnyVal]
+        [Number, Number]
+    ),
+    'when creating a identityT using identityTOf and chain should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                a(_.Identity.of(b)).chain(function(x) {
+                    return _.Identity.IdentityT(_.Identity.of(1)).of(x + 1);
+                })
+            ).toBe(_.Identity.IdentityT(_.Identity.of(1)).of(b + 1));
+        },
+        [_.identityTOf(Number), Number]
+    ),
+    'when creating a identityT using identityTOf and map should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                _.map(
+                    a(_.Identity.of(b)),
+                    function(x) {
+                        return x + 1;
+                    }
+                )
+            ).toBe(_.Identity.IdentityT(_.Identity.of(1)).of(b + 1));
+        },
+        [_.identityTOf(Number), Number]
     )
 };
