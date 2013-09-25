@@ -32,10 +32,9 @@ var Either = taggedSum('Either', {
 //  Applicative ap(ply)
 //
 Either.prototype.ap = function(e) {
-    return this.match({
-        Left: function() {
-            return this;
-        },
+    var env = this;
+    return env.match({
+        Left: constant(env),
         Right: function(x) {
             return squishy.map(e, x);
         }
@@ -49,8 +48,9 @@ Either.prototype.ap = function(e) {
 //  Monadic flatMap/bind
 //
 Either.prototype.chain = function(f) {
-    return this.match({
-        Left: constant(this),
+    var env = this;
+    return env.match({
+        Left: constant(env),
         Right: f
     });
 };
@@ -63,7 +63,7 @@ Either.prototype.chain = function(f) {
 //
 Either.prototype.concat = function(s, f) {
     var env = this;
-    return this.match({
+    return env.match({
         Left: function() {
             return squishy.fold(
                 s,
@@ -138,8 +138,9 @@ Either.prototype.fold = function(a, b) {
 //  Functor map
 //
 Either.prototype.map = function(f) {
-    return this.match({
-        Left: constant(this),
+    var env = this;
+    return env.match({
+        Left: constant(env),
         Right: function(x) {
             return Either.Right(f(x));
         }
@@ -262,6 +263,27 @@ Either.Right.empty = function() {
 var isEither = isInstanceOf(Either);
 
 //
+//  ## Either Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+var EitherT = tagged('EitherT', ['run']);
+
+Either.EitherT = transformer(EitherT);
+
+//
+//  ## isEitherT(a)
+//
+//  Returns `true` if `a` is `EitherT`.
+//
+var isEitherT = isInstanceOf(EitherT);
+
+//
 //  ## leftOf(type)
 //
 //  Sentinel value for when an left of a particular type is needed:
@@ -307,6 +329,26 @@ var isRightOf = isInstanceOf(rightOf);
 fo.unsafeSetValueOf(Either.prototype);
 
 //
+//  ## eitherTOf(type)
+//
+//  Sentinel value for when an either of a particular type is needed:
+//
+//       eitherTOf(Number)
+//
+function eitherTOf(type) {
+    var self = getInstance(this, eitherTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isEitherTOf(a)
+//
+//  Returns `true` if `a` is an instance of `eitherTOf`.
+//
+var isEitherTOf = isInstanceOf(eitherTOf);
+
+//
 //  ### lens
 //
 //  Lens access for an attempt structure.
@@ -339,13 +381,17 @@ Either.lens = function() {
 //
 squishy = squishy
     .property('Either', Either)
+    .property('EitherT', EitherT)
     .property('Left', Either.Left)
     .property('Right', Either.Right)
     .property('leftOf', leftOf)
     .property('rightOf', rightOf)
+    .property('eitherTOf', eitherTOf)
     .property('isEither', isEither)
+    .property('isEitherT', isEitherT)
     .property('isLeftOf', isLeftOf)
     .property('isRightOf', isRightOf)
+    .property('isEitherTOf', isEitherTOf)
     .method('of', strictEquals(Either), function(x) {
         return Either.of(x);
     })
@@ -387,4 +433,22 @@ squishy = squishy
     })
     .method('toStream', isAttempt, function(a) {
         return a.toStream();
+    })
+    .method('arb', isEitherTOf, function(a, b) {
+        return Either.EitherT(Either.of(this.arb(a.type, b - 1)));
+    })
+    .method('ap', isEitherT, function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', isEitherT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isEitherT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isEitherT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isEitherT, function(a) {
+        return [];
     });
