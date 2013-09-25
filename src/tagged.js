@@ -14,12 +14,17 @@ function tagged(name, fields) {
             total = fields.length,
             i;
         if(arguments.length != total) {
-            throw new TypeError("Expected " + fields.length + " arguments, got " + arguments.length);
+            throw new TypeError("Expected " + fields.length + " arguments, got " + arguments.length + " for " + name);
         }
         for(i = 0; i < total; i++) {
             self[fields[i]] = arguments[i];
         }
         return self;
+    }
+
+    /* Make sure the fields is an array */
+    if (!isArray(fields)) {
+        throw new TypeError("Expected Array but got `" + (typeof fields) + "`");
     }
 
     /* Make sure the tagged are named */

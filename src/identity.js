@@ -5,10 +5,10 @@
 //  strategy. It simply applies the bound function to its input without
 //  any modification.
 //
-//  * ap(a) - applicative ap(ply)
-//  * chain(f) - chain values
+//  * `ap(a)` - applicative ap(ply)
+//  * `chain(f)` - chain values
 //  * `concat(s, plus)` - Semigroup concat
-//  * map(f) - functor map
+//  * `map(f)` - functor map
 //
 //
 var Identity = tagged('Identity', ['x']);
@@ -100,89 +100,15 @@ var isIdentity = isInstanceOf(Identity);
 //
 //  The trivial monad transformer, which maps a monad to an equivalent monad.
 //
-//  * chain(f) - chain values
-//  * map(f) - functor map
-//  * ap(a) - applicative ap(ply)
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
 //
 
 var IdentityT = tagged('IdentityT', ['run']);
 
-Identity.IdentityT = function(M) {
-
-    //
-    //  ## of(x)
-    //
-    //  Constructor `of` Monad creating `IdentityT` for the value of `x`.
-    //
-    IdentityT.of = function(a) {
-        return IdentityT(point(M)(a));
-    };
-
-    //
-    //  ## empty()
-    //
-    //  Constructor `empty` Monad creating `IdentityT` for the
-    //  value of `M.empty()`.
-    //
-    Identity.empty = function() {
-        return Identity.of(empty(M)());
-    };
-
-    //
-    //  ### lift(b)
-    //
-    //  Lift the `Identity` to a new `IdentityT`
-    //
-    IdentityT.lift = IdentityT;
-
-    //
-    //  ### ap(b)
-    //
-    //  Apply a function in the environment of the value of the identity
-    //  transformer
-    //  Applicative ap(ply)
-    //
-    IdentityT.prototype.ap = function(a) {
-        return this.chain(function(f) {
-            return a.map(f);
-        });
-    };
-
-    //
-    //  ### chain(f)
-    //
-    //  Bind through the value of the identity transformer
-    //  Monadic flatMap/bind
-    //
-    IdentityT.prototype.chain = function(f) {
-        return IdentityT(this.run.chain(function(x) {
-            return f(x).run;
-        }));
-    };
-
-    //
-    //  ### equal(b)
-    //
-    //  Compare two option values for equality
-    //
-    IdentityT.prototype.equal = function(b) {
-        return squishy.equal(this.run, b.run);
-    };
-
-    //
-    //  ### map(f)
-    //
-    //  Map on the value of this identity.
-    //  Functor map
-    //
-    IdentityT.prototype.map = function(f) {
-        return this.chain(function(a) {
-            return IdentityT.of(f(a));
-        });
-    };
-
-    return IdentityT;
-};
+Identity.IdentityT = transformer(IdentityT);
 
 //
 //  ## isIdentityT(a)

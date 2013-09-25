@@ -40,11 +40,11 @@ exports.identity = {
 exports.identityT = {
     'when testing identityT ap should return correct value': _.check(
         function(a) {
-            var identityT = _.Identity.IdentityT(_.Identity(_.inc)),
-                actual = identityT(_.Identity(a)).map(_.inc),
-                expected = identityT(_.Identity(a + 1));
+            var monad = _.Identity(a),
+                transformer = _.Identity.IdentityT(monad),
+                actual = transformer(_.Identity(_.inc)).ap(transformer(monad));
 
-            return _.expect(actual).toBe(expected);
+            return _.expect(actual).toBe(transformer(_.Identity(a + 1)));
         },
         [_.AnyVal]
     ),
