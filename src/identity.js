@@ -296,7 +296,6 @@ squishy = squishy
     .method('shrink', isIdentity, function(a) {
         return [];
     })
-
     .method('arb', isIdentityTOf, function(a, b) {
         return Identity.IdentityT(Identity.of(this.arb(a.type, b - 1)));
     })
