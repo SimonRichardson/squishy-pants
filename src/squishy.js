@@ -425,17 +425,27 @@ function dec(x) {
 }
 
 //
+//  ## hasMethod(a, n)
+//
+//  Has the `a` got a method with the name either on the instance or
+//  the constructor.
+//
+function hasMethod(a, n) {
+    return a[n] || a.constructor[n];
+}
+
+//
 //  ## point(a)
 //
 function point(a) {
-    return a.of || a.constructor.of;
+    return hasMethod(a, 'of') || hasMethod(a.constructor, 'of');
 }
 
 //
 //  ## zero(a)
 //
 function zero(a) {
-    return a.empty || a.constructor.empty;
+    return hasMethod(a, 'empty') || hasMethod(a.constructor, 'empty');
 }
 
 //

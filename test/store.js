@@ -13,7 +13,7 @@ exports.store = {
         },
         [_.AnyVal]
     ),
-    'when testing store with extend should return correct value': _.check(
+    'when testing store with expand should return correct value': _.check(
         function(a) {
             var store = _.Store(
                     _.identity,
@@ -21,7 +21,7 @@ exports.store = {
                         return a;
                     }
                 );
-            return _.expect(store.extend().get()).toBe(a);
+            return _.expect(store.expand().get()).toBe(a);
         },
         [_.AnyVal]
     ),

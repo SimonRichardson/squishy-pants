@@ -46,9 +46,11 @@ var transformer = function(ctor) {
         //  transformer
         //  Applicative ap(ply)
         //
-        ctor.prototype.ap = function(a) {
-            return ctor(this.run.ap(a.run));
-        };
+        if (isFunction(hasMethod(M, 'ap'))) {
+            ctor.prototype.ap = function(a) {
+                return ctor(this.run.ap(a.run));
+            };
+        }
 
         //
         //  ### chain(f)
@@ -56,20 +58,24 @@ var transformer = function(ctor) {
         //  Bind through the value of the identity transformer
         //  Monadic flatMap/bind
         //
-        ctor.prototype.chain = function(f) {
-            return ctor(this.run.chain(function(x) {
-                return f(x).run;
-            }));
-        };
+        if (isFunction(hasMethod(M, 'chain'))) {
+            ctor.prototype.chain = function(f) {
+                return ctor(this.run.chain(function(x) {
+                    return f(x).run;
+                }));
+            };
+        }
 
         //
         //  ### equal(b)
         //
         //  Compare two option values for equality
         //
-        ctor.prototype.equal = function(b) {
-            return squishy.equal(this.run, b.run);
-        };
+        if (isFunction(hasMethod(M, 'equal'))) {
+            ctor.prototype.equal = function(b) {
+                return squishy.equal(this.run, b.run);
+            };
+        }
 
         //
         //  ### map(f)
@@ -77,9 +83,11 @@ var transformer = function(ctor) {
         //  Map on the value of this identity.
         //  Functor map
         //
-        ctor.prototype.map = function(f) {
-            return ctor(this.run.map(f));
-        };
+        if (isFunction(hasMethod(M, 'map'))) {
+            ctor.prototype.map = function(f) {
+                return ctor(this.run.map(f));
+            };
+        }
 
         return ctor;
     };

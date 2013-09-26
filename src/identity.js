@@ -223,7 +223,7 @@ squishy = squishy
         return [];
     })
     .method('arb', isIdentityTOf, function(a, b) {
-        return Identity.IdentityT(Identity.of(this.arb(a.type, b - 1)));
+        return Identity.IdentityT(this.arb(identityOf(a.type), b - 1));
     })
     .method('ap', isIdentityT, function(a, b) {
         return a.ap(b);

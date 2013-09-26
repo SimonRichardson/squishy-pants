@@ -17,11 +17,11 @@ Store.prototype.extract = function() {
 };
 
 //
-//  ### extend(f)
+//  ### expand(f)
 //
 //  Extend the store value with the result from f, chaining stores together.
 //
-Store.prototype.extend = function(f) {
+Store.prototype.expand = function(f) {
     var env = this;
     return Store(
         function(k) {
@@ -42,7 +42,7 @@ Store.prototype.extend = function(f) {
 //  Returns a new state that evaluates `f` on a value and passes it through.
 //
 Store.prototype.map = function(f) {
-    return this.extend(function(c) {
+    return this.expand(function(c) {
         return f(c.extract());
     });
 };
@@ -108,6 +108,9 @@ squishy = squishy
     .property('storeOf', storeOf)
     .property('isStore', isStore)
     .property('isStoreOf', isStoreOf)
+    .method('expand', isStore, function(a, b) {
+        return a.expand(b);
+    })
     .method('extract', isStore, function(a) {
         return a.extract();
     })

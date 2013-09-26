@@ -4,17 +4,18 @@
 //  Promise is a constructor which takes a `deferred` function. The `deferred`
 //  function takes two arguments:
 //
-//       deferred(resolve)
+//       deferred(resolve, reject)
 //
 //  `resolve` are side-effecting callbacks.
 //
-//  ### deferred(resolve)
+//  ### deferred(resolve, reject)
 //
 //  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
 //  either be a Success or a Failure.
 //
 //  * `chain(f)` - Monadic flatMap/bind
-//  * `extract()` - extract the value from attempt
+//  * `extend(f)` - Returns a new promise that evaluates `f` over the promise to get a value.
+//  * `extract()` - extract the value from promise
 //  * `map(f)` - Functor map for resolve
 //  * `reject(f)` - Functor map for reject
 //
@@ -76,18 +77,28 @@ Promise.prototype.chain = function(f) {
 };
 
 //
+//  ### expand()
+//
+//  Returns a new promise that evaluates `f` over the promise to get a value.
+//
+Promise.prototype.expand = function(f) {
+    var env = this;
+    return env.map(
+        function(a) {
+            return f(Promise.of(a));
+        }
+    );
+};
+
+//
 //  ### extract()
 //
 //  Executes a promise to get a value.
 //
 Promise.prototype.extract = function() {
     return this.fork(
-        function(a) {
-            return a;
-        },
-        function(e) {
-            return e;
-        }
+        identity,
+        identity
     );
 };
 
@@ -139,6 +150,36 @@ Promise.prototype.reject = function(f) {
 var isPromise = isInstanceOf(Promise);
 
 //
+//  ## Promise Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var PromiseT = tagged('PromiseT', ['run']);
+
+Promise.PromiseT = transformer(PromiseT);
+
+//
+//  ### fork(a, b)
+//
+//
+PromiseT.prototype.fork = function(a, b) {
+    return this.run.fork(a, b);
+};
+
+//
+//  ## isPromiseT(a)
+//
+//  Returns `true` if `a` is `PromiseT`.
+//
+var isPromiseT = isInstanceOf(PromiseT);
+
+//
 //  ## promiseOf(type)
 //
 //  Sentinel value for when an promise of a particular type is needed:
@@ -164,6 +205,26 @@ var isPromiseOf = isInstanceOf(promiseOf);
 fo.unsafeSetValueOf(Promise.prototype);
 
 //
+//  ## promiseTOf(type)
+//
+//  Sentinel value for when an promise of a particular type is needed:
+//
+//       promiseTOf(Number)
+//
+function promiseTOf(type) {
+    var self = getInstance(this, promiseTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isPromiseTOf(a)
+//
+//  Returns `true` if `a` is an instance of `promiseTOf`.
+//
+var isPromiseTOf = isInstanceOf(promiseTOf);
+
+//
 //  ### lens
 //
 //  Lens access for an promise structure.
@@ -186,9 +247,12 @@ Promise.lens = function() {
 //
 squishy = squishy
     .property('Promise', Promise)
+    .property('PromiseT', PromiseT)
     .property('promiseOf', promiseOf)
+    .property('promiseTOf', promiseTOf)
     .property('isPromise', isPromise)
     .property('isPromiseOf', isPromiseOf)
+    .property('isPromiseTOf', isPromiseTOf)
     .method('empty', strictEquals(Promise), function() {
         return Promise.empty();
     })
@@ -197,6 +261,9 @@ squishy = squishy
     })
     .method('chain', isPromise, function(a, b) {
         return a.chain(b);
+    })
+    .method('expand', isPromise, function(a, b) {
+        return a.expand(b);
     })
     .method('extract', isPromise, function(a) {
         return a.extract();
@@ -208,5 +275,20 @@ squishy = squishy
         return Promise.of(this.arb(a.type, b - 1));
     })
     .method('shrink', isPromise, function(a, b) {
+        return [];
+    })
+    .method('arb', isPromiseTOf, function(a, b) {
+        return Promise.PromiseT(this.arb(promiseOf(a.type), b - 1));
+    })
+    .method('chain', isPromiseT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isPromiseT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isPromiseT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isPromiseT, function(a) {
         return [];
     });
