@@ -301,7 +301,8 @@ var or = curry(function(a, b) {
 //  Curried function for `&&`.
 //
 var and = curry(function(a, b) {
-    return a && b;
+    /* Make sure we coerce the value to true. */
+    return !!(a && b);
 });
 
 //
