@@ -46,7 +46,7 @@ var transformer = function(ctor) {
         //  transformer
         //  Applicative ap(ply)
         //
-        if (isFunction(hasMethod(M, 'ap'))) {
+        if (isFunction(retrieveMethod(M, 'ap'))) {
             ctor.prototype.ap = function(a) {
                 return ctor(this.run.ap(a.run));
             };
@@ -58,7 +58,7 @@ var transformer = function(ctor) {
         //  Bind through the value of the identity transformer
         //  Monadic flatMap/bind
         //
-        if (isFunction(hasMethod(M, 'chain'))) {
+        if (isFunction(retrieveMethod(M, 'chain'))) {
             ctor.prototype.chain = function(f) {
                 return ctor(this.run.chain(function(x) {
                     return f(x).run;
@@ -71,7 +71,7 @@ var transformer = function(ctor) {
         //
         //  Compare two option values for equality
         //
-        if (isFunction(hasMethod(M, 'equal'))) {
+        if (isFunction(retrieveMethod(M, 'equal'))) {
             ctor.prototype.equal = function(b) {
                 return squishy.equal(this.run, b.run);
             };
@@ -83,7 +83,7 @@ var transformer = function(ctor) {
         //  Map on the value of this identity.
         //  Functor map
         //
-        if (isFunction(hasMethod(M, 'map'))) {
+        if (isFunction(retrieveMethod(M, 'map'))) {
             ctor.prototype.map = function(f) {
                 return ctor(this.run.map(f));
             };

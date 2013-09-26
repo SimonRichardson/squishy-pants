@@ -425,12 +425,12 @@ function dec(x) {
 }
 
 //
-//  ## hasMethod(a, n)
+//  ## retrieveMethod(a, n)
 //
 //  Has the `a` got a method with the name either on the instance or
 //  the constructor.
 //
-function hasMethod(a, n) {
+function retrieveMethod(a, n) {
     return a[n] || a.constructor[n];
 }
 
@@ -438,14 +438,14 @@ function hasMethod(a, n) {
 //  ## point(a)
 //
 function point(a) {
-    return hasMethod(a, 'of') || hasMethod(a.constructor, 'of');
+    return retrieveMethod(a, 'of') || retrieveMethod(a.constructor, 'of');
 }
 
 //
 //  ## zero(a)
 //
 function zero(a) {
-    return hasMethod(a, 'empty') || hasMethod(a.constructor, 'empty');
+    return retrieveMethod(a, 'empty') || retrieveMethod(a.constructor, 'empty');
 }
 
 //
