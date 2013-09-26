@@ -404,6 +404,35 @@ Stream.fromArray = function(a) {
 var isStream = isInstanceOf(Stream);
 
 //
+//  ## Stream Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//
+
+var StreamT = tagged('StreamT', ['run']);
+
+Stream.StreamT = transformer(StreamT);
+
+//
+//  ### fork(a, b)
+//
+//  Open up fork from the reader transformer
+//
+StreamT.prototype.fork = function(a, b) {
+    return this.run.fork(a, b);
+};
+
+//
+//  ## isStreamT(a)
+//
+//  Returns `true` if `a` is `StreamT`.
+//
+var isStreamT = isInstanceOf(StreamT);
+
+//
 //  ## streamOf(type)
 //
 //  Sentinel value for when an stream of a particular type is needed:
@@ -422,6 +451,26 @@ function streamOf(type) {
 //  Returns `true` if `a` is `streamOf`.
 //
 var isStreamOf = isInstanceOf(streamOf);
+
+//
+//  ## streamTOf(type)
+//
+//  Sentinel value for when an stream of a particular type is needed:
+//
+//       streamTOf(Number)
+//
+function streamTOf(type) {
+    var self = getInstance(this, streamTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStreamTOf(a)
+//
+//  Returns `true` if `a` is an instance of `streamTOf`.
+//
+var isStreamTOf = isInstanceOf(streamTOf);
 
 //
 //  ### Fantasy Overload
@@ -451,9 +500,13 @@ Stream.lens = function() {
 //
 squishy = squishy
     .property('Stream', Stream)
+    .property('StreamT', StreamT)
     .property('streamOf', streamOf)
+    .property('streamTOf', streamTOf)
     .property('isStream', isStream)
+    .property('isStreamT', isStreamT)
     .property('isStreamOf', isStreamOf)
+    .property('isStreamTOf', isStreamTOf)
     .method('arb', isStreamOf, function(a, b) {
         var args = this.arb(a.type, b - 1);
         return Stream.fromArray(args);
@@ -484,4 +537,22 @@ squishy = squishy
     })
     .method('zip', isStream, function(b) {
         return a.zip(b);
+    })
+    .method('arb', isStreamTOf, function(a, b) {
+        return Stream.StreamT(this.arb(streamOf(a.type), b - 1));
+    })
+    .method('ap', isStreamT, function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', isStreamT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isStreamT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isStreamT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isStreamT, function(a) {
+        return [];
     });

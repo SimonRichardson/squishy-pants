@@ -199,11 +199,6 @@ function promiseOf(type) {
 var isPromiseOf = isInstanceOf(promiseOf);
 
 //
-//  ### Fantasy Overload
-//
-fo.unsafeSetValueOf(Promise.prototype);
-
-//
 //  ## promiseTOf(type)
 //
 //  Sentinel value for when an promise of a particular type is needed:
@@ -222,6 +217,11 @@ function promiseTOf(type) {
 //  Returns `true` if `a` is an instance of `promiseTOf`.
 //
 var isPromiseTOf = isInstanceOf(promiseTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Promise.prototype);
 
 //
 //  ### lens
