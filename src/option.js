@@ -235,6 +235,15 @@ Option.of = function(x) {
 };
 
 //
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Option` with no value.
+//
+Option.empty = function() {
+    return Option.None;
+};
+
+//
 //  ## Some(x)
 //
 //  Constructor to represent the existence of a value, `x`.
@@ -256,6 +265,28 @@ Option.None.isNone = true;
 //  Returns `true` if `a` is a `Some` or `None`.
 //
 var isOption = isInstanceOf(Option);
+
+//
+//  ## Option Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var OptionT = tagged('OptionT', ['run']);
+
+Option.OptionT = transformer(OptionT);
+
+//
+//  ## isOptionT(a)
+//
+//  Returns `true` if `a` is `OptionT`.
+//
+var isOptionT = isInstanceOf(OptionT);
 
 //
 //  ## someOf(type)
@@ -297,6 +328,26 @@ function noneOf() {
 var isNoneOf = isInstanceOf(noneOf);
 
 //
+//  ## optionTOf(type)
+//
+//  Sentinel value for when an option of a particular type is needed:
+//
+//       optionTOf(Number)
+//
+function optionTOf(type) {
+    var self = getInstance(this, optionTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isOptionTOf(a)
+//
+//  Returns `true` if `a` is an instance of `optionTOf`.
+//
+var isOptionTOf = isInstanceOf(optionTOf);
+
+//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(Option.prototype);
@@ -332,13 +383,17 @@ Option.lens = function() {
 //
 squishy = squishy
     .property('Option', Option)
+    .property('OptionT', OptionT)
     .property('Some', Option.Some)
     .property('None', Option.None)
     .property('someOf', someOf)
     .property('noneOf', noneOf)
+    .property('optionTOf', optionTOf)
     .property('isOption', isOption)
+    .property('isOptionT', isOptionT)
     .property('isSomeOf', isSomeOf)
     .property('isNoneOf', isNoneOf)
+    .property('isOptionTOf', isOptionTOf)
     .method('of', strictEquals(Option.Some), function(x) {
         return Option.Some.of(x);
     })
@@ -380,4 +435,22 @@ squishy = squishy
     })
     .property('toOption', function(a) {
         return a !== null ? Option.Some(a) : Option.None;
+    })
+    .method('arb', isOptionTOf, function(a, b) {
+        return Option.OptionT(this.arb(someOf(a.type), b - 1));
+    })
+    .method('ap', isOptionT, function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', isOptionT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isOptionT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isOptionT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isOptionT, function(a) {
+        return [];
     });

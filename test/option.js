@@ -211,3 +211,106 @@ exports.option = {
         [_.noneOf(), _.AnyVal]
     )
 };
+
+exports.optionT = {
+    'when testing optionT ap with some should return correct value': _.check(
+        function(a) {
+            var monad = _.Some(a),
+                transformer = _.Option.OptionT(monad),
+                actual = transformer(_.Some(_.inc)).ap(transformer(monad));
+
+            return _.expect(actual).toBe(transformer(_.Some(a + 1)));
+        },
+        [_.AnyVal]
+    ),
+    'when testing optionT map with some should return correct value': _.check(
+        function(a) {
+            var optionT = _.Option.OptionT(_.Some(a)),
+                actual = optionT(_.Some(a)).map(_.inc),
+                expected = optionT(_.Some(a + 1));
+
+            return _.expect(actual).toBe(expected);
+        },
+        [_.AnyVal]
+    ),
+    'when testing optionT chain with some should return correct value': _.check(
+        function(a, b) {
+            var optionT0 = _.Option.OptionT(_.Some(a)),
+                optionT1 = _.Option.OptionT(_.Some(b)),
+                actual = optionT0(_.Some(a)).chain(
+                    function() {
+                        return optionT1(_.Some(b));
+                    }
+                ),
+                expected = optionT0(_.Some(b));
+
+            return _.expect(actual).toBe(expected);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when testing optionT ap with none should return correct value': function(test) {
+        var monad = _.None,
+                transformer = _.Option.OptionT(monad),
+                actual = transformer(_.None).ap(transformer(monad));
+
+        test.ok(_.expect(actual).toBe(transformer(_.None)));
+        test.done();
+    },
+    'when testing optionT map with none should return correct value': function(test) {
+        var optionT = _.Option.OptionT(_.None),
+            actual = optionT(_.None).map(_.inc),
+            expected = optionT(_.None);
+
+        test.ok(_.expect(actual).toBe(expected));
+        test.done();
+    },
+    'when testing optionT chain with none should return correct value': function(test) {
+        var optionT0 = _.Option.OptionT(_.None),
+            actual = optionT0(_.None).chain(
+                function() {
+                    _.error('Failed if called')();
+                }
+            ),
+            expected = optionT0(_.None);
+
+        test.ok(_.expect(actual).toBe(expected));
+        test.done();
+    },
+    'when creating a optionT and using chain should be correct value': _.check(
+        function(a, b) {
+            var monad = _.Option.of(1),
+                transformer = _.Option.OptionT(monad);
+
+            return _.expect(
+                transformer(_.Option.of(b)).chain(function(x) {
+                    return _.Option.OptionT(monad).of(x + 1);
+                })
+            ).toBe(_.Option.OptionT(monad).of(b + 1));
+        },
+        [Number, Number]
+    ),
+    'when creating a optionT using optionTOf and chain should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                a(_.Option.of(b)).chain(function(x) {
+                    return _.Option.OptionT(_.Option.of(1)).of(x + 1);
+                })
+            ).toBe(_.Option.OptionT(_.Option.of(1)).of(b + 1));
+        },
+        [_.optionTOf(Number), Number]
+    ),
+    'when creating a optionT using optionTOf and map should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                _.map(
+                    a(_.Option.of(b)),
+                    function(x) {
+                        return x + 1;
+                    }
+                )
+            ).toBe(_.Option.OptionT(_.Option.of(1)).of(b + 1));
+        },
+        [_.optionTOf(Number), Number]
+    )
+};
+

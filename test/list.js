@@ -278,7 +278,6 @@ exports.list = {
     )
 };
 
-
 exports.listT = {
     'when testing listT ap should return correct value': _.check(
         function(a) {
