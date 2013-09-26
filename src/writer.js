@@ -187,38 +187,28 @@ squishy = squishy
     .property('isWriterOf', isWriterOf)
     .property('isWriterTOf', isWriterTOf)
     .method('of', strictEquals(Writer), function(x) {
-        return State.of(x);
+        return Writer.of(x);
     })
-    .method('ap', isWriter, function(a, b) {
-        return a.ap(b);
+    .method('empty', strictEquals(Writer), function(x) {
+        return Writer.empty();
     })
-    .method('chain', isWriter, function(a, b) {
-        return a.chain(b);
-    })
-    .method('map', isWriter, function(a, b) {
-        return a.map(b);
-    })
+
     .method('arb', isWriterOf, function(a, b) {
         return Writer.of(this.arb(a.type, b - 1));
-    })
-    .method('shrink', isWriter, function(a, b) {
-        return [];
     })
     .method('arb', isWriterTOf, function(a, b) {
         return Writer.WriterT(this.arb(writerOf(a.type), b - 1));
     })
-    .method('ap', isWriterT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isWriterT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isWriterT, function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', isWriterT, function(a, b) {
+    .method('map', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isWriterT, function(a) {
+    .method('shrink', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
         return [];
     });

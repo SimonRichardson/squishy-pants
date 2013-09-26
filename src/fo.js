@@ -1,57 +1,57 @@
 //
-//    # Fo (Fantasy Overloading)
+//  # Fo (Fantasy Overloading)
 //
-//    Overloaded operators for compatible JavaScript:
+//  Overloaded operators for compatible JavaScript:
 //
-//      * `>=` Monad chain:
+//  * `>=` Monad chain:
 //
-//            fo()(
-//                Option.Some(1) >= function(x) {
-//                    return x < 0 ? Option.None : Option.Some(x + 2);
-//                }
-//            ).getOrElse(0) == 3;
+//        fo()(
+//            Option.Some(1) >= function(x) {
+//                return x < 0 ? Option.None : Option.Some(x + 2);
+//            }
+//        ).getOrElse(0) == 3;
 //
-//      * `<` Monad sequence:
+//  * `<` Monad sequence:
 //
-//            fo()(
-//                Option.Some(1) < Option.Some(2)
-//            ).getOrElse(0) == 2;
+//        fo()(
+//            Option.Some(1) < Option.Some(2)
+//        ).getOrElse(0) == 2;
 //
-//      * `%` Functor map:
+//  * `%` Functor map:
 //
-//            fo()(
-//                Option.Some(1) % add(2)
-//            ).getOrElse(0) == 3;
+//        fo()(
+//            Option.Some(1) % add(2)
+//        ).getOrElse(0) == 3;
 //
-//      * `*` Applicative ap(ply):
+//  * `*` Applicative ap(ply):
 //
-//            fo()(
-//                Option.Some(add) * Option.Some(1) * Option.Some(2)
-//            ).getOrElse(0) == 3;
+//        fo()(
+//            Option.Some(add) * Option.Some(1) * Option.Some(2)
+//        ).getOrElse(0) == 3;
 //
-//      * `<<` Compose:
+//  * `<<` Compose:
 //
-//            fo()(
-//                add(1) << times(2)
-//            )(3) == 7;
+//        fo()(
+//            add(1) << times(2)
+//        )(3) == 7;
 //
-//      * `>>` Compose reverse:
+//  * `>>` Compose reverse:
 //
-//            fo()(
-//                add(1) >> times(2)
-//            )(3) == 8;
+//        fo()(
+//            add(1) >> times(2)
+//        )(3) == 8;
 //
-//      * `+` Semigroup concat:
+//  * `+` Semigroup concat:
 //
-//            fo()(
-//                Option.Some([1, 2]) + Option.Some([3, 4])
-//            ).getOrElse([]) == [1, 2, 3, 4];
+//        fo()(
+//            Option.Some([1, 2]) + Option.Some([3, 4])
+//        ).getOrElse([]) == [1, 2, 3, 4];
 //
-//      * `-` Group minus:
+//  * `-` Group minus:
 //
-//            fo()(
-//                Option.Some(1) - Option.Some(2)
-//            ).getOrElse(0) == -1;
+//        fo()(
+//            Option.Some(1) - Option.Some(2)
+//        ).getOrElse(0) == -1;
 //
 
 /* Gross mutable global */

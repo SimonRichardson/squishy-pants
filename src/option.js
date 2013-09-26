@@ -30,6 +30,14 @@ var Option = taggedSum('Option', {
 });
 
 //
+//  ### toOption(a)
+//  @deprecated
+//
+Option.toOption = function(a) {
+    return a !== null ? Option.Some(a) : Option.None;
+};
+
+//
 //  ### ap(b)
 //
 //  Apply a function in the environment of the some of this option,
@@ -394,23 +402,26 @@ squishy = squishy
     .property('isSomeOf', isSomeOf)
     .property('isNoneOf', isNoneOf)
     .property('isOptionTOf', isOptionTOf)
+    .property('toOption', Option.toOption)
     .method('of', strictEquals(Option.Some), function(x) {
         return Option.Some.of(x);
     })
     .method('empty', strictEquals(Option.Some), function(x) {
         return Option.None;
     })
-    .method('ap', isOption, function(a, b) {
-        return a.ap(b);
+
+    .method('arb', isSomeOf, function(a, b) {
+        return Option.Some(this.arb(a.type, b - 1));
     })
+    .method('arb', isNoneOf, function(a, b) {
+        return Option.None;
+    })
+    .method('arb', isOptionTOf, function(a, b) {
+        return Option.OptionT(this.arb(someOf(a.type), b - 1));
+    })
+
     .method('concat', isOption, function(a, b) {
         return a.concat(b);
-    })
-    .method('chain', isOption, function(a, b) {
-        return a.chain(b);
-    })
-    .method('equal', isOption, function(a, b) {
-        return a.equal(b);
     })
     .method('extract', isOption, function(a) {
         return a.extract();
@@ -418,39 +429,22 @@ squishy = squishy
     .method('fold', isOption, function(a, b, c) {
         return a.fold(b, c);
     })
-    .method('map', isOption, function(a, b) {
-        return a.map(b);
-    })
-    .method('arb', isSomeOf, function(a, b) {
-        return Option.Some(this.arb(a.type, b - 1));
-    })
-    .method('arb', isNoneOf, function(a, b) {
-        return Option.None;
-    })
-    .method('shrink', isOption, function(a, b) {
-        return [];
-    })
     .method('toArray', isOption, function(a) {
         return a.toArray();
     })
-    .property('toOption', function(a) {
-        return a !== null ? Option.Some(a) : Option.None;
-    })
-    .method('arb', isOptionTOf, function(a, b) {
-        return Option.OptionT(this.arb(someOf(a.type), b - 1));
-    })
-    .method('ap', isOptionT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isOption, isOptionT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isOptionT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isOption, isOptionT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isOptionT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isOption, isOptionT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isOptionT, function(a, b) {
+    .method('map', squishy.liftA2(or, isOption, isOptionT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isOptionT, function(a) {
+    .method('shrink', squishy.liftA2(or, isOption, isOptionT), function(a) {
         return [];
     });

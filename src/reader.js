@@ -184,33 +184,23 @@ squishy = squishy
     .method('empty', strictEquals(Reader), function() {
         return Reader.empty();
     })
-    .method('chain', isReader, function(a, b) {
-        return a.chain(b);
-    })
-    .method('map', isReader, function(a, b) {
-        return a.map(b);
-    })
+
     .method('arb', isReaderOf, function(a, b) {
         return Reader.of(this.arb(a.type, b - 1));
-    })
-    .method('shrink', isReader, function(a, b) {
-        return [];
     })
     .method('arb', isReaderTOf, function(a, b) {
         return Reader.ReaderT(this.arb(readerOf(a.type), b - 1));
     })
-    .method('ap', isReaderT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isReaderT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isReaderT, function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', isReaderT, function(a, b) {
+    .method('map', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isReaderT, function(a) {
+    .method('shrink', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
         return [];
     });

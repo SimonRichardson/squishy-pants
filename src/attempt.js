@@ -412,32 +412,22 @@ squishy = squishy
     .method('empty', strictEquals(Attempt), function() {
         return Attempt.empty();
     })
-    .method('ap', isAttempt, function(a, b) {
-        return a.ap(b);
-    })
+
     .method('arb', isSuccessOf, function(a, b) {
         return Attempt.Success(this.arb(a.type, b - 1));
     })
     .method('arb', isFailureOf, function(a, b) {
         return Attempt.Failure(this.arb(a.type, b - 1));
     })
-    .method('chain', isAttempt, function(a, b) {
-        return a.chain(b);
+    .method('arb', isAttemptTOf, function(a, b) {
+        return Attempt.AttemptT(this.arb(successOf(a.type), b - 1));
     })
-    .method('shrink', isAttempt, function(a) {
-        return [];
-    })
-    .method('equal', isAttempt, function(a, b) {
-        return a.equal(b);
-    })
+
     .method('extract', isAttempt, function(a) {
         return a.extract();
     })
     .method('fold', isAttempt, function(a, b, c) {
         return a.fold(b, c);
-    })
-    .method('map', isAttempt, function(a, b) {
-        return a.map(b);
     })
     .method('toArray', isAttempt, function(a) {
         return a.toArray();
@@ -445,21 +435,19 @@ squishy = squishy
     .method('toStream', isAttempt, function(a) {
         return a.toStream();
     })
-    .method('arb', isAttemptTOf, function(a, b) {
-        return Attempt.AttemptT(this.arb(successOf(a.type), b - 1));
-    })
-    .method('ap', isAttemptT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isAttemptT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isAttemptT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isAttemptT, function(a, b) {
+    .method('map', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isAttemptT, function(a) {
+    .method('shrink', squishy.liftA2(or, isAttempt, isAttemptT), function(a) {
         return [];
     });

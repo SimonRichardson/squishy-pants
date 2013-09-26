@@ -760,6 +760,13 @@ squishy = squishy
     .property('isListOf', isListOf)
     .property('isListTOf', isListTOf)
     .property('listRange', List.range)
+    .method('of', strictEquals(List), function(x) {
+        return List.of(x);
+    })
+    .method('empty', strictEquals(List), function(x) {
+        return List.empty();
+    })
+
     .method('arb', isListOf, function(a, b) {
         var accum = List.Nil,
             length = this.randomRange(0, b),
@@ -771,6 +778,10 @@ squishy = squishy
 
         return accum.reverse();
     })
+    .method('arb', isListTOf, function(a, b) {
+        return List.ListT(this.arb(listOf(a.type), b - 1));
+    })
+
     .method('shrink', isList, function(a) {
         var accum = [List.Nil],
             x = a.size();
@@ -783,12 +794,10 @@ squishy = squishy
 
         return accum;
     })
-    .method('ap', isList, function(a, b) {
-        return a.ap(b);
+    .method('shrink', isListT, function(a) {
+        return [];
     })
-    .method('chain', isList, function(a, b) {
-        return a.chain(b);
-    })
+
     .method('concat', isList, function(a, b) {
         return a.concat(b);
     })
@@ -804,17 +813,11 @@ squishy = squishy
     .method('dropWhile', isList, function(a, b) {
         return a.dropWhile(b);
     })
-    .method('equal', isList, function(a, b) {
-        return a.equal(b);
-    })
     .method('exists', isList, function(a, f) {
         return a.exists(f);
     })
     .method('fold', isList, function(a, f, g) {
         return a.fold(f, g);
-    })
-    .method('map', isList, function(a, b) {
-        return a.map(b);
     })
     .method('partition', isList, function(a, f) {
         return a.partition(f);
@@ -840,18 +843,16 @@ squishy = squishy
     .method('toArray', isList, function(a) {
         return a.toArray();
     })
-    .method('arb', isListTOf, function(a, b) {
-        return List.ListT(this.arb(listOf(a.type), b - 1));
+
+    .method('ap', squishy.liftA2(or, isList, isListT), function(a, b) {
+        return a.ap(b);
     })
-    .method('chain', isListT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isList, isListT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isListT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isList, isListT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isListT, function(a, b) {
+    .method('map', squishy.liftA2(or, isList, isListT), function(a, b) {
         return a.map(b);
-    })
-    .method('shrink', isListT, function(a) {
-        return [];
     });

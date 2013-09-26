@@ -398,26 +398,19 @@ squishy = squishy
     .method('empty', strictEquals(Either), function(x) {
         return Either.Left.empty();
     })
-    .method('ap', isEither, function(a, b) {
-        return a.ap(b);
-    })
+
     .method('arb', isLeftOf, function(a, b) {
         return Either.Left(this.arb(a.type, b - 1));
     })
     .method('arb', isRightOf, function(a, b) {
         return Either.Right(this.arb(a.type, b - 1));
     })
-    .method('shrink', isEither, function(a) {
-        return [];
+    .method('arb', isEitherTOf, function(a, b) {
+        return Either.EitherT(Either.of(this.arb(a.type, b - 1)));
     })
-    .method('chain', isEither, function(a, b) {
-        return a.chain(b);
-    })
+
     .method('concat', isEither, function(a, b) {
         return a.concat(b, this.concat);
-    })
-    .method('equal', isEither, function(a, b) {
-        return a.equal(b);
     })
     .method('extract', isEither, function(a) {
         return a.extract();
@@ -425,30 +418,25 @@ squishy = squishy
     .method('fold', isEither, function(a, b, c) {
         return a.fold(b, c);
     })
-    .method('map', isEither, function(a, b) {
-        return a.map(b);
-    })
     .method('toArray', isEither, function(a) {
         return a.toArray();
     })
     .method('toStream', isAttempt, function(a) {
         return a.toStream();
     })
-    .method('arb', isEitherTOf, function(a, b) {
-        return Either.EitherT(Either.of(this.arb(a.type, b - 1)));
-    })
-    .method('ap', isEitherT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isEither, isEitherT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isEitherT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isEither, isEitherT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isEitherT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isEither, isEitherT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isEitherT, function(a, b) {
+    .method('map', squishy.liftA2(or, isEither, isEitherT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isEitherT, function(a) {
+    .method('shrink', squishy.liftA2(or, isEither, isEitherT), function(a) {
         return [];
     });

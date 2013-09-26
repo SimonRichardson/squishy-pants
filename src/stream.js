@@ -507,24 +507,23 @@ squishy = squishy
     .property('isStreamT', isStreamT)
     .property('isStreamOf', isStreamOf)
     .property('isStreamTOf', isStreamTOf)
+    .method('of', strictEquals(Stream), function(x) {
+        return Stream.of(x);
+    })
+    .method('empty', strictEquals(Stream), function() {
+        return Stream.empty();
+    })
+
     .method('arb', isStreamOf, function(a, b) {
         var args = this.arb(a.type, b - 1);
         return Stream.fromArray(args);
     })
-    .method('shrink', isStream, function(a, b) {
-        return [];
+    .method('arb', isStreamTOf, function(a, b) {
+        return Stream.StreamT(this.arb(streamOf(a.type), b - 1));
     })
-    .method('ap', isStream, function(a, b) {
-        return a.ap(b);
-    })
-    .method('chain', isStream, function(a, b) {
-        return a.chain(b);
-    })
+
     .method('concat', isStream, function(a, b) {
         return a.chain(b);
-    })
-    .method('equal', isStream, function(a, b) {
-        return a.equal(b);
     })
     .method('extract', isStream, function(a) {
         return a.extract();
@@ -532,27 +531,22 @@ squishy = squishy
     .method('fold', isStream, function(a, b) {
         return a.chain(b);
     })
-    .method('map', isStream, function(a, b) {
-        return a.map(b);
-    })
     .method('zip', isStream, function(b) {
         return a.zip(b);
     })
-    .method('arb', isStreamTOf, function(a, b) {
-        return Stream.StreamT(this.arb(streamOf(a.type), b - 1));
-    })
-    .method('ap', isStreamT, function(a, b) {
+
+    .method('ap', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isStreamT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isStreamT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isStreamT, function(a, b) {
+    .method('map', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isStreamT, function(a) {
+    .method('shrink', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
         return [];
     });

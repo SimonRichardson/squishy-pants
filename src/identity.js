@@ -192,51 +192,39 @@ squishy = squishy
     .property('isIdentityOf', isIdentityOf)
     .property('isIdentityT', isIdentityT)
     .property('isIdentityTOf', isIdentityTOf)
-    .method('arb', isIdentityOf, function(a, b) {
-        return Identity(this.arb(a.type, b - 1));
-    })
-    .method('ap', isIdentity, function(a, b) {
-        return a.ap(b);
-    })
-    .method('concat', isIdentity, function(a, b) {
-        return a.concat(b);
-    })
-    .method('chain', isIdentity, function(a, b) {
-        return a.chain(b);
-    })
-    .method('empty', strictEquals(Identity), function() {
-        return Identity.empty();
-    })
-    .method('equal', isIdentity, function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', isIdentity, function(a, b) {
-        return a.map(b);
-    })
-    .method('negate', isIdentity, function(a) {
-        return a.negate();
-    })
     .method('of', strictEquals(Identity), function(x) {
         return Identity.of(x);
     })
-    .method('shrink', isIdentity, function(a) {
-        return [];
+    .method('empty', strictEquals(Identity), function(x) {
+        return Identity.empty();
+    })
+
+    .method('arb', isIdentityOf, function(a, b) {
+        return Identity(this.arb(a.type, b - 1));
     })
     .method('arb', isIdentityTOf, function(a, b) {
         return Identity.IdentityT(this.arb(identityOf(a.type), b - 1));
     })
-    .method('ap', isIdentityT, function(a, b) {
+
+    .method('concat', isIdentity, function(a, b) {
+        return a.concat(b);
+    })
+    .method('negate', isIdentity, function(a) {
+        return a.negate();
+    })
+
+    .method('ap', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
         return a.ap(b);
     })
-    .method('chain', isIdentityT, function(a, b) {
-        return a.chain(b);
-    })
-    .method('equal', isIdentityT, function(a, b) {
+    .method('equal', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
         return a.equal(b);
     })
-    .method('map', isIdentityT, function(a, b) {
+    .method('chain', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+        return a.chain(b);
+    })
+    .method('map', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isIdentityT, function(a) {
+    .method('shrink', squishy.liftA2(or, isIdentity, isIdentityT), function(a) {
         return [];
     });

@@ -252,42 +252,33 @@ squishy = squishy
     .property('isPromise', isPromise)
     .property('isPromiseOf', isPromiseOf)
     .property('isPromiseTOf', isPromiseTOf)
-    .method('empty', strictEquals(Promise), function() {
-        return Promise.empty();
-    })
     .method('of', strictEquals(Promise), function(x) {
         return Promise.of(x);
     })
-    .method('chain', isPromise, function(a, b) {
-        return a.chain(b);
+    .method('empty', strictEquals(Promise), function() {
+        return Promise.empty();
     })
+
+    .method('arb', isPromiseOf, function(a, b) {
+        return Promise.of(this.arb(a.type, b - 1));
+    })
+    .method('arb', isPromiseTOf, function(a, b) {
+        return Promise.PromiseT(this.arb(promiseOf(a.type), b - 1));
+    })
+
     .method('expand', isPromise, function(a, b) {
         return a.expand(b);
     })
     .method('extract', isPromise, function(a) {
         return a.extract();
     })
-    .method('map', isPromise, function(a, b) {
-        return a.map(b);
-    })
-    .method('arb', isPromiseOf, function(a, b) {
-        return Promise.of(this.arb(a.type, b - 1));
-    })
-    .method('shrink', isPromise, function(a, b) {
-        return [];
-    })
-    .method('arb', isPromiseTOf, function(a, b) {
-        return Promise.PromiseT(this.arb(promiseOf(a.type), b - 1));
-    })
-    .method('chain', isPromiseT, function(a, b) {
+
+    .method('chain', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
         return a.chain(b);
     })
-    .method('equal', isPromiseT, function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', isPromiseT, function(a, b) {
+    .method('map', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
         return a.map(b);
     })
-    .method('shrink', isPromiseT, function(a) {
+    .method('shrink', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
         return [];
     });
