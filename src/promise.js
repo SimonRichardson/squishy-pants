@@ -156,8 +156,6 @@ var isPromise = isInstanceOf(Promise);
 //
 //  * `chain(f)` - chain values
 //  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//  * `equal(a)` - `true` if `a` is equal to `this`
 //
 
 var PromiseT = tagged('PromiseT', ['run']);
@@ -167,6 +165,7 @@ Promise.PromiseT = transformer(PromiseT);
 //
 //  ### fork(a, b)
 //
+//  Open up fork from the reader transformer
 //
 PromiseT.prototype.fork = function(a, b) {
     return this.run.fork(a, b);

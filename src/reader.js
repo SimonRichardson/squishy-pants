@@ -84,6 +84,27 @@ Reader.prototype.map = function(f) {
 var isReader = isInstanceOf(Reader);
 
 //
+//  ## Reader Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//
+
+var ReaderT = tagged('ReaderT', ['run']);
+
+Reader.ReaderT = transformer(ReaderT);
+
+//
+//  ## isReaderT(a)
+//
+//  Returns `true` if `a` is `ReaderT`.
+//
+var isReaderT = isInstanceOf(ReaderT);
+
+//
 //  ## readerOf(type)
 //
 //  Sentinel value for when an reader of a particular type is needed:
@@ -102,6 +123,26 @@ function readerOf(type) {
 //  Returns `true` if `a` is an instance of `readerOf`.
 //
 var isReaderOf = isInstanceOf(readerOf);
+
+//
+//  ## readerTOf(type)
+//
+//  Sentinel value for when an reader of a particular type is needed:
+//
+//       readerTOf(Number)
+//
+function readerTOf(type) {
+    var self = getInstance(this, readerTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isReaderTOf(a)
+//
+//  Returns `true` if `a` is an instance of `readerTOf`.
+//
+var isReaderTOf = isInstanceOf(readerTOf);
 
 //
 //  ### Fantasy Overload
@@ -131,9 +172,12 @@ Reader.lens = function() {
 //
 squishy = squishy
     .property('Reader', Reader)
+    .property('ReaderT', ReaderT)
     .property('readerOf', readerOf)
+    .property('readerTOf', readerTOf)
     .property('isReader', isReader)
     .property('isReaderOf', isReaderOf)
+    .property('isReaderTOf', isReaderTOf)
     .method('of', strictEquals(Reader), function(x) {
         return Reader.of(x);
     })
@@ -150,5 +194,23 @@ squishy = squishy
         return Reader.of(this.arb(a.type, b - 1));
     })
     .method('shrink', isReader, function(a, b) {
+        return [];
+    })
+    .method('arb', isReaderTOf, function(a, b) {
+        return Reader.ReaderT(this.arb(readerOf(a.type), b - 1));
+    })
+    .method('ap', isReaderT, function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', isReaderT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isReaderT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isReaderT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isReaderT, function(a) {
         return [];
     });
