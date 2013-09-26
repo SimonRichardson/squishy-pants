@@ -277,3 +277,78 @@ exports.list = {
         [_.listOf(_.AnyVal), _.AnyVal]
     )
 };
+
+
+exports.listT = {
+    'when testing listT ap should return correct value': _.check(
+        function(a) {
+            var monad = _.List.of(a),
+                transformer = _.List.ListT(monad),
+                actual = transformer(_.List.of(_.inc)).ap(transformer(monad));
+
+            return _.expect(actual).toBe(transformer(_.List.of(a + 1)));
+        },
+        [_.AnyVal]
+    ),
+    'when testing listT map should return correct value': _.check(
+        function(a) {
+            var listT = _.List.ListT(_.List.of(a)),
+                actual = listT(_.List.of(a)).map(_.inc),
+                expected = listT(_.List.of(a + 1));
+
+            return _.expect(actual).toBe(expected);
+        },
+        [_.AnyVal]
+    ),
+    'when testing listT chain should return correct value': _.check(
+        function(a, b) {
+            var listT0 = _.List.ListT(_.List.of(a)),
+                listT1 = _.List.ListT(_.List.of(b)),
+                actual = listT0(_.List.of(a)).chain(
+                    function() {
+                        return listT1(_.List.of(b));
+                    }
+                ),
+                expected = listT0(_.List.of(b));
+
+            return _.expect(actual).toBe(expected);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when creating a listT and using chain should be correct value': _.check(
+        function(a, b) {
+            var monad = _.List.of(1),
+                transformer = _.List.ListT(monad);
+
+            return _.expect(
+                transformer(_.List.of(b)).chain(function(x) {
+                    return _.List.ListT(monad).of(x + 1);
+                })
+            ).toBe(_.List.ListT(monad).of(b + 1));
+        },
+        [Number, Number]
+    ),
+    'when creating a listT using listTOf and chain should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                a(_.List.of(b)).chain(function(x) {
+                    return _.List.ListT(_.List.of(1)).of(x + 1);
+                })
+            ).toBe(_.List.ListT(_.List.of(1)).of(b + 1));
+        },
+        [_.listTOf(Number), Number]
+    ),
+    'when creating a listT using listTOf and map should be correct value': _.check(
+        function(a, b) {
+            return _.expect(
+                _.map(
+                    a(_.List.of(b)),
+                    function(x) {
+                        return x + 1;
+                    }
+                )
+            ).toBe(_.List.ListT(_.List.of(1)).of(b + 1));
+        },
+        [_.listTOf(Number), Number]
+    )
+};

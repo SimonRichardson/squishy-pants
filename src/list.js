@@ -605,11 +605,51 @@ List.Nil.isEmpty = true;
 List.Nil.isNonEmpty = false;
 
 //
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `List.Cons` with value of `x`.
+//
+List.of = function(x) {
+    return List.Cons(x, List.Nil);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `List.Nil`.
+//
+List.empty = function() {
+    return List.Nil;
+};
+
+//
 //  ## isList(a)
 //
 //  Returns `true` if `a` is a `Cons` or `Nil`.
 //
 var isList = isInstanceOf(List);
+
+//
+//  ## List Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var ListT = tagged('ListT', ['run']);
+
+List.ListT = transformer(ListT);
+
+//
+//  ## isListT(a)
+//
+//  Returns `true` if `a` is `ListT`.
+//
+var isListT = isInstanceOf(ListT);
 
 //
 //  ## listOf(type)
@@ -630,6 +670,26 @@ function listOf(type) {
 //  Returns `true` if `a` is an instance of `listOf`.
 //
 var isListOf = isInstanceOf(listOf);
+
+//
+//  ## listTOf(type)
+//
+//  Sentinel value for when an list of a particular type is needed:
+//
+//       listTOf(Number)
+//
+function listTOf(type) {
+    var self = getInstance(this, listTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isListTOf(a)
+//
+//  Returns `true` if `a` is an instance of `listTOf`.
+//
+var isListTOf = isInstanceOf(listTOf);
 
 //
 //  ### Fantasy Overload
@@ -691,22 +751,25 @@ List.Cons.lens = function() {
 //
 squishy = squishy
     .property('List', List)
+    .property('ListT', ListT)
     .property('Cons', List.Cons)
     .property('Nil', List.Nil)
     .property('isList', isList)
     .property('listOf', listOf)
+    .property('listTOf', listTOf)
     .property('isListOf', isListOf)
+    .property('isListTOf', isListTOf)
     .property('listRange', List.range)
     .method('arb', isListOf, function(a, b) {
-        var accum = [],
+        var accum = List.Nil,
             length = this.randomRange(0, b),
             i;
 
         for(i = 0; i < length; i++) {
-            accum.push(this.arb(a.type, b - 1));
+            accum = accum.prepend(this.arb(a.type, b - 1));
         }
 
-        return List.fromArray(accum);
+        return accum.reverse();
     })
     .method('shrink', isList, function(a) {
         var accum = [List.Nil],
@@ -776,4 +839,19 @@ squishy = squishy
     })
     .method('toArray', isList, function(a) {
         return a.toArray();
+    })
+    .method('arb', isListTOf, function(a, b) {
+        return List.ListT(this.arb(listOf(a.type), b - 1));
+    })
+    .method('chain', isListT, function(a, b) {
+        return a.chain(b);
+    })
+    .method('equal', isListT, function(a, b) {
+        return a.equal(b);
+    })
+    .method('map', isListT, function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', isListT, function(a) {
+        return [];
     });

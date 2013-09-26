@@ -5,12 +5,14 @@
 //
 
 //
-//  ## IO(f)
+//   ## IO(f)
 //
-//  Pure wrapper around a side-effecting `f` function.
+//   Pure wrapper around a side-effecting `f` function.
 //
-//  * perform() - action to be called a single time per program
-//  * flatMap(f) - monadic flatMap/bind
+//   * `unsafePerform()` - action to be called a single time per program
+//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `map(f)` - Functor map
 //
 var IO = tagged('IO', ['unsafePerform']);
 
@@ -20,12 +22,24 @@ IO.of = function(x) {
     });
 };
 
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of IO
+//  Applicative ap(ply)
+//
 IO.prototype.ap = function(a) {
     return this.chain(function(f) {
         return squishy.map(a, f);
     });
 };
 
+//
+//  ### chain(f)
+//
+//  Bind through the f of an IO
+//  Monadic flatMap/bind
+//
 IO.prototype.chain = function(f) {
     var env = this;
     return IO(function() {
@@ -33,6 +47,12 @@ IO.prototype.chain = function(f) {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Map on the f of this IO.
+//  Functor map
+//
 IO.prototype.map = function(f) {
     return this.chain(function(a) {
         return IO.of(f(a));
@@ -46,6 +66,14 @@ IO.prototype.map = function(f) {
 //
 var isIO = isInstanceOf(IO);
 
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(IO.prototype);
+
+//
+//  append methods to the squishy environment.
+//
 squishy = squishy
     .property('IO', IO)
     .property('isIO', isIO)

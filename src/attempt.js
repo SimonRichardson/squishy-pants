@@ -24,7 +24,7 @@
 //
 //   Represents a Failure.
 //
-//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `ap(b)` - Applicative ap(ply)
 //   * `chain(f)` - Monadic flatMap/bind
 //   * `equal(a)` - `true` if `a` is equal to `this`
 //   * `extract()` - extract the value from attempt
@@ -45,7 +45,7 @@ var Attempt = taggedSum('Attempt', {
 });
 
 //
-//  ### ap(b, concat)
+//  ### ap(b)
 //
 //  Apply a function in the environment of the success of this attempt,
 //  accumulating errors
@@ -446,7 +446,7 @@ squishy = squishy
         return a.toStream();
     })
     .method('arb', isAttemptTOf, function(a, b) {
-        return Attempt.AttemptT(Attempt.of(this.arb(a.type, b - 1)));
+        return Attempt.AttemptT(this.arb(successOf(a.type), b - 1));
     })
     .method('ap', isAttemptT, function(a, b) {
         return a.ap(b);
