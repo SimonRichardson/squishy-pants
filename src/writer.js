@@ -27,7 +27,9 @@ Writer.of = function(a) {
 //  Constructor `empty` Monad creating a `Writer`.
 //
 Writer.empty = function() {
-    return Writer(nothing);
+    return Writer(function() {
+        return Tuple2(null, '');
+    });
 };
 
 //
@@ -48,9 +50,9 @@ Writer.put = function(t) {
 //  Applicative ap(ply)
 //
 Writer.prototype.ap = function(a) {
-    return this.chain(function(tup) {
-        return squishy.map(a, function(val) {
-            return Tuple2(tup._1(val._1), val._2);
+    return this.chain(function(f) {
+        return squishy.map(a, function(b) {
+            return f(b);
         });
     });
 };
@@ -65,7 +67,7 @@ Writer.prototype.chain = function(f) {
     var env = this;
     return Writer(function(e) {
         var a = env.run(e),
-            b = f(a).run(e);
+            b = f(a._1).run(a._1);
 
         return Tuple2(b._1, squishy.concat(a._2, b._2));
     });
@@ -79,7 +81,7 @@ Writer.prototype.chain = function(f) {
 //
 Writer.prototype.map = function(f) {
     return this.chain(function(a) {
-        return Writer.put(f(a));
+        return Writer.of(f(a));
     });
 };
 

@@ -431,7 +431,7 @@ function dec(x) {
 //  the constructor.
 //
 function retrieveMethod(a, n) {
-    return a[n] || a.constructor[n];
+    return a[n] || a.constructor[n] || (a.prototype && a.prototype[n]);
 }
 
 //
