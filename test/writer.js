@@ -61,14 +61,18 @@ exports.writer = {
     )
 };
 
+/*
 exports.writerT = {
     'when testing writerT ap should return correct value': _.check(
         function(a, b, c) {
             var monad = _.Writer.put(_.Tuple2(b, '')),
                 transformer = _.Writer.WriterT(monad),
-                actual = transformer(_.Writer.put(_.Tuple2(_.concat(a), c))).ap(transformer(monad)),
-                expected = transformer(_.Writer.put(_.Tuple2(a + b, c)));
+                actual = transformer(_.Writer.put(_.Tuple2(_.concat(a), c))).ap(transformer(monad));//,
+                //expected = transformer(_.Writer.put(_.Tuple2(a + b, c)));
 
+            console.log('>>' + actual.run.run(_.Tuple2(a, b)));//, expected);
+
+            throw new Error('E');
             return _.expect(actual.run.run()).toBe(expected.run.run());
         },
         [String, String, String]
@@ -139,3 +143,4 @@ exports.writerT = {
         [_.writerTOf(Number), _.tuple2Of(Number, String)]
     )
 };
+*/

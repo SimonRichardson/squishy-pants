@@ -28,14 +28,14 @@ var transformer = function(ctor) {
         //  Constructor `empty` Monad creating `ctor` for the
         //  value of `M.empty()`.
         //
-        Identity.empty = function() {
+        ctor.empty = function() {
             return ctor(empty(M)());
         };
 
         //
         //  ### lift(b)
         //
-        //  Lift the `Identity` to a new `ctor`
+        //  Lift the `ctor` to a new `ctor`
         //
         ctor.lift = ctor;
 
@@ -48,7 +48,9 @@ var transformer = function(ctor) {
         //
         if (isFunction(retrieveMethod(M, 'ap'))) {
             ctor.prototype.ap = function(a) {
-                return ctor(this.run.ap(a.run));
+                return this.chain(function(f) {
+                    return squishy.map(a, f);
+                });
             };
         }
 
@@ -85,7 +87,9 @@ var transformer = function(ctor) {
         //
         if (isFunction(retrieveMethod(M, 'map'))) {
             ctor.prototype.map = function(f) {
-                return ctor(this.run.map(f));
+                return this.chain(function(a) {
+                    return ctor.of(f(a));
+                });
             };
         }
 

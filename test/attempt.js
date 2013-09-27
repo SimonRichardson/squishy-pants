@@ -266,7 +266,7 @@ exports.attemptT = {
                 transformer = _.Attempt.AttemptT(monad),
                 actual = transformer(_.Failure(a)).ap(transformer(monad));
 
-            return _.expect(actual).toBe(transformer(_.Failure(_.concat(a, a))));
+            return _.expect(actual).toBe(transformer(_.Failure(a)));
         },
         [_.arrayOf(_.AnyVal)]
     ),
