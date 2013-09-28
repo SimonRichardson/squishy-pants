@@ -2,7 +2,7 @@ var Parser = tagged('Parser', ['run']);
 
 Parser.of = function(a) {
     return Parser(function() {
-        return Tuple2(a, 0);
+        return Tuple3(a, 0, '');
     });
 };
 
@@ -17,41 +17,40 @@ Parser.regexp = function(r) {
         var match = r.exec(stream.slice(index)),
             result = match[0];
 
-        return Tuple2(result, index + result.length);
+        return Tuple3(stream, index + result.length, result);
     });
 };
 
 Parser.prototype.chain = function(f) {
     var env = this;
-    return Parser(function(stream, index) {
-        var a = env.run(stream, index),
-            b = f(a._1, a._2);
+    return Parser(function(stream, index, result) {
+        var a = env.run(stream, index, result),
+            b = f(a._1, a._2, a._3);
 
-        return b.run(a._1, a._2);
+        return b.run(a._1, a._2, a._3);
     });
 };
 
 Parser.prototype.map = function(f) {
-    return this.chain(function(stream, index) {
-        return Parser.put(Tuple2(f(stream), index));
+    return this.chain(function(stream, index, result) {
+        return Parser.put(Tuple3(stream, index, f(result)));
     });
 };
 
 Parser.prototype.skip = function(a) {
-    return this.chain(function(stream, index) {
-        return a.run(stream, index);
+    return this.chain(function(stream, index, result) {
+        return a.run(stream, index, result);
     });
 };
 
 Parser.prototype.parse = function(a) {
-    return this.skip(eof).run(a, 0)._1;
+    return this.skip(eof).run(a, 0, '')._3;
 };
 
-var eof = Parser(function(stream, index) {
+var eof = Parser(function(stream, index, result) {
     return Parser(function() {
-        var result = index < stream.length ? stream : null;
-
-        return Tuple2(result, index);
+        var a = index < stream.length ? stream : null;
+        return Tuple3(a, index, result);
     });
 });
 
