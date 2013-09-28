@@ -2,7 +2,7 @@ var Parser = tagged('Parser', ['run']);
 
 Parser.of = function(a) {
     return Parser(function() {
-        return Tuple3(a, 0, '');
+        return Tuple3(a, 0, ['']);
     });
 };
 
@@ -17,7 +17,7 @@ Parser.regexp = function(r) {
         var match = r.exec(stream.slice(index)),
             result = match[0];
 
-        return Tuple3(stream, index + result.length, result);
+        return Tuple3(stream, index + result.length, [result]);
     });
 };
 
@@ -27,13 +27,17 @@ Parser.prototype.chain = function(f) {
         var a = env.run(stream, index, result),
             b = f(a._1, a._2, a._3);
 
-        return b.run(a._1, a._2, a._3);
+        return b.run(a._1, a._2, squishy.concat(result, a._3));
     });
 };
 
 Parser.prototype.map = function(f) {
     return this.chain(function(stream, index, result) {
-        return Parser.put(Tuple3(stream, index, f(result)));
+        var numOfLast = result.length - 1,
+            lens = Lens.arrayLens(numOfLast).run(result),
+            outcome = lens.set(f(result[numOfLast]));
+
+        return Parser.put(Tuple3(stream, index, outcome));
     });
 };
 
@@ -44,7 +48,7 @@ Parser.prototype.skip = function(a) {
 };
 
 Parser.prototype.parse = function(a) {
-    return this.skip(eof).run(a, 0, '')._3;
+    return this.skip(eof).run(a, 0, [])._3;
 };
 
 var eof = Parser(function(stream, index, result) {
