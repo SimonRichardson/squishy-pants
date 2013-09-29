@@ -16,6 +16,10 @@ Parser.regexp = function(r) {
     return Parser(function c(stream, index, result) {
         var sliced = stream.slice(index),
             match = r.exec(sliced),
+            extract = result.match({
+                Success: identity,
+                Failure: identity
+            }),
             matched,
             length,
             value;
@@ -26,13 +30,13 @@ Parser.regexp = function(r) {
 
             matched = result.match({
                 Success: function(x) {
-                    return Attempt.of(squishy.concat(x, [value]));
+                    return Attempt.of(squishy.concat(extract, [value]));
                 },
                 Failure: constant(result)
             });
         } else {
             length = 0;
-            matched = Attempt.Failure([sliced, index]);
+            matched = Attempt.Failure(squishy.concat(extract, [[sliced, index]]));
         }
 
         return Tuple3(stream, index + length, matched);
@@ -57,7 +61,8 @@ Parser.prototype.chain = function(f) {
                 }));
             },
             Failure: function c4(x) {
-                return Tuple3(a._1, a._2, a._3);
+                var next = f(a._1, a._2, a._3);
+                return next.run(a._1, a._2, a._3);
             }
         });
     });
@@ -88,8 +93,19 @@ Parser.prototype.map = function(f) {
     });
 };
 
-Parser.prototype.or = function(a) {
-
+Parser.prototype.orElse = function(a) {
+    var env = this;
+    return this.chain(function o1(stream, index, result) {
+        return result.match({
+            Success: function() {
+                return Parser.put(Tuple3(stream, index, result));
+            },
+            Failure: function(x) {
+                var outcome = a.run(stream, index, Attempt.of(x.slice(0, x.length - 2)));
+                return Parser.put(Tuple3(outcome._1, outcome._2, outcome._3));
+            }
+        });
+    });
 };
 
 Parser.prototype.skip = function(a) {

@@ -15,9 +15,10 @@ exports.parser = {
         var semiColon = _.Parser.regexp(/^;/);
 
         var parser = _.Parser.regexp(/^-?[0-9\\.]+/);
+        var char = _.Parser.regexp(/^[a-z]/);
 
         var number = parser.map(toInt).map(toFloat);
-        var result = number.parse('1.11');
+        var result = number.orElse(char).parse('1.1');
 
         console.log(result);
 
