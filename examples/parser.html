@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <title>State with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../bin/squishy-pants.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      function toInt(a) {
+          return ~~a;
+      }
+
+      function toFloat(a) {
+          return a.toFixed(2);
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML += x + '<br />';
+              })),
+              logger = _.curry(function(prefix, value) {
+                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              });
+
+
+          var whitespace = _.Parser.regexp(/^\s+/);
+          var semiColon = _.Parser.regexp(/^;/);
+
+          var parser = _.Parser.regexp(/^-?[0-9\\.]+/);
+          var char = _.Parser.regexp(/^[a-z]/);
+          var openBracket = _.Parser.string('(');
+
+          var number = parser.map(toInt).map(toFloat);
+          var result = openBracket.skip(whitespace).chain(function(a, b, c) {
+              return number.orElse(char).skip(whitespace);
+          });
+
+          logger('--', result.parse('( 1 ').extract());
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>State using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert">
+              <pre>
+              </pre>
+          </div>
+          <hr />
+          <p>Becomes:</p>
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -16,13 +16,14 @@ exports.parser = {
 
         var parser = _.Parser.regexp(/^-?[0-9\\.]+/);
         var char = _.Parser.regexp(/^[a-z]/);
+        var openBracket = _.Parser.string('(');
 
         var number = parser.map(toInt).map(toFloat);
-        var result = number.orElse(char).parse('1.1');
+        var result = openBracket.skip(whitespace).chain(function(a, b, c) {
+            return number.orElse(char).skip(whitespace);
+        });
 
-        console.log(result);
-
-        test.ok(true);
+        test.ok(_.expect(result.parse('( 1 ')).toBe(_.Attempt.of(['(', '1.00'])));
         test.done();
     }
 };

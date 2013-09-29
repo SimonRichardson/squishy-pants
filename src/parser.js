@@ -6,6 +6,12 @@ Parser.of = function(a) {
     });
 };
 
+Parser.empty = function() {
+    return Parser(function(a) {
+        return Tuple3(a, 0, Attempt.of([]));
+    });
+};
+
 Parser.put = function(a) {
     return Parser(function() {
         return a;
@@ -26,20 +32,38 @@ Parser.regexp = function(r) {
 
         if (match) {
             value = match[0];
-            length = value.length;
 
-            matched = result.match({
+            return Tuple3(stream, index + value.length, result.match({
                 Success: function(x) {
                     return Attempt.of(squishy.concat(extract, [value]));
                 },
                 Failure: constant(result)
-            });
+            }));
         } else {
-            length = 0;
-            matched = Attempt.Failure(squishy.concat(extract, [[sliced, index]]));
+            return Tuple3(stream, index, Attempt.Failure(squishy.concat(extract, [[sliced, index]])));
         }
+    });
+};
 
-        return Tuple3(stream, index + length, matched);
+Parser.string = function(value) {
+    return Parser(function(stream, index, result) {
+        var length = value.length,
+            sliced = stream.slice(index, length),
+            extract = result.match({
+                Success: identity,
+                Failure: identity
+            });
+
+        if (sliced === value) {
+            return Tuple3(stream, index + length, result.match({
+                Success: function(x) {
+                    return Attempt.of(squishy.concat(extract, [value]));
+                },
+                Failure: constant(result)
+            }));
+        } else {
+            return Tuple3(stream, index, Attempt.Failure(squishy.concat(extract, [[sliced, index]])));
+        }
     });
 };
 
@@ -47,15 +71,12 @@ Parser.prototype.chain = function(f) {
     var env = this;
     return Parser(function(stream, index, result) {
         var a = env.run(stream, index, result);
-
         return a._3.match({
             Success: function(x) {
-
                 var next = f(a._1, a._2, a._3);
-
                 return next.run(a._1, a._2, result.match({
                     Success: function(y) {
-                        return squishy.concat(y, x);
+                        return Attempt.of(squishy.concat(x, y));
                     },
                     Failure: identity
                 }));
