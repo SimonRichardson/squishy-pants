@@ -1,4 +1,5 @@
-var _ = require('../../bin/squishy-pants');
+var _ = require('../../bin/squishy-pants'),
+    NonEmptyAlphaChar = {};
 
 _ = _
     .property('check', _.curry(function(property, args, test) {
@@ -92,6 +93,12 @@ _ = _
         test.done();
     }))
     .property('badLeft', _.error("Got Left side"))
-    .property('badRight', _.error("Got Right side"));
+    .property('badRight', _.error("Got Right side"))
+    .property('NonEmptyAlphaChar', NonEmptyAlphaChar)
+    .method('arb', _.strictEquals(NonEmptyAlphaChar), function(a, s) {
+      var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
+          rnd = _.randomIntRangeWithout(33, 255, blacklist);
+      return String.fromCharCode(rnd);
+    });
 
 exports = module.exports = _;

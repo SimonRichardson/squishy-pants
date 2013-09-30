@@ -60,8 +60,7 @@ Parser.prototype.chain = function(f) {
                 return next.run(a._1, a._2, values, attempt);
             },
             Failure: function(x) {
-                var next = f(a._1, a._2, a._3, a._4);
-                return next.run(a._1, a._2, a._3, a._4);
+                return a;
             }
         });
     });
@@ -112,7 +111,7 @@ Parser.prototype.parse = function(stream) {
         Success: function() {
             return Attempt.of(result._3);
         },
-        Failure: identity
+        Failure: constant(result._4)
     });
 };
 

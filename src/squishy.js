@@ -407,6 +407,19 @@ function randomRange(a, b) {
 }
 
 //
+//  ## randomIntRangeWithout(a, b, c)
+//
+//        randomIntRangeWithout(1, 100, [50, 51])
+//
+//  Returns a random integer between the range, but excluding c
+//
+function randomIntRangeWithout(a, b, c) {
+    var x = Math.floor(randomRange(a, b));
+    return c.indexOf(x) < 0 ? x : randomIntRangeWithout(a, b, c);
+}
+
+
+//
 //  ## inc(a)
 //
 //  Increments the number by 1
@@ -528,6 +541,7 @@ squishy = squishy
     .property('fill', fill)
     .property('range', range)
     .property('randomRange', randomRange)
+    .property('randomIntRangeWithout', randomIntRangeWithout)
     .property('inc', inc)
     .property('dec', dec)
     .property('point', point)
