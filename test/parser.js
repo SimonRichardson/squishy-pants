@@ -14,16 +14,21 @@ exports.parser = {
         var whitespace = _.Parser.regexp(/^\s+/);
         var semiColon = _.Parser.regexp(/^;/);
 
-        var parser = _.Parser.regexp(/^-?[0-9\\.]+/);
+        var float = _.Parser.regexp(/^[\+\-]?[0-9\\.]+/);
         var char = _.Parser.regexp(/^[a-z]/);
         var openBracket = _.Parser.string('(');
+        var closeBracket = _.Parser.string(')');
+        var one = _.Parser.string('1');
 
-        var number = parser.map(toInt).map(toFloat);
-        var result = openBracket.skip(whitespace).chain(function(a, b, c) {
-            return number.orElse(char).skip(whitespace);
+        var floatRound = float.map(toInt).map(toFloat);
+
+        var result = openBracket.skip(whitespace).chain(function(a, b, c, d) {
+            return floatRound.skip(whitespace).chain(function(a, b, c, d) {
+                return closeBracket;
+            });
         });
 
-        test.ok(_.expect(result.parse('( 1 ')).toBe(_.Attempt.of(['(', '1.00'])));
+        test.ok(_.expect(result.parse('( 1 )')).toBe(_.Attempt.of(['(', '1.00', ')'])));
         test.done();
     }
 };

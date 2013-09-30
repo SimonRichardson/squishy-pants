@@ -32,19 +32,25 @@
               });
 
 
-          var whitespace = _.Parser.regexp(/^\s+/);
-          var semiColon = _.Parser.regexp(/^;/);
+              var whitespace = _.Parser.regexp(/^\s+/);
+              var semiColon = _.Parser.regexp(/^;/);
 
-          var parser = _.Parser.regexp(/^-?[0-9\\.]+/);
-          var char = _.Parser.regexp(/^[a-z]/);
-          var openBracket = _.Parser.string('(');
+              var float = _.Parser.regexp(/^[\+\-]?[0-9\\.]+/);
+              var char = _.Parser.regexp(/^[a-z]/);
+              var openBracket = _.Parser.string('(');
+              var closeBracket = _.Parser.string(')');
+              var one = _.Parser.string('1');
 
-          var number = parser.map(toInt).map(toFloat);
-          var result = openBracket.skip(whitespace).chain(function(a, b, c) {
-              return number.orElse(char).skip(whitespace);
-          });
+              var floatRound = one;//.map(toInt).map(toFloat);
 
-          logger('--', result.parse('( 1 ').extract());
+
+              var result = openBracket.chain(function() {
+                  return one.chain(function() {
+                      return closeBracket;
+                  });
+              });
+
+          logger('--', JSON.stringify(result.parse('(1)')));
       });
 
     </script>
