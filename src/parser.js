@@ -77,11 +77,34 @@ Parser.prototype.chain = function(f) {
             },
             Failure: function(x) {
                 var next = f(stream, index, result, a._4);
-                var b = next.run(stream, index, result, a._4);
-                return b;
-                // return a;
+                return next.run(stream, index, result, a._4);
             }
         });
+    });
+};
+
+Parser.prototype.many = function() {
+    var env = this;
+    return this.chain(function(stream, index, result, attempt) {
+        var outcome = attempt,
+            values = result,
+            expr;
+
+        // TODO: Make this recursive!
+        while(outcome.isSuccess) {
+            expr = env.run(stream, index, values, outcome);
+
+            if (outcome.isFailure) {
+                break;
+            }
+
+            values = expr._3;
+            outcome = expr._4;
+
+            index += 1;
+        }
+
+        return Parser.put(Tuple4(stream, index, values, Attempt.of([])));
     });
 };
 
