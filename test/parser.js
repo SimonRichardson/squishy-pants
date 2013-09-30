@@ -94,11 +94,7 @@ exports.parser = {
                 expr = form.orElse(atom),
                 value = '(add 1 2)';
 
-            console.log(expr.parse(value));
-
-            throw new Error('asd');
-
-            return _.expect(expr.parse(value)).toBe(_.Success(['(', 'add', '1', '2', ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(['(', 'add', 1])); //, '2', ')']));
         },
         [_.NumericOrAlphaChar]
     )
