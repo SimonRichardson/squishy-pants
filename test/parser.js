@@ -1,4 +1,5 @@
 var _ = require('./lib/test'),
+    alpha = _.Parser.regexp(/^[a-zA-Z]+/),
     number = _.Parser.regexp(/^[\+\-]?\d+(\.\d+)?/),
     whitespace = _.Parser.regexp(/^\s+/),
     leftBracket = _.Parser.string('('),
@@ -11,10 +12,6 @@ function toInt(a) {
 function toFloat(a) {
     return a.toFixed(2);
 }
-
-// Append to squishy
-_ = _
-  .property('xcheck', function() {});
 
 exports.parser = {
     'when testing a number in brackets should return correct value': _.check(
@@ -57,8 +54,24 @@ exports.parser = {
                 }),
                 value = '(' + a + ')';
 
-            return _.expect(parser.parse(value)).toBe(_.Failure([[a + ')', 1]]));
+            return _.expect(parser.parse(value)).toBe(_.Failure([[a + ')', 1], [a, 1]]));
         },
         [_.NonEmptyAlphaChar]
+    ),
+    'when testing a number or alpha character in brackets should return correct value': _.check(
+        function(a) {
+            var round = number.map(toInt).map(toFloat),
+                parser = leftBracket.skip(whitespace).chain(function(a, b, c, d) {
+                    return round.orElse(alpha).skip(whitespace).chain(function(a, b, c, d) {
+                        return rightBracket;
+                    });
+                }),
+                value = '(' + a + ')',
+                possibleNumber = parseFloat(a, 10),
+                expected = _.isNaN(possibleNumber) ? a : toFloat(toInt(possibleNumber)).toString();
+
+            return _.expect(parser.parse(value)).toBe(_.Success(['(', expected, ')']));
+        },
+        [_.NumericOrAlphaChar]
     )
 };

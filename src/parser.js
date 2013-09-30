@@ -24,6 +24,7 @@ Parser.regexp = function(r) {
             match = r.exec(sliced),
             matched,
             length,
+            errors,
             value;
 
         if (match) {
@@ -31,7 +32,14 @@ Parser.regexp = function(r) {
 
             return Tuple4(stream, index + value.length, result, Attempt.of([value]));
         } else {
-            return Tuple4(stream, index, result, Attempt.Failure([[sliced, index]]));
+            errors = [[sliced, index]];
+
+            return Tuple4(stream, index, result, Attempt.Failure(attempt.fold(
+                constant(errors),
+                function(x) {
+                    return squishy.concat(x, errors);
+                }
+            )));
         }
     });
 };
@@ -39,12 +47,20 @@ Parser.regexp = function(r) {
 Parser.string = function(value) {
     return Parser(function(stream, index, result, attempt) {
         var length = value.length,
-            sliced = stream.slice(index, index + length);
+            sliced = stream.slice(index, index + length),
+            errors;
 
         if (sliced === value) {
             return Tuple4(stream, index + length, result, Attempt.of([sliced]));
         } else {
-            return Tuple4(stream, index, result, Attempt.Failure([[sliced, index]]));
+            errors = [[sliced, index]];
+
+            return Tuple4(stream, index, result, Attempt.Failure(attempt.fold(
+                constant(errors),
+                function(x) {
+                    return squishy.concat(x, errors);
+                }
+            )));
         }
     });
 };
@@ -60,7 +76,10 @@ Parser.prototype.chain = function(f) {
                 return next.run(a._1, a._2, values, attempt);
             },
             Failure: function(x) {
-                return a;
+                var next = f(stream, index, result, a._4);
+                var b = next.run(stream, index, result, a._4);
+                return b;
+                // return a;
             }
         });
     });
@@ -88,11 +107,11 @@ Parser.prototype.orElse = function(a) {
     return this.chain(function(stream, index, result, attempt) {
         return attempt.match({
             Success: function() {
-                return Parser.put(Tuple4(stream, index, result, attempt));
+                return Parser.put(Tuple4(stream, index, result, Attempt.of([])));
             },
             Failure: function(x) {
-                var outcome = a.run(stream, index, result, Attempt.of(x.slice(0, x.length - 2)));
-                return Parser.put(Tuple4(outcome._1, outcome._2, result, outcome._4));
+                var outcome = a.run(stream, index, result, Attempt.of([]));
+                return Parser.put(Tuple4(outcome._1, outcome._2, outcome._3, outcome._4));
             }
         });
     });
@@ -100,8 +119,15 @@ Parser.prototype.orElse = function(a) {
 
 Parser.prototype.skip = function(a) {
     return this.chain(function(stream, index, result, attempt) {
-        var outcome = a.run(stream, index, result, attempt);
-        return Parser.put(Tuple4(outcome._1, outcome._2, result, Attempt.of([])));
+        return attempt.fold(
+            function(x) {
+                var outcome = a.run(stream, index, result, attempt);
+                return Parser.put(Tuple4(outcome._1, outcome._2, result, Attempt.of([])));
+            },
+            function(x) {
+                return Parser.put(Tuple4(stream, index, result, attempt));
+            }
+        );
     });
 };
 

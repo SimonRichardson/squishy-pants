@@ -1,7 +1,14 @@
 var _ = require('../../bin/squishy-pants'),
-    NonEmptyAlphaChar = {};
+    NonEmptyAlphaChar = {},
+    NumericOrAlphaChar = {};
 
 _ = _
+    .property('xcheck', function(){
+        return function(test) {
+            console.log('Next test disabled via `xcheck`, skipping...');
+            test.done();
+        };
+    })
     .property('check', _.curry(function(property, args, test) {
         var report = _.forAll(property, args);
 
@@ -96,9 +103,15 @@ _ = _
     .property('badRight', _.error("Got Right side"))
     .property('NonEmptyAlphaChar', NonEmptyAlphaChar)
     .method('arb', _.strictEquals(NonEmptyAlphaChar), function(a, s) {
-      var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
-          rnd = _.randomIntRangeWithout(33, 255, blacklist);
-      return String.fromCharCode(rnd);
+        var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
+            rnd = _.randomIntRangeWithout(33, 255, blacklist);
+        return String.fromCharCode(rnd);
+    })
+    .property('NumericOrAlphaChar', NumericOrAlphaChar)
+    .method('arb', _.strictEquals(NumericOrAlphaChar), function(a, s) {
+        var blacklist = [58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96],
+            rnd = _.randomIntRangeWithout(48, 122, blacklist);
+        return String.fromCharCode(rnd);
     });
 
 exports = module.exports = _;
