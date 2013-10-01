@@ -84,7 +84,7 @@ Parser.prototype.many = function() {
     var env = this;
     return this.chain(function(stream, index, result, attempt) {
         var outcome = attempt,
-            values = result,
+            values = [],
             expr;
 
         while(outcome.isSuccess) {
@@ -99,7 +99,7 @@ Parser.prototype.many = function() {
             index = expr._2;
         }
 
-        return Parser.put(Tuple4(stream, index, values, Attempt.of([])));
+        return Parser.put(Tuple4(stream, index, result, Attempt.of(values)));
     });
 };
 

@@ -16,7 +16,7 @@ function toFloat(a) {
 }
 
 exports.parser = {
-    'when testing a number in brackets should return correct value': _.check(
+   'when testing a number in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 parser = leftBracket.skip(whitespace).chain(function(a, b, c, d) {
