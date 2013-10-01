@@ -68,6 +68,31 @@ exports.parser = {
         },
         [_.NumericOrAlphaChar]
     ),
+    'when testing a alpha character or leftBracket or rightBracket but got number should return failure': _.check(
+        function(a) {
+            var parser = rightBracket.orElse(leftBracket).orElse(alpha),
+                value = a.toString();
+
+            return _.expect(parser.parse(value)).toBe(_.Failure([[value, 0]]));
+        },
+        [Number]
+    ),
+    'when testing two numbers brackets in should return correct value': _.check(
+        function(a, b) {
+            var parser = leftBracket.chain(function() {
+                    return number.skip(whitespace).chain(function() {
+                          return number.chain(function() {
+                              return rightBracket;
+                          });
+                    });
+                }),
+                value = '(' + a + ' ' + b + ')',
+                expected = ['(', a.toString(), b.toString(), ')'];
+
+            return _.expect(parser.parse(value)).toBe(_.Success(expected));
+        },
+        [Number, Number]
+    ),
     'when testing a number or alpha character in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
@@ -95,6 +120,24 @@ exports.parser = {
                 value = a.toString();
 
             return _.expect(expr.parse(value)).toBe(_.Success([toInt(value)]));
+        },
+        [Number]
+    ),
+    'when testing nested values in brackets or atom should return correct value': _.xcheck(
+        function(a) {
+            var round = number.map(toInt),
+                atom = round.orElse(id),
+                form = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().skip(rightBracket);
+                }),
+                expr = form.orElse(atom).skip(optionalWhitespace),
+                value = '(add 1 2)';
+
+            console.log(expr.parse(value));
+
+            throw new Error('ere');
+
+            //return _.expect(expr.parse(value)).toBe(_.Success([toInt(value)]));
         },
         [Number]
     )
