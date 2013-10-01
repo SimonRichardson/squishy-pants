@@ -123,7 +123,7 @@ exports.parser = {
         },
         [Number]
     ),
-    'when testing multiple numbers in brackets should return correct value': _.check(
+    'when testing two numbers in brackets should return correct value': _.check(
         function(a, b) {
             var block = leftBracket.skip(optionalWhitespace).chain(function() {
                     return expr.many().chain(function() {
@@ -137,5 +137,64 @@ exports.parser = {
             return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [Number, Number]
-    )
+    ),
+    'when testing three numbers in brackets should return correct value': _.check(
+        function(a, b, c) {
+            var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().chain(function() {
+                        return rightBracket;
+                    });
+                }),
+                expr = block.orElse(number).skip(optionalWhitespace),
+                value = '(' + a + ' ' + b + ' ' +c + ')',
+                expected = ['(', a.toString(), b.toString(), c.toString(), ')'];
+
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
+        },
+        [Number, Number, Number]
+    ),
+    'when testing one string and two numbers in brackets should return correct value': _.check(
+        function(a, b, c) {
+            var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().chain(function() {
+                        return rightBracket;
+                    });
+                }),
+                atom = number.orElse(id),
+                expr = block.orElse(atom).skip(optionalWhitespace),
+                value = '(' + a + ' ' + b + ' ' +c + ')',
+                expected = ['(', a, b.toString(), c.toString(), ')'];
+
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
+        },
+        [_.NonEmptyAlphaChar, Number, Number]
+    ),
+    'when testing `(add 1 2)` should return correct value': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().chain(function() {
+                    return rightBracket;
+                });
+            }),
+            atom = number.orElse(id),
+            expr = block.orElse(atom).skip(optionalWhitespace),
+            value = '(add 1 2)',
+            expected = ['(', 'add', '1', '2', ')'];
+
+        test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
+        test.done();
+    },
+    'when testing `(add (mul 1 2) 3)` should return correct value': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().chain(function() {
+                    return rightBracket;
+                });
+            }),
+            atom = number.orElse(id),
+            expr = block.orElse(atom).skip(optionalWhitespace),
+            value = '(add (mul 1 2) 3)',
+            expected = ['(', 'add', '(', 'mul', '1', '2', ')', '3', ')'];
+
+        test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
+        test.done();
+    }
 };
