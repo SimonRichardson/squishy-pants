@@ -178,9 +178,7 @@ exports.parser = {
             value = '( )',
             expected = [[]];
 
-        console.log(expr.parse(value));
-
-        //test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
+        test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
         test.done();
     }
     /*,

@@ -82,25 +82,21 @@ Parser.prototype.chain = function(f) {
 };
 
 Parser.prototype.many = function() {
-    var env = this;
-    return Parser(function(stream, index, result, attempt) {
-        var outcome = attempt,
-            values = [],
-            expr;
-
-        while(outcome.isSuccess) {
-            expr = env.run(stream, index, values, outcome);
-            outcome = expr._4;
+    var env = this,
+        rec = function(stream, index, result, attempt) {
+            var expr = env.run(stream, index, result, attempt),
+                outcome = expr._4;
 
             if (outcome.isFailure) {
-                break;
+                return Tuple2(index, result);
             }
 
-            values = expr._3;
-            index = expr._2;
-        }
+            return rec(stream, expr._2, expr._3, outcome);
+        };
 
-        return Tuple4(stream, index, result, Attempt.of([[values]]));
+    return Parser(function(stream, index, result, attempt) {
+        var outcome = rec(stream, index, [], attempt);
+        return Tuple4(stream, outcome._1, result.slice(0, result.length - 2), Attempt.of([outcome._2]));
     });
 };
 
