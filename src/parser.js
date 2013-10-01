@@ -75,12 +75,7 @@ Parser.prototype.chain = function(f) {
                     next = f(a._1, a._2, values, a._4);
                 return next.run(a._1, a._2, values, attempt);
             },
-            function(x) {
-                var next = f(stream, index, result, a._4),
-                    outcome = next.run(stream, index, result, Attempt.of([]));
-
-                return outcome;
-            }
+            constant(a)
         );
     });
 };
@@ -135,8 +130,24 @@ Parser.prototype.orElse = function(a) {
                 return Parser.put(Tuple4(stream, index, result, Attempt.of([])));
             },
             function(x) {
-                var outcome = a.run(stream, index, result, Attempt.of([]));
-                return Parser.put(Tuple4(outcome._1, outcome._2, outcome._3, outcome._4));
+                throw new Error('Missing implementation');
+            }
+        );
+    });
+};
+
+Parser.prototype.orElse = function(alt) {
+    var env = this;
+    return Parser(function(stream, index, result, attempt) {
+        var a = env.run(stream, index, result, attempt);
+        return a._4.fold(
+            function(x) {
+                var values = squishy.concat(a._3, x);
+                return Tuple4(a._1, a._2, values, Attempt.of([]));
+            },
+            function(x) {
+                var outcome = alt.run(stream, index, result, Attempt.of([]));
+                return outcome;
             }
         );
     });
