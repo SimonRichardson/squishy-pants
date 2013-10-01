@@ -1,4 +1,5 @@
 var _ = require('../../bin/squishy-pants'),
+    NonEmptyChar = {},
     NonEmptyAlphaChar = {},
     NumericOrAlphaChar = {};
 
@@ -101,10 +102,16 @@ _ = _
     }))
     .property('badLeft', _.error("Got Left side"))
     .property('badRight', _.error("Got Right side"))
-    .property('NonEmptyAlphaChar', NonEmptyAlphaChar)
-    .method('arb', _.strictEquals(NonEmptyAlphaChar), function(a, s) {
+    .property('NonEmptyChar', NonEmptyChar)
+    .method('arb', _.strictEquals(NonEmptyChar), function(a, s) {
         var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
             rnd = _.randomIntRangeWithout(33, 255, blacklist);
+        return String.fromCharCode(rnd);
+    })
+    .property('NonEmptyAlphaChar', NonEmptyAlphaChar)
+    .method('arb', _.strictEquals(NonEmptyAlphaChar), function(a, s) {
+        var blacklist = [91, 92, 93, 94, 95, 96],
+            rnd = _.randomIntRangeWithout(65, 122, blacklist);
         return String.fromCharCode(rnd);
     })
     .property('NumericOrAlphaChar', NumericOrAlphaChar)

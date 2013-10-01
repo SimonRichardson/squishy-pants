@@ -56,7 +56,7 @@ exports.parser = {
                 }),
                 value = '(' + a + ')';
 
-            return _.expect(parser.parse(value)).toBe(_.Failure([[a + ')', 1], [a, 1]]));
+            return _.expect(parser.parse(value)).toBe(_.Failure([[a, 1]]));
         },
         [_.NonEmptyAlphaChar]
     ),
@@ -84,17 +84,21 @@ exports.parser = {
         },
         [_.NumericOrAlphaChar]
     ),
-    'when testing nested values in brackets should return correct value': _.check(
+    'when testing nested values in brackets should return correct value': _.xcheck(
         function(a) {
             var round = number.map(toInt),
                 atom = round.orElse(id),
-                form = leftBracket.skip(optionalWhitespace).chain(function() {
-                    return atom.skip(optionalWhitespace).many().skip(rightBracket);
+                form = leftBracket.chain(function() {
+                    return expr.many().skip(rightBracket);
                 }),
                 expr = form.orElse(atom),
                 value = '(add 1 2)';
 
-            return _.expect(expr.parse(value)).toBe(_.Success(['(', 'add', 1])); //, '2', ')']));
+            console.log('>>', expr.parse('3'));
+
+            throw new Error(':-(');
+
+            //return _.expect(expr.parse(value)).toBe(_.Success(['(', 'add', 1])); //, '2', ')']));
         },
         [_.NumericOrAlphaChar]
     )

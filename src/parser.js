@@ -69,17 +69,19 @@ Parser.prototype.chain = function(f) {
     var env = this;
     return Parser(function(stream, index, result, attempt) {
         var a = env.run(stream, index, result, attempt);
-        return a._4.match({
-            Success: function(x) {
+        return a._4.fold(
+            function(x) {
                 var values = squishy.concat(a._3, x),
                     next = f(a._1, a._2, values, a._4);
                 return next.run(a._1, a._2, values, attempt);
             },
-            Failure: function(x) {
-                var next = f(stream, index, result, a._4);
-                return next.run(stream, index, result, a._4);
+            function(x) {
+                var next = f(stream, index, result, a._4),
+                    outcome = next.run(stream, index, result, Attempt.of([]));
+
+                return outcome;
             }
-        });
+        );
     });
 };
 
@@ -110,33 +112,33 @@ Parser.prototype.many = function() {
 
 Parser.prototype.map = function(f) {
     return this.chain(function(stream, index, result, attempt) {
-        return attempt.match({
-            Success: function(x) {
+        return attempt.fold(
+            function(x) {
                 var numOfLast = result.length - 1,
                     values = numOfLast < 0 ? result : result.slice(0, numOfLast),
                     outcome = Attempt.of(f(x));
 
                 return Parser.put(Tuple4(stream, index, values, outcome));
             },
-            Failure: function(x) {
+            function(x) {
                 return Parser.put(Tuple4(stream, index, result, attempt));
             }
-        });
+        );
     });
 };
 
 Parser.prototype.orElse = function(a) {
     var env = this;
     return this.chain(function(stream, index, result, attempt) {
-        return attempt.match({
-            Success: function() {
+        return attempt.fold(
+            function() {
                 return Parser.put(Tuple4(stream, index, result, Attempt.of([])));
             },
-            Failure: function(x) {
+            function(x) {
                 var outcome = a.run(stream, index, result, Attempt.of([]));
                 return Parser.put(Tuple4(outcome._1, outcome._2, outcome._3, outcome._4));
             }
-        });
+        );
     });
 };
 
@@ -156,12 +158,12 @@ Parser.prototype.skip = function(a) {
 
 Parser.prototype.parse = function(stream) {
     var result = this.skip(eof).run(stream, 0, [], Attempt.of([]));
-    return result._4.match({
-        Success: function() {
+    return result._4.fold(
+        function() {
             return Attempt.of(result._3);
         },
-        Failure: constant(result._4)
-    });
+        constant(result._4)
+    );
 };
 
 var eof = Parser(function(stream, index, result, attempt) {
