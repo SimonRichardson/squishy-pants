@@ -123,22 +123,19 @@ exports.parser = {
         },
         [Number]
     ),
-    'when testing nested values in brackets or atom should return correct value': _.xcheck(
-        function(a) {
-            var round = number.map(toInt),
-                atom = round.orElse(id),
-                form = leftBracket.skip(optionalWhitespace).chain(function() {
-                    return expr.many().skip(rightBracket);
+    'when testing multiple numbers in brackets should return correct value': _.check(
+        function(a, b) {
+            var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().chain(function() {
+                        return rightBracket;
+                    });
                 }),
-                expr = form.orElse(atom).skip(optionalWhitespace),
-                value = '(add 1 2)';
+                expr = block.orElse(number).skip(optionalWhitespace),
+                value = '(' + a + ' ' + b + ')',
+                expected = ['(', a.toString(), b.toString(), ')'];
 
-            console.log(expr.parse(value));
-
-            throw new Error('ere');
-
-            //return _.expect(expr.parse(value)).toBe(_.Success([toInt(value)]));
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
-        [Number]
+        [Number, Number]
     )
 };

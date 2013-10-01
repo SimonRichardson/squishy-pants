@@ -87,8 +87,7 @@ Parser.prototype.many = function() {
             values = result,
             expr;
 
-        // TODO: Make this recursive!
-        while(true) {
+        while(outcome.isSuccess) {
             expr = env.run(stream, index, values, outcome);
             outcome = expr._4;
 
@@ -97,7 +96,7 @@ Parser.prototype.many = function() {
             }
 
             values = expr._3;
-            index += 1;
+            index = expr._2;
         }
 
         return Parser.put(Tuple4(stream, index, values, Attempt.of([])));
