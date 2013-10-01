@@ -45,9 +45,10 @@ Parser.regexp = function(r) {
 };
 
 Parser.string = function(value) {
+    var length = value.length;
+
     return Parser(function(stream, index, result, attempt) {
-        var length = value.length,
-            sliced = stream.slice(index, index + length),
+        var sliced = stream.slice(index, index + length),
             errors;
 
         if (sliced === value) {
@@ -82,7 +83,7 @@ Parser.prototype.chain = function(f) {
 
 Parser.prototype.many = function() {
     var env = this;
-    return this.chain(function(stream, index, result, attempt) {
+    return Parser(function(stream, index, result, attempt) {
         var outcome = attempt,
             values = [],
             expr;
@@ -99,7 +100,7 @@ Parser.prototype.many = function() {
             index = expr._2;
         }
 
-        return Parser.put(Tuple4(stream, index, result, Attempt.of(values)));
+        return Tuple4(stream, index, result, Attempt.of([[values]]));
     });
 };
 
@@ -113,7 +114,7 @@ Parser.prototype.map = function(f) {
 
                 return Parser.put(Tuple4(stream, index, values, outcome));
             },
-            function(x) {
+            function() {
                 return Parser.put(Tuple4(stream, index, result, attempt));
             }
         );

@@ -16,7 +16,7 @@ function toFloat(a) {
 }
 
 exports.parser = {
-   'when testing a number in brackets should return correct value': _.check(
+   /*'when testing a number in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 parser = leftBracket.skip(whitespace).chain(function(a, b, c, d) {
@@ -169,6 +169,21 @@ exports.parser = {
         },
         [_.NonEmptyAlphaChar, Number, Number]
     ),
+*/
+    'when testing `( )` with many should return correct value': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().skip(rightBracket);
+            }),
+            expr = block,
+            value = '( )',
+            expected = [[]];
+
+        console.log(expr.parse(value));
+
+        //test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
+        test.done();
+    }
+    /*,
     'when testing `(add 1 2)` should return correct value': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().chain(function() {
@@ -210,5 +225,5 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
         test.done();
-    }
+    }*/
 };
