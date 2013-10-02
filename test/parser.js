@@ -220,5 +220,19 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
         test.done();
-    }
+    }/*,
+    'when testing `(add (mul 10 (/ 3 4)) (add 7 8))` should return failure': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().skip(rightBracket);
+            }),
+            atom = number.orElse(id),
+            expr = block.orElse(atom).skip(optionalWhitespace),
+            value = '(add (mul 10 (/ 3 4)) (add 7 8))',
+            expected = [['/', 14]];
+
+            console.log(expr.parse(value));
+
+        test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
+        test.done();
+    }*/
 };
