@@ -255,8 +255,6 @@ exports.parser = {
             value = '(add 2 (mul / 3))',
             expected = [['(', 7], [value, 0], [value, 0]];
 
-        console.log(expr.parse(value));
-
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
     }

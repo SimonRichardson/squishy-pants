@@ -14,12 +14,8 @@
           }
       }
 
-      function toInt(a) {
-          return ~~a;
-      }
-
-      function toFloat(a) {
-          return a.toFixed(2);
+      function json() {
+          return document.getElementById('json').innerHTML;
       }
 
       event(window, 'load', function() {
@@ -32,25 +28,7 @@
               });
 
 
-              var whitespace = _.Parser.regexp(/^\s+/);
-              var semiColon = _.Parser.regexp(/^;/);
-
-              var float = _.Parser.regexp(/^[\+\-]?[0-9\\.]+/);
-              var char = _.Parser.regexp(/^[a-z]/);
-              var openBracket = _.Parser.string('(');
-              var closeBracket = _.Parser.string(')');
-              var one = _.Parser.string('1');
-
-              var floatRound = one;//.map(toInt).map(toFloat);
-
-
-              var result = openBracket.chain(function() {
-                  return one.chain(function() {
-                      return closeBracket;
-                  });
-              });
-
-          logger('--', JSON.stringify(result.parse('(1)')));
+          //logger('--', JSON.stringify(expr.parse(value)));
       });
 
     </script>
@@ -68,6 +46,38 @@
           <hr />
           <p>Becomes:</p>
           <div class="alert" id="output"></div>
+          <div style="display:none">
+              <pre id="json">
+{
+  "name": "squishy-pants",
+  "description": "Semi serious functional programming library for JavaScript",
+  "author": "Simon Richardson",
+  "homepage": "https://github.com/SimonRichardson/squishy-pants",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimonRichardson/squishy-pants.git"
+  },
+  "scripts": {
+    "test": "grunt macro"
+  },
+  "devDependencies": {
+    "grunt-cli": "0.1.9",
+    "grunt": "0.4.x",
+    "grunt-rigger": "0.5.x",
+    "grunt-contrib-concat": "0.3.0",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.0",
+    "grunt-contrib-uglify": "0.2.2",
+    "grunt-parallel": "~0.2.0",
+    "shelljs": "0.2.3",
+    "sweet.js": "0.2.0"
+  },
+  "main": "squishy-pants.js",
+  "version": "0.0.5"
+}
+              </pre>
+          </div>
         </div>
       </div>
     </div>
