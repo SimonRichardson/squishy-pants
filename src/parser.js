@@ -142,7 +142,8 @@ Parser.prototype.orElse = function(alt) {
                 return outcome._4.fold(
                     constant(outcome),
                     function(y) {
-                        return Tuple4(a._1, a._2, result, Attempt.Failure(y));
+                        var errors = squishy.concat(x, y);
+                        return Tuple4(a._1, a._2, result, Attempt.Failure(errors));
                     }
                 );
             }
@@ -155,7 +156,14 @@ Parser.prototype.skip = function(a) {
         return attempt.fold(
             function() {
                 var outcome = a.run(stream, index, result, attempt);
-                return Parser.put(Tuple4(stream, outcome._2, result, Attempt.of([])));
+                return outcome._4.fold(
+                    function() {
+                        return Parser.put(Tuple4(stream, outcome._2, result, Attempt.of([])));
+                    },
+                    function(x) {
+                        return Parser.put(Tuple4(stream, outcome._2, result, outcome._4));
+                    }
+                );
             },
             function() {
                 return Parser.put(Tuple4(stream, index, result, attempt));
@@ -176,7 +184,7 @@ Parser.prototype.parse = function(stream) {
 
 var eof = Parser(function(stream, index, result, attempt) {
     var outcome = (index < stream.length) ? attempt : Attempt.Failure(['EOF']);
-    return Tuple4(stream, index, result, outcome);
+    return Tuple4(stream, index, result, attempt);
 });
 
 //

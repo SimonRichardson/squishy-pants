@@ -19,22 +19,22 @@ exports.parser = {
    'when testing a number in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
-                parser = leftBracket.skip(whitespace).chain(function(a, b, c, d) {
-                    return round.skip(whitespace).chain(function(a, b, c, d) {
+                expr = leftBracket.skip(optionalWhitespace).chain(function(a, b, c, d) {
+                    return round.skip(optionalWhitespace).chain(function(a, b, c, d) {
                         return rightBracket;
                     });
                 }),
                 value = '(' + a + ')',
                 expected = toFloat(toInt(a)).toString();
 
-            return _.expect(parser.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
         },
         [Number]
     ),
     'when testing a number with whitespace in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
-                parser = leftBracket.skip(whitespace).chain(function() {
+                expr = leftBracket.skip(whitespace).chain(function() {
                     return round.skip(whitespace).chain(function() {
                         return rightBracket;
                     });
@@ -42,44 +42,45 @@ exports.parser = {
                 value = '( ' + a + ' )',
                 expected = toFloat(toInt(a)).toString();
 
-            return _.expect(parser.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
         },
         [Number]
     ),
     'when testing a alpha character in brackets should return attempt failure': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
-                parser = leftBracket.skip(whitespace).chain(function() {
+                expr = leftBracket.skip(whitespace).chain(function() {
                     return round.skip(whitespace).chain(function() {
                         return rightBracket;
                     });
                 }),
                 value = '(' + a + ')';
 
-            return _.expect(parser.parse(value)).toBe(_.Failure([[a + ')', 1]]));
+            return _.expect(expr.parse(value)).toBe(_.Failure([[a + ')', 1]]));
         },
         [_.NonEmptyAlphaChar]
     ),
     'when testing a number or alpha character or leftBracket should return correct value': _.check(
         function(a) {
-            var parser = leftBracket.orElse(alpha).orElse(number);
+            var expr = leftBracket.orElse(alpha).orElse(number);
 
-            return _.expect(parser.parse(a)).toBe(_.Success([a]));
+            return _.expect(expr.parse(a)).toBe(_.Success([a]));
         },
         [_.NumericOrAlphaChar]
     ),
     'when testing a alpha character or leftBracket or rightBracket but got number should return failure': _.check(
         function(a) {
-            var parser = rightBracket.orElse(leftBracket).orElse(alpha),
-                value = a.toString();
+            var expr = alpha.orElse(rightBracket).orElse(leftBracket),
+                value = a.toString(),
+                expected = [[value, 0], [value.slice(0, 1), 0], [value.slice(0, 1), 0]];
 
-            return _.expect(parser.parse(value)).toBe(_.Failure([[value, 0]]));
+            return _.expect(expr.parse(value)).toBe(_.Failure(expected));
         },
         [Number]
     ),
     'when testing two numbers brackets in should return correct value': _.check(
         function(a, b) {
-            var parser = leftBracket.chain(function() {
+            var expr = leftBracket.chain(function() {
                     return number.skip(whitespace).chain(function() {
                           return number.chain(function() {
                               return rightBracket;
@@ -89,15 +90,15 @@ exports.parser = {
                 value = '(' + a + ' ' + b + ')',
                 expected = ['(', a.toString(), b.toString(), ')'];
 
-            return _.expect(parser.parse(value)).toBe(_.Success(expected));
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [Number, Number]
     ),
     'when testing a number or alpha character in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
-                parser = leftBracket.skip(whitespace).chain(function() {
-                    return round.orElse(alpha).skip(whitespace).chain(function() {
+                expr = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return round.orElse(alpha).skip(optionalWhitespace).chain(function() {
                         return rightBracket;
                     });
                 }),
@@ -105,7 +106,7 @@ exports.parser = {
                 possibleNumber = parseFloat(a, 10),
                 expected = _.isNaN(possibleNumber) ? a : toFloat(toInt(possibleNumber)).toString();
 
-            return _.expect(parser.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
         },
         [_.NumericOrAlphaChar]
     ),
@@ -220,19 +221,17 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
         test.done();
-    }/*,
-    'when testing `(add (mul 10 (/ 3 4)) (add 7 8))` should return failure': function(test) {
+    },
+    'when testing `(add /)` should return failure': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().skip(rightBracket);
             }),
             atom = number.orElse(id),
             expr = block.orElse(atom).skip(optionalWhitespace),
-            value = '(add (mul 10 (/ 3 4)) (add 7 8))',
-            expected = [['/', 14]];
-
-            console.log(expr.parse(value));
+            value = '(add /)',
+            expected = [['/', 5], ['(add /)', 0], ['(add /)', 0]];
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
-    }*/
+    }
 };
