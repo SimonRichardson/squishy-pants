@@ -95,8 +95,10 @@ Parser.prototype.many = function() {
         };
 
     return Parser(function(stream, index, result, attempt) {
-        var outcome = rec(stream, index, [], attempt);
-        return Tuple4(stream, outcome._1, result.slice(0, result.length - 2), Attempt.of([outcome._2]));
+        var outcome = rec(stream, index, [], attempt),
+            fragment = result.slice(0,  Math.max(result.length - 1, 0));
+
+        return Tuple4(stream, outcome._1, fragment, Attempt.of([outcome._2]));
     });
 };
 
