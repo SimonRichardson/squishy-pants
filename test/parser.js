@@ -229,7 +229,33 @@ exports.parser = {
             atom = number.orElse(id),
             expr = block.orElse(atom).skip(optionalWhitespace),
             value = '(add /)',
-            expected = [['/', 5], ['(add /)', 0], ['(add /)', 0]];
+            expected = [['/', 5], [value, 0], [value, 0]];
+
+        test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
+        test.done();
+    },
+    'when testing `(add 2 /)` should return failure': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().skip(rightBracket);
+            }),
+            atom = number.orElse(id),
+            expr = block.orElse(atom).skip(optionalWhitespace),
+            value = '(add 2 /)',
+            expected = [['/', 7], [value, 0], [value, 0]];
+
+        test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
+        test.done();
+    },
+    'when testing `(add 2 (mul / 3))` should return failure': function(test) {
+        var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                return expr.many().skip(rightBracket);
+            }),
+            atom = number.orElse(id),
+            expr = block.orElse(atom).skip(optionalWhitespace),
+            value = '(add 2 (mul / 3))',
+            expected = [['(', 7], [value, 0], [value, 0]];
+
+        console.log(expr.parse(value));
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
