@@ -72,7 +72,7 @@ exports.parser = {
         function(a) {
             var expr = alpha.orElse(rightBracket).orElse(leftBracket),
                 value = a.toString(),
-                expected = [[value, 0], [value.slice(0, 1), 0], [value.slice(0, 1), 0]];
+                expected = [[value, 0]];
 
             return _.expect(expr.parse(value)).toBe(_.Failure(expected));
         },
@@ -229,7 +229,7 @@ exports.parser = {
             atom = number.orElse(id),
             expr = block.orElse(atom).skip(optionalWhitespace),
             value = '(add /)',
-            expected = [['/', 5], [value, 0], [value, 0]];
+            expected = [['/', 5]];
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
@@ -241,7 +241,7 @@ exports.parser = {
             atom = number.orElse(id),
             expr = block.orElse(atom).skip(optionalWhitespace),
             value = '(add 2 /)',
-            expected = [['/', 7], [value, 0], [value, 0]];
+            expected = [['/', 7]];
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
@@ -253,7 +253,7 @@ exports.parser = {
             atom = number.orElse(id),
             expr = block.orElse(atom).skip(optionalWhitespace),
             value = '(add 2 (mul / 3))',
-            expected = [['(', 7], [value, 0], [value, 0]];
+            expected = [['/', 12]];
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();

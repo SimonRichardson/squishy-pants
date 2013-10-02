@@ -92,7 +92,7 @@ Parser.prototype.many = function() {
                     return rec(stream, expr._2, expr._3, outcome);
                 },
                 function() {
-                    return Tuple4(stream, index, result, outcome);
+                    return Tuple4(stream, expr._2, result, outcome);
                 }
             );
         };
@@ -141,9 +141,8 @@ Parser.prototype.orElse = function(alt) {
                 var outcome = alt.run(stream, index, result, Attempt.of([]));
                 return outcome._4.fold(
                     constant(outcome),
-                    function(y) {
-                        var errors = squishy.concat(x, y);
-                        return Tuple4(a._1, a._2, result, Attempt.Failure(errors));
+                    function() {
+                        return Tuple4(a._1, a._2, result, Attempt.Failure(x));
                     }
                 );
             }
