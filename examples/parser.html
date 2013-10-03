@@ -14,8 +14,8 @@
           }
       }
 
-      function json() {
-          return document.getElementById('json').innerHTML;
+      function rawJson() {
+          return document.getElementById('raw-json').innerHTML;
       }
 
       event(window, 'load', function() {
@@ -25,10 +25,103 @@
               })),
               logger = _.curry(function(prefix, value) {
                   log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
-              });
+              }),
+
+              string = _.Parser.string,
+              regexp = _.Parser.regexp,
+
+              escapes = {
+                  b: '\b',
+                  f: '\f',
+                  n: '\n',
+                  r: '\r',
+                  t: '\t'
+              },
+
+              json,
+
+              stringLiteral = regexp(/^"(\\.|.)*?"/).map(
+                  function(str) {
+                      return str[0].slice(1, -1).replace(/\\u(\d{4})/,
+                          function(_, hex) {
+                              console.log(hex);
+                              return String.fromCharCode(parseInt(hex, 16));
+                          }
+                      ).replace(/\\(.)/,
+                          function(_, ch) {
+                              return escapes.hasOwnProperty(ch) ? escapes[ch] : ch;
+                          }
+                      );
+                  }
+              ),
+
+              numberLiteral = regexp(/^\d+(([.]|e[+-]?)\d+)?/i).map(
+                  function(str) {
+                      return parseFloat(str, 10);
+                  }
+              ),
+
+              commaSep = function(parser) {
+                  return parser.chain(
+                      function(x) {
+                          return regexp(/^,\s*/m).chain(
+                              function() {
+                                  return parser;
+                              }
+                          ).many().map(
+                              function(xs) {
+                                  return _.concat(x, xs[0]);
+                              }
+                          );
+                      }
+                  );
+              },
+
+              array = regexp(/^\[\s*/m).chain(
+                  function() {
+                      return commaSep(json).skip(string(']'));
+                  }
+              ),
+
+              pair = stringLiteral.chain(
+                  function(key) {
+                      return regexp(/^\s*:\s*/m).chain(
+                          function() {
+                              return json;
+                          }
+                      ).map(
+                          function(res) {
+                              console.log(key, res);
+                              return [key, res];
+                          }
+                      );
+                  }
+              ),
+
+              object = regexp(/^[{]\s*/m).chain(
+                  function() {
+                      return commaSep(pair);
+                  }
+              ).skip(string('}')).map(
+                  function(pairs) {
+                      var accum = {},
+                          i = pairs.length - 1;
+
+                      for (i; i >= 0; i -= 1) {
+                          accum[pairs[i][0]] = pairs[i][1];
+                      }
+
+                      return accum;
+                  }
+              );
+
+          json = object.orElse(array).orElse(stringLiteral).orElse(numberLiteral).skip(regexp(/^\s*/m));
 
 
-          //logger('--', JSON.stringify(expr.parse(value)));
+          json.parse(rawJson()).fold(
+              logger('Success'),
+              logger('Failure')
+          );
       });
 
     </script>
@@ -37,46 +130,21 @@
     <div class="container">
       <div class="row">
         <div class="span8 offset2">
-          <h1>State using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <h1>Parser using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
           <hr />
           <div class="alert">
-              <pre>
+              <pre id="raw-json">
+{
+  "glossary":"example",
+  "version":"1.0.1"
+}
               </pre>
           </div>
           <hr />
           <p>Becomes:</p>
-          <div class="alert" id="output"></div>
-          <div style="display:none">
-              <pre id="json">
-{
-  "name": "squishy-pants",
-  "description": "Semi serious functional programming library for JavaScript",
-  "author": "Simon Richardson",
-  "homepage": "https://github.com/SimonRichardson/squishy-pants",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/SimonRichardson/squishy-pants.git"
-  },
-  "scripts": {
-    "test": "grunt macro"
-  },
-  "devDependencies": {
-    "grunt-cli": "0.1.9",
-    "grunt": "0.4.x",
-    "grunt-rigger": "0.5.x",
-    "grunt-contrib-concat": "0.3.0",
-    "grunt-contrib-jshint": "0.6.x",
-    "grunt-contrib-nodeunit": "0.2.0",
-    "grunt-contrib-uglify": "0.2.2",
-    "grunt-parallel": "~0.2.0",
-    "shelljs": "0.2.3",
-    "sweet.js": "0.2.0"
-  },
-  "main": "squishy-pants.js",
-  "version": "0.0.5"
-}
-              </pre>
+          <div class="alert">
+              <code id="output">
+              </code>
           </div>
         </div>
       </div>
