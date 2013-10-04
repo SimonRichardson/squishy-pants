@@ -14,7 +14,7 @@ Parser.empty = function() {
 
 Parser.fail = function(e) {
     return Parser(function(a, b) {
-        return Tuple3(a, b, Attempt.Failure(e));
+        return Tuple3(a, b, Attempt.Failure([e]));
     });
 };
 
@@ -39,7 +39,7 @@ Parser.regexp = function(a) {
             result = match[0];
             return Tuple3(stream, index + result.length, Attempt.of([result]));
         } else {
-            return Tuple3(stream, index, Attempt.Failure([value, index]));
+            return Tuple3(stream, index, Attempt.Failure([[value, index]]));
         }
     });
 };
@@ -51,7 +51,7 @@ Parser.string = function(a) {
         if (value === a) {
             return Tuple3(stream, index + length, Attempt.of([value]));
         } else {
-            return Tuple3(stream, index, Attempt.Failure([value, index]));
+            return Tuple3(stream, index, Attempt.Failure([[value, index]]));
         }
     });
 };
@@ -97,8 +97,7 @@ Parser.prototype.many = function() {
         };
     return Parser(function(stream, index, attempt) {
         var outcome = recursive(stream)(index, attempt, []);
-        console.log('Many --->', outcome);
-        return Tuple3(stream, outcome._1, Attempt.of(outcome._2));
+        return Tuple3(stream, outcome._1, Attempt.of([outcome._2]));
     });
 };
 
@@ -146,7 +145,7 @@ Parser.prototype.parse = function(stream) {
 };
 
 var eof = Parser(function(stream, index, attempt) {
-    var outcome = index < stream.length ? attempt : Attempt.Failure(['EOF']);
+    var outcome = index <= stream.length ? attempt : Attempt.Failure(['EOF', index]);
     return Tuple3(stream, index, outcome);
 });
 
