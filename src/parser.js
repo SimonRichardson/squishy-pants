@@ -123,7 +123,15 @@ Parser.prototype.orElse = function(a) {
                 return outcome;
             },
             function() {
-                return a.run(stream, index, attempt);
+                var possible = a.run(stream, index, attempt);
+                return possible._3.fold(
+                    function() {
+                        return Tuple3(possible._1, possible._2, possible._3);
+                    },
+                    function() {
+                        return Tuple3(stream, index, outcome._3);
+                    }
+                );
             }
         );
     });
