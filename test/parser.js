@@ -231,11 +231,9 @@ exports.parser = {
             value = '(add /)',
             expected = [['/', 5]];
 
-        console.log(expr.parse(value));
-
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
-    }/*,
+    },
     'when testing `(add 2 /)` should return failure': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().skip(rightBracket);
@@ -271,5 +269,5 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
-    }*/
+    }
 };
