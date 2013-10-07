@@ -103,35 +103,43 @@ function fo() {
             return n;
         }
 
-        // >= > === ==
+        // Possible syntax for `chain`
+        // `>= > === ==`
         if(n === false) {
             op = proxy('chain');
 
-        // >> >>> &
+        // Possible syntax for `andThen` (inverted `compose`)
+        // `>> >>> &`
         } else if(n === 0) {
             op = andThen;
 
-        // <<
+        // Possible syntax for `compose`
+        // `<<`
         } else if(n === Math.pow(2, (2 << foQueue.length) - 3)) {
             op = proxy('compose');
 
-        // *
+        // Possible syntax for `ap`
+        // `*`
         } else if(n === Math.pow(2, foQueue.length * (foQueue.length + 1) / 2)) {
             op = proxy('ap');
 
-        // + | ^
+        // Possible syntax for `concat`
+        // `+ | ^`
         } else if(n === (2 << foQueue.length) - 2) {
             op = proxy('concat');
 
-        // %
+        // Possible syntax for `map`
+        // `%`
         } else if(n === 2) {
             op = proxy('map');
 
-        // -
+        // Possible syntax for `minus`
+        // `-`
         } else if(n < 0) {
             op = minus;
 
-        // < <= !== !=
+        // Possible syntax for `sequence`
+        // `< <= !== !=`
         } else if(n === true) {
             op = sequence;
 
