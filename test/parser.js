@@ -1,4 +1,4 @@
-var _ = require('./lib/parser'),
+var _ = require('./lib/test'),
     id = _.Parser.regexp(/^[a-zA-Z_]+/),
     alpha = _.Parser.regexp(/^[a-zA-Z]+/),
     number = _.Parser.regexp(/^[\+\-]?\d+(\.\d+)?/),
@@ -13,6 +13,46 @@ function toInt(a) {
 
 function toFloat(a) {
     return a.toFixed(2);
+}
+
+function statementToArray(str) {
+    var rec = function(str) {
+        var index = str.indexOf('('),
+            name = '',
+            arg0,
+            arg1,
+            spaceIndex,
+            rightIndex;
+
+        if (index === 0) {
+            nameIndex = str.indexOf(' ');
+            name = str.slice(1, nameIndex);
+
+            arg0 = rec(str.slice(nameIndex + 1));
+            arg1 = rec(arg0[0]);
+
+            return [arg1[0].slice(1), [name, arg0[1], arg1[1]]];
+        } else {
+            spaceIndex = str.indexOf(' ');
+            rightIndex = str.indexOf(')');
+
+            if (spaceIndex >= 0 && spaceIndex < rightIndex) {
+                return [str.slice(spaceIndex + 1), str.slice(0, spaceIndex)];
+            } else {
+                return [str.slice(rightIndex + 1), str.slice(0, rightIndex)];
+            }
+        }
+    };
+
+    return rec(str)[1];
+}
+
+function invalidStatementToArray(str) {
+    var index = str.indexOf('/');
+    if (index < 0) {
+        return _.Success([statementToArray(str)]);
+    }
+    return _.Failure([['/', index]]);
 }
 
 exports.parser = {
@@ -161,7 +201,7 @@ exports.parser = {
                 }),
                 atom = number.orElse(id),
                 expr = block.orElse(atom).skip(optionalWhitespace),
-                expected = _.statementToArray(a);
+                expected = statementToArray(a);
 
             return _.expect(expr.parse(a)).toBe(_.Success([expected]));
         },
@@ -174,7 +214,7 @@ exports.parser = {
                 }),
                 atom = number.orElse(id),
                 expr = block.orElse(atom).skip(optionalWhitespace),
-                expected = _.invalidStatementToArray(a);
+                expected = invalidStatementToArray(a);
 
             return _.expect(expr.parse(a)).toBe(expected);
         },

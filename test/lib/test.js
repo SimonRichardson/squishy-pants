@@ -1,7 +1,24 @@
 var _ = require('../../bin/squishy-pants'),
     NonEmptyChar = {},
     NonEmptyAlphaChar = {},
-    NumericOrAlphaChar = {};
+    NumericOrAlphaChar = {},
+    Add = {},
+    Div = {},
+    Min = {},
+    Mul = {},
+    AddInvalid = {},
+    DivInvalid = {},
+    MinInvalid = {},
+    MulInvalid = {},
+    Branch = {},
+    BranchInvalid = {},
+    NumberOrInvalid = {},
+    Generate = {},
+    GenerateInvalid = {};
+
+function statement(a, b, c) {
+    return '(' + a + ' ' + b + ' ' + c + ')';
+}
 
 _ = _
     .property('xcheck', function(){
@@ -101,8 +118,12 @@ _ = _
         test.ok(valid, words);
         test.done();
     }))
+
+    // Either related
     .property('badLeft', _.error("Got Left side"))
     .property('badRight', _.error("Got Right side"))
+
+    // Character related
     .property('NonEmptyChar', NonEmptyChar)
     .method('arb', _.strictEquals(NonEmptyChar), function(a, s) {
         var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
@@ -120,6 +141,91 @@ _ = _
         var blacklist = [58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96],
             rnd = this.randomIntRangeWithout(48, 122, blacklist);
         return String.fromCharCode(rnd);
+    })
+
+    // Parser related
+    .property('Add', Add)
+    .method('arb', _.strictEquals(Add), function(a, b) {
+        var x = this.arb(Branch, b - 1),
+            y = this.arb(Branch, b - 1);
+
+        return statement('add', x, y);
+    })
+    .property('Div', Div)
+    .method('arb', _.strictEquals(Div), function(a, b) {
+        var x = this.arb(Branch, b - 1),
+            y = this.arb(Branch, b - 1);
+        return statement('div', x, y);
+    })
+    .property('Min', Min)
+    .method('arb', _.strictEquals(Min), function(a, b) {
+        var x = this.arb(Branch, b - 1),
+            y = this.arb(Branch, b - 1);
+        return statement('min', x, y);
+    })
+    .property('Mul', Mul)
+    .method('arb', _.strictEquals(Mul), function(a, b) {
+        var x = this.arb(Branch, b - 1),
+            y = this.arb(Branch, b - 1);
+        return statement('mul', x, y);
+    })
+    .property('AddInvalid', AddInvalid)
+    .method('arb', _.strictEquals(AddInvalid), function(a, b) {
+        var x = this.arb(BranchInvalid, b - 1),
+            y = this.arb(BranchInvalid, b - 1);
+
+        return statement('add', x, y);
+    })
+    .property('DivInvalid', DivInvalid)
+    .method('arb', _.strictEquals(DivInvalid), function(a, b) {
+        var x = this.arb(BranchInvalid, b - 1),
+            y = this.arb(BranchInvalid, b - 1);
+        return statement('div', x, y);
+    })
+    .property('MinInvalid', MinInvalid)
+    .method('arb', _.strictEquals(MinInvalid), function(a, b) {
+        var x = this.arb(BranchInvalid, b - 1),
+            y = this.arb(BranchInvalid, b - 1);
+        return statement('min', x, y);
+    })
+    .property('MulInvalid', MulInvalid)
+    .method('arb', _.strictEquals(MulInvalid), function(a, b) {
+        var x = this.arb(BranchInvalid, b - 1),
+            y = this.arb(BranchInvalid, b - 1);
+        return statement('mul', x, y);
+    })
+    .property('Branch', Branch)
+    .method('arb', _.strictEquals(Branch), function(a, b) {
+        if (b <= 0 || _.randomRange(0, 1) < 0.5) {
+            return _.arb(Number, b - 1);
+        }
+        return this.arb(Generate, b - 1);
+    })
+    .property('BranchInvalid', BranchInvalid)
+    .method('arb', _.strictEquals(BranchInvalid), function(a, b) {
+        if (b <= 0 || _.randomRange(0, 1) < 0.5) {
+            return this.arb(NumberOrInvalid, b - 1);
+        }
+        return this.arb(GenerateInvalid, b - 1);
+    })
+    .property('NumberOrInvalid', NumberOrInvalid)
+    .method('arb', _.strictEquals(NumberOrInvalid), function(a, b) {
+        if(_.randomRange(0, 1) < 0.5) {
+            return '/';
+        }
+        return _.arb(Number, b - 1);
+    })
+    .property('Generate', Generate)
+    .method('arb', _.strictEquals(Generate), function(a, b) {
+        var types = [Add, Mul, Div, Min],
+            value = this.arb(_.oneOf(types), b - 1);
+        return value;
+    })
+    .property('GenerateInvalid', GenerateInvalid)
+    .method('arb', _.strictEquals(GenerateInvalid), function(a, b) {
+        var types = [AddInvalid, MulInvalid, DivInvalid, MinInvalid],
+            value = this.arb(_.oneOf(types), b - 1);
+        return value;
     });
 
 exports = module.exports = _;
