@@ -26,6 +26,10 @@
               logger = _.curry(function(prefix, value) {
                   log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
               }),
+              rawLog = function(a) {
+                  console.log(a);
+                  return a;
+              },
 
               string = _.Parser.string,
               regexp = _.Parser.regexp,
@@ -44,7 +48,6 @@
                   function(str) {
                       return str[0].slice(1, -1).replace(/\\u(\d{4})/,
                           function(_, hex) {
-                              console.log(hex);
                               return String.fromCharCode(parseInt(hex, 16));
                           }
                       ).replace(/\\(.)/,
@@ -63,7 +66,11 @@
 
               commaSep = function(parser) {
                   return parser.chain(
-                      function(x) {
+                      function(stream, index, attempt) {
+                          var x = attempt.fold(
+                              _.identity,
+                              _.constant([])
+                          );
                           return regexp(/^,\s*/m).chain(
                               function() {
                                   return parser;
@@ -84,14 +91,17 @@
               ),
 
               pair = stringLiteral.chain(
-                  function(key) {
+                  function(stream, index, attempt) {
                       return regexp(/^\s*:\s*/m).chain(
                           function() {
                               return json;
                           }
                       ).map(
                           function(res) {
-                              console.log(key, res);
+                              var key = attempt.fold(
+                                      _.identity,
+                                      _.constant('')
+                                  );
                               return [key, res];
                           }
                       );
@@ -105,22 +115,21 @@
               ).skip(string('}')).map(
                   function(pairs) {
                       var accum = {},
-                          i = pairs.length - 1;
+                          i;
 
-                      for (i; i >= 0; i -= 1) {
-                          accum[pairs[i][0]] = pairs[i][1];
+                      for (i = 0; i < pairs.length; i+=2) {
+                          accum[pairs[i]] = pairs[i + 1];
                       }
 
                       return accum;
                   }
               );
 
-          json = object.orElse(array).orElse(stringLiteral).orElse(numberLiteral).skip(regexp(/^\s*/m));
-
+          json = object.orElse(stringLiteral).skip(regexp(/^\s*/m));
 
           json.parse(rawJson()).fold(
-              logger('Success'),
-              logger('Failure')
+              _.andThen(rawLog, _.andThen(JSON.stringify, logger('Success'))),
+              _.andThen(rawLog, _.andThen(JSON.stringify, logger('Failure')))
           );
       });
 
@@ -136,7 +145,13 @@
               <pre id="raw-json">
 {
   "glossary":"example",
-  "version":"1.0.1"
+  "version":"1.0.1",
+  "author":"Simon Richardson",
+  "dependencies":{
+      "lib1":"1.0.1",
+      "lib2":"1.x.x",
+      "lib3":"2.2.x"
+  }
 }
               </pre>
           </div>

@@ -1,35 +1,72 @@
+//
+//   # Parser
+//
+//   A monadic LL(infinity) parser.
+//
+//        var alpha = _.Parser.regexp(/^[a-zA-Z]+/),
+//            number = _.Parser.regexp(/^[\+\-]?\d+(\.\d+)?/),
+//            expr = alpha.orElse(number);
+//        expr.parse('1.1');
+//
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `many` - Yield array of results
+//   * `map(f)` - Functor map
+//   * `orElse(a)` - Default parser or else try alternative
+//   * `skip` - Skip the parser
+//   * `parse` - Executes parser
+//
 var Parser = tagged('Parser', ['run']);
 
+//
+//  ### of(x)
+//
 Parser.of = function(a) {
     return Parser(function() {
         return Tuple4(a, 0, Attempt.of([]), Option.None);
     });
 };
 
+//
+//  ### empty()
+//
 Parser.empty = function() {
     return Parser(function(a) {
         return Tuple4(a, 0, Attempt.of([]), Option.None);
     });
 };
 
+//
+//  ### fail(x)
+//
 Parser.fail = function(e) {
     return Parser(function(a, b) {
         return Tuple4(a, b, Attempt.Failure([e]), Option.of([e]));
     });
 };
 
+//
+//  ### success(x)
+//
 Parser.success = function(s) {
     return Parser(function(a, b) {
         return Tuple4(a, b, Attempt.of(s), Option.None);
     });
 };
 
+//
+//  ### put(x)
+//
 Parser.put = function(a) {
     return Parser(function() {
         return a;
     });
 };
 
+//
+//  ### regexp(x)
+//
+//  Parser that expects the stream to match the given regex.
+//
 Parser.regexp = function(a) {
     return Parser(function(stream, index, attempt, possibleFailure) {
         var value = stream.slice(index),
@@ -44,6 +81,11 @@ Parser.regexp = function(a) {
     });
 };
 
+//
+//  ### string(x)
+//
+//  Parser that expects to find a string, and will yield the same.
+//
 Parser.string = function(a) {
     var length = a.length;
     return Parser(function(stream, index, attempt, possibleFailure) {
@@ -56,6 +98,12 @@ Parser.string = function(a) {
     });
 };
 
+//
+//  ### chain(f)
+//
+//  Expects another Parser to follow parser, and yields the result of
+//  another Parser.
+//
 Parser.prototype.chain = function(f) {
     var env = this;
     return Parser(function(stream, index, attempt, possibleFailure) {
@@ -72,6 +120,11 @@ Parser.prototype.chain = function(f) {
     });
 };
 
+//
+//  ### many()
+//
+//  Expects parser zero or more times, and yields an array of the results.
+//
 Parser.prototype.many = function() {
     var env = this,
         recursive = function(stream) {
@@ -117,6 +170,11 @@ Parser.prototype.many = function() {
     });
 };
 
+//
+//  ### map(f)
+//
+//  Transforms the output of parser with the given function.
+//
 Parser.prototype.map = function(f) {
     return this.chain(function(stream, index, attempt, possibleFailure) {
         return attempt.fold(
@@ -130,6 +188,9 @@ Parser.prototype.map = function(f) {
     });
 };
 
+//
+//  ### orElse(a)
+//
 Parser.prototype.orElse = function(a) {
     var env = this;
     return Parser(function(stream, index, attempt, possibleFailure) {
@@ -153,6 +214,11 @@ Parser.prototype.orElse = function(a) {
     });
 };
 
+//
+//  ### skip(a)
+//
+//  Returns a new parser which tries parser, and if it fails uses otherParser.
+//
 Parser.prototype.skip = function(a) {
     return this.chain(function(stream, index, attempt, possibleFailure) {
         return a.chain(function() {
@@ -163,6 +229,11 @@ Parser.prototype.skip = function(a) {
     });
 };
 
+//
+//  ### parse(stream)
+//
+//  Executes the parser with the given stream.
+//
 Parser.prototype.parse = function(stream) {
     var result = this.skip(eof).run(stream, 0, Attempt.of([]), Option.None);
     return result._3.fold(
@@ -178,6 +249,11 @@ Parser.prototype.parse = function(stream) {
     );
 };
 
+//
+//  ### eof()
+//
+//  Expects the end of the stream.
+//
 var eof = Parser(function(stream, index, attempt, possibleFailure) {
     var outcome = index <= stream.length ? attempt : Attempt.Failure(['EOF', index]);
     return Tuple4(stream, index, outcome, possibleFailure);

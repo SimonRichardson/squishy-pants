@@ -59,6 +59,9 @@ function invalidStatementToArray(str) {
 }
 
 _ = _
+    .property('statementToArray', statementToArray)
+    .property('invalidStatementToArray', invalidStatementToArray)
+
     .property('Add', Add)
     .method('arb', _.strictEquals(Add), function(a, b) {
         var x = this.arb(Branch, b - 1),
@@ -84,6 +87,7 @@ _ = _
             y = this.arb(Branch, b - 1);
         return statement('mul', x, y);
     })
+
     .property('AddInvalid', AddInvalid)
     .method('arb', _.strictEquals(AddInvalid), function(a, b) {
         var x = this.arb(BranchInvalid, b - 1),
@@ -109,6 +113,7 @@ _ = _
             y = this.arb(BranchInvalid, b - 1);
         return statement('mul', x, y);
     })
+
     .property('Branch', Branch)
     .method('arb', _.strictEquals(Branch), function(a, b) {
         if (b <= 0 || this.randomRange(0, 1) < 0.5) {
@@ -116,6 +121,7 @@ _ = _
         }
         return this.arb(Generate, b - 1);
     })
+
     .property('BranchInvalid', BranchInvalid)
     .method('arb', _.strictEquals(BranchInvalid), function(a, b) {
         if (b <= 0 || this.randomRange(0, 1) < 0.5) {
@@ -123,6 +129,7 @@ _ = _
         }
         return this.arb(GenerateInvalid, b - 1);
     })
+
     .property('NumberOrInvalid', NumberOrInvalid)
     .method('arb', _.strictEquals(NumberOrInvalid), function(a, b) {
         if(this.randomRange(0, 1) < 0.5) {
@@ -130,19 +137,19 @@ _ = _
         }
         return this.arb(Number, b - 1);
     })
+
     .property('Generate', Generate)
     .method('arb', _.strictEquals(Generate), function(a, b) {
         var types = [Add, Mul, Div, Min],
             value = this.arb(this.oneOf(types), b - 1);
         return value;
     })
+
     .property('GenerateInvalid', GenerateInvalid)
     .method('arb', _.strictEquals(GenerateInvalid), function(a, b) {
         var types = [AddInvalid, MulInvalid, DivInvalid, MinInvalid],
             value = this.arb(this.oneOf(types), b - 1);
         return value;
-    })
-    .property('statementToArray', statementToArray)
-    .property('invalidStatementToArray', invalidStatementToArray);
+    });
 
 exports = module.exports = _;
