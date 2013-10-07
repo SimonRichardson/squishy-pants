@@ -20,6 +20,8 @@ var Parser = tagged('Parser', ['run']);
 //
 //  ### of(x)
 //
+//  Creates a parser that contains a successful value.
+//
 Parser.of = function(a) {
     return Parser(function() {
         return Tuple4(a, 0, Attempt.of([]), Option.None);
@@ -28,6 +30,8 @@ Parser.of = function(a) {
 
 //
 //  ### empty()
+//
+//  Creates a parser that contains a empty value.
 //
 Parser.empty = function() {
     return Parser(function(a) {
@@ -38,6 +42,8 @@ Parser.empty = function() {
 //
 //  ### fail(x)
 //
+//  Creates a parser that contains a failed value.
+//
 Parser.fail = function(e) {
     return Parser(function(a, b) {
         return Tuple4(a, b, Attempt.Failure([e]), Option.of([e]));
@@ -46,6 +52,8 @@ Parser.fail = function(e) {
 
 //
 //  ### success(x)
+//
+//  Creates a parser that contains a successful value.
 //
 Parser.success = function(s) {
     return Parser(function(a, b) {
