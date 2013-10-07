@@ -167,6 +167,19 @@ exports.parser = {
         },
         [_.Generate]
     ),
+    'when testing a generated invalid string with nested values should return correct value': _.check(
+        function(a) {
+            var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().skip(rightBracket);
+                }),
+                atom = number.orElse(id),
+                expr = block.orElse(atom).skip(optionalWhitespace),
+                expected = _.invalidStatementToArray(a);
+
+            return _.expect(expr.parse(a)).toBe(expected);
+        },
+        [_.GenerateInvalid]
+    ),
     'when testing `( )` with many should return correct value': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().skip(rightBracket);

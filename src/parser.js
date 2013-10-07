@@ -199,4 +199,6 @@ fo.unsafeSetValueOf(Parser.prototype);
 //  append methods to the squishy environment.
 //
 squishy = squishy
-    .property('Parser', Parser);
+    .property('Parser', Parser)
+    .property('isParser', isParser);
+
