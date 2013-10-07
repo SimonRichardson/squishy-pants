@@ -109,7 +109,7 @@ exports.parser = {
             return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
         },
         [_.NumericOrAlphaChar]
-    ),
+    ),*/
     'when testing nested values in brackets or atom should return atom': _.check(
         function(a) {
             var round = number.map(toInt),
@@ -120,7 +120,7 @@ exports.parser = {
                 expr = form.orElse(atom).skip(optionalWhitespace),
                 value = a.toString();
 
-            return _.expect(expr.parse(value)).toBe(_.Success([toInt(value)]));
+            return _.expect(expr.parse(value)).toBe(_.Success(toInt(value)));
         },
         [Number]
     ),
@@ -185,7 +185,7 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Success(expected)));
         test.done();
-    },*/
+    },
     'when testing `(add 1 2)` should return correct value': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().skip(rightBracket);
