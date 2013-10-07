@@ -172,7 +172,7 @@ Parser.prototype.parse = function(stream) {
                 function(y) {
                     return Attempt.Failure(y);
                 },
-                constant(x)
+                constant(result._3)
             );
         }
     );

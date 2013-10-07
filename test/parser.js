@@ -16,18 +16,16 @@ function toFloat(a) {
 }
 
 exports.parser = {
-   /*'when testing a number in brackets should return correct value': _.check(
+   'when testing a number in brackets should return correct value': _.check(
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 expr = leftBracket.skip(optionalWhitespace).chain(function(a, b, c, d) {
-                    return round.skip(optionalWhitespace).chain(function(a, b, c, d) {
-                        return rightBracket;
-                    });
+                    return round.skip(optionalWhitespace).skip(rightBracket);
                 }),
                 value = '(' + a + ')',
                 expected = toFloat(toInt(a)).toString();
 
-            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [Number]
     ),
@@ -35,14 +33,12 @@ exports.parser = {
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 expr = leftBracket.skip(whitespace).chain(function() {
-                    return round.skip(whitespace).chain(function() {
-                        return rightBracket;
-                    });
+                    return round.skip(whitespace).skip(rightBracket);
                 }),
                 value = '( ' + a + ' )',
                 expected = toFloat(toInt(a)).toString();
 
-            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [Number]
     ),
@@ -50,9 +46,7 @@ exports.parser = {
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 expr = leftBracket.skip(whitespace).chain(function() {
-                    return round.skip(whitespace).chain(function() {
-                        return rightBracket;
-                    });
+                    return round.skip(whitespace).skip(rightBracket);
                 }),
                 value = '(' + a + ')';
 
@@ -77,7 +71,7 @@ exports.parser = {
             return _.expect(expr.parse(value)).toBe(_.Failure(expected));
         },
         [Number]
-    ),
+    ),/*
     'when testing two numbers brackets in should return correct value': _.check(
         function(a, b) {
             var expr = leftBracket.chain(function() {
