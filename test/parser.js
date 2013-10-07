@@ -1,4 +1,4 @@
-var _ = require('./lib/test'),
+var _ = require('./lib/parser'),
     id = _.Parser.regexp(/^[a-zA-Z_]+/),
     alpha = _.Parser.regexp(/^[a-zA-Z]+/),
     number = _.Parser.regexp(/^[\+\-]?\d+(\.\d+)?/),
@@ -153,6 +153,19 @@ exports.parser = {
             return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [_.NonEmptyAlphaChar, Number, Number]
+    ),
+    'when testing a generated string with nested values should return correct value': _.check(
+        function(a) {
+            var block = leftBracket.skip(optionalWhitespace).chain(function() {
+                    return expr.many().skip(rightBracket);
+                }),
+                atom = number.orElse(id),
+                expr = block.orElse(atom).skip(optionalWhitespace),
+                expected = _.statementToArray(a);
+
+            return _.expect(expr.parse(a)).toBe(_.Success([expected]));
+        },
+        [_.Generate]
     ),
     'when testing `( )` with many should return correct value': function(test) {
         var block = leftBracket.skip(optionalWhitespace).chain(function() {

@@ -11,7 +11,7 @@ _ = _
         };
     })
     .property('check', _.curry(function(property, args, test) {
-        var report = _.forAll(property, args);
+        var report = this.forAll(property, args);
 
         test.ok(report.isNone, report.fold(
             function(fail) {
@@ -25,14 +25,15 @@ _ = _
     }))
     .property('checkTaggedArgs', _.curry(function(type, args, access, test) {
         // Go through and check all the tagged arguments.
-        var length = _.functionLength(type);
-        _.fill(length)(_.identity).forEach(function (value, index) {
+        var env = this,
+            length = env.functionLength(type);
+        env.fill(length)(env.identity).forEach(function (value, index) {
             function property() {
                 return access(type.apply(this, arguments), index) === arguments[index];
             }
             property._length = length;
 
-            var report = _.forAll(property, args);
+            var report = env.forAll(property, args);
             test.ok(report.isNone, report.fold(
                 function(fail) {
                     return 'Failed after ' + fail.tries + ' tries: ' + fail.inputs.toString();
@@ -56,7 +57,7 @@ _ = _
                 state(
                     !result ?
                     env.Some(
-                        _.failureReporter(
+                        env.failureReporter(
                             inputs,
                             index + 1
                         )
@@ -89,10 +90,10 @@ _ = _
             applied.fork(check(reporter, inputs, i), checkDone());
         }
 
-        var valid = _.fold(failures, true, function(a, b) {
+        var valid = env.fold(failures, true, function(a, b) {
                 return a && b.valid;
             }),
-            words = valid ? 'OK' : _.fold(failures, '', function(a, b) {
+            words = valid ? 'OK' : env.fold(failures, '', function(a, b) {
                 return b.valid ? a : a + '\n' + b.msg;
             });
 
@@ -105,19 +106,19 @@ _ = _
     .property('NonEmptyChar', NonEmptyChar)
     .method('arb', _.strictEquals(NonEmptyChar), function(a, s) {
         var blacklist = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, 129, 141, 143, 144, 157, 160, 173],
-            rnd = _.randomIntRangeWithout(33, 255, blacklist);
+            rnd = this.randomIntRangeWithout(33, 255, blacklist);
         return String.fromCharCode(rnd);
     })
     .property('NonEmptyAlphaChar', NonEmptyAlphaChar)
     .method('arb', _.strictEquals(NonEmptyAlphaChar), function(a, s) {
         var blacklist = [91, 92, 93, 94, 95, 96],
-            rnd = _.randomIntRangeWithout(65, 122, blacklist);
+            rnd = this.randomIntRangeWithout(65, 122, blacklist);
         return String.fromCharCode(rnd);
     })
     .property('NumericOrAlphaChar', NumericOrAlphaChar)
     .method('arb', _.strictEquals(NumericOrAlphaChar), function(a, s) {
         var blacklist = [58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96],
-            rnd = _.randomIntRangeWithout(48, 122, blacklist);
+            rnd = this.randomIntRangeWithout(48, 122, blacklist);
         return String.fromCharCode(rnd);
     });
 
