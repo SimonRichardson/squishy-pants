@@ -284,5 +284,10 @@ fo.unsafeSetValueOf(Parser.prototype);
 //
 squishy = squishy
     .property('Parser', Parser)
-    .property('isParser', isParser);
-
+    .property('isParser', isParser)
+    .method('chain', isParser, function(a, b) {
+        return a.chain(b);
+    })
+    .method('map', isParser, function(a, b) {
+        return a.map(b);
+    });
