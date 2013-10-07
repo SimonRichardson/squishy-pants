@@ -71,18 +71,16 @@ exports.parser = {
             return _.expect(expr.parse(value)).toBe(_.Failure(expected));
         },
         [Number]
-    ),/*
+    ),
     'when testing two numbers brackets in should return correct value': _.check(
         function(a, b) {
             var expr = leftBracket.chain(function() {
                     return number.skip(whitespace).chain(function() {
-                          return number.chain(function() {
-                              return rightBracket;
-                          });
+                          return number.skip(rightBracket);
                     });
                 }),
                 value = '(' + a + ' ' + b + ')',
-                expected = ['(', a.toString(), b.toString(), ')'];
+                expected = [b.toString()];
 
             return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
@@ -92,18 +90,16 @@ exports.parser = {
         function(a) {
             var round = number.map(toInt).map(toFloat),
                 expr = leftBracket.skip(optionalWhitespace).chain(function() {
-                    return round.orElse(alpha).skip(optionalWhitespace).chain(function() {
-                        return rightBracket;
-                    });
+                    return round.orElse(alpha).skip(rightBracket);
                 }),
                 value = '(' + a + ')',
                 possibleNumber = parseFloat(a, 10),
-                expected = _.isNaN(possibleNumber) ? a : toFloat(toInt(possibleNumber)).toString();
+                expected = _.isNaN(possibleNumber) ? [a] : toFloat(toInt(possibleNumber)).toString();
 
-            return _.expect(expr.parse(value)).toBe(_.Success(['(', expected, ')']));
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
         },
         [_.NumericOrAlphaChar]
-    ),*/
+    ),
     'when testing nested values in brackets or atom should return atom': _.check(
         function(a) {
             var round = number.map(toInt),
