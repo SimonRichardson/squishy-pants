@@ -105,7 +105,7 @@ function forAll(property, args) {
 //
 //  Default is `100`.
 //
-var goal = 10;//00;
+var goal = 30;//00;
 
 //
 //  ## AnyVal
