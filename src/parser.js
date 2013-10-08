@@ -9,6 +9,7 @@
 //        expr.parse('1.1');
 //
 //   * `chain(f)` - Monadic flatMap/bind
+//   * `also(f)` - FlatMap/bind with concatenation of results
 //   * `many` - Yield array of results
 //   * `map(f)` - Functor map
 //   * `orElse(a)` - Default parser or else try alternative
@@ -120,6 +121,37 @@ Parser.prototype.chain = function(f) {
             function(x) {
                 var a = f(outcome._1, outcome._2, outcome._3, outcome._4);
                 return a.run(outcome._1, outcome._2, outcome._3, outcome._4);
+            },
+            function() {
+                return Tuple4(outcome._1, outcome._2, outcome._3, outcome._4);
+            }
+        );
+    });
+};
+
+//
+//  ### also(f)
+//
+//  Expects another Parser to follow parser, and concatenates the result of
+//  both Parser results.
+//
+Parser.prototype.also = function(f) {
+    var env = this;
+    return Parser(function(stream, index, attempt, possibleFailure) {
+        var outcome = env.run(stream, index, attempt, possibleFailure);
+        return outcome._3.fold(
+            function(x) {
+                var a = f(outcome._1, outcome._2, outcome._3, outcome._4);
+                var b = a.run(outcome._1, outcome._2, outcome._3, outcome._4);
+                return b._3.fold(
+                    function(y) {
+                        var c = Attempt.of([squishy.concat(x[0], y)]);
+                        return Tuple4(b._1, b._2, c, b._4);
+                    },
+                    function() {
+                        return b;
+                    }
+                );
             },
             function() {
                 return Tuple4(outcome._1, outcome._2, outcome._3, outcome._4);

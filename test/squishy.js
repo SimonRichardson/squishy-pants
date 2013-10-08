@@ -257,10 +257,10 @@ exports.sequence = {
     }
 };
 
-exports.flatten = {
-    'when call flatten and checking that arguments passed are correct': _.check(
+exports.then = {
+    'when call then and checking that arguments passed are correct': _.check(
         function(a, b) {
-            return _.expect(_.flatten(_.add, [a, b]), _.add(a, b));
+            return _.expect(_.then(_.add, [a, b]), _.add(a, b));
         },
         [_.Integer, _.Integer]
     )

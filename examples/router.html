@@ -48,7 +48,7 @@
 
                   self.route = function(path, f) {
                       var predicate = _.constant(_.andThen(format, toRegExp)(path())),
-                          callback = _.andThen(perform(predicate), _.flatten(f));
+                          callback = _.andThen(perform(predicate), _.then(f));
 
                       return router(self.routes.method(is(predicate), callback));
                   };

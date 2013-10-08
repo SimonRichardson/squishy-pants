@@ -236,13 +236,13 @@ var minus = curry(function(a, b) {
 });
 
 //
-//  ## flatten(a, [b])
+//  ## then(a, [b])
 //
-//  Flatten arguments passed via flatten into the function
+//  Then flatten arguments passed via then into the function
 //
-//      flatten(f, [1, 2]) == f.apply(null, [1, 2])
+//      then(f, [1, 2]) == f.apply(null, [1, 2])
 //
-var flatten = curry(function(f, b) {
+var then = curry(function(f, b) {
     return f.apply(null, b);
 });
 
@@ -525,7 +525,7 @@ squishy = squishy
     .property('andThen', andThen)
     .property('sequence', sequence)
     .property('minus', minus)
-    .property('flatten', flatten)
+    .property('then', then)
     .property('liftA2', liftA2)
     .property('arrayOf', arrayOf)
     .property('objectLike', objectLike)

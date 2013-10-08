@@ -14,7 +14,7 @@
 //   * `dropWhile(a, f)` - Returns the longest suffix of this array whose first element does not satisfy the predicate.
 //   * `exists(a, f)` - Tests the existence in this array of an element that satisfies the predicate.
 //   * `filter(a, f)` - Returns all the elements of this array that satisfy the predicate p.
-//   * `flatten(a)` - Concatenate the elements of this array.
+//   * `flatten(a)` - Concatenate nested elements of this array.
 //   * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.
 //   * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from Right to Left, and starting with the value v.
 //   * `map(a, f)` - Returns the array resulting from applying the given function f to each element of this array.
@@ -152,6 +152,17 @@ var exists = curry(function(a, f) {
     }
 
     return false;
+});
+
+//
+//  ### flatten(a)
+//
+//  Concatenate nested elements of this array.
+//
+var flatten = curry(function(a) {
+    return chain(a, function(b) {
+        return isArray(b) ? b : [b];
+    });
 });
 
 //
@@ -365,6 +376,7 @@ squishy = squishy
     .method('dropRight', isArray, dropRight)
     .method('dropWhile', isArray, dropWhile)
     .method('exists', isArray, exists)
+    .method('flatten', isArray, flatten)
     .method('filter', isArray, filter)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)

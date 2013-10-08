@@ -6,19 +6,17 @@ var _ = require('./lib/test'),
 
 exports.matcher = {
     'testing': function(test) {
-        var dispatcher = {
-            'Cons(_, Cons(_, _))': function(head, tail) {
-                return 2;
+        var options = {
+                'Cons(a, _)': function(a, b, c) {
+                    return a;
+                },
+                '_': function() {
+                    return 0;
+                }
             },
-            'Cons(_, Nil)': function(head) {
-                return 1;
-            },
-            Nil: function() {
-                return 0;
-            }
-        };
-        console.log('(FIN) --->', _.matcher(dispatcher, 'Cons', ['blah', 1]));
-        test.ok(true);
+            args = [1, List.Cons(2, List.Nil)];
+
+        //test.ok(_.matcher(options, 'Cons', args) === 2);
         test.done();
     }
 };
