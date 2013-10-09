@@ -62,23 +62,11 @@ function taggedSum(name, constructors) {
         throw new TypeError('Tagged sum was called instead of one of its properties.');
     }
 
-    function constructFields(o, fields) {
-        var args = [],
-            total,
-            i;
-
-        for(i = 0, total = fields.length; i < total; i++) {
-            args.push(o[fields[i]]);
-        }
-
-        return args;
-    }
-
     function constructMatch(key) {
         return function(dispatches) {
             var fields = constructors[key],
                 accessor = dispatches[key],
-                args = constructFields(this, fields),
+                args = squishy.select(this, fields),
                 total,
                 first,
                 opt,

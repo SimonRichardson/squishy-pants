@@ -5,18 +5,34 @@ var _ = require('./lib/test'),
     });
 
 exports.matcher = {
-    'testing': function(test) {
-        var options = {
-                'Cons(a, _)': function(a, b, c) {
-                    return a;
+    'when checking a recursive match should return correct value': _.check(
+        function(a, b) {
+            var options = {
+                    'Cons(a, Cons(b, _))': function(x, y) {
+                        return x + y;
+                    },
+                    '_': function() {
+                        return 0;
+                    }
                 },
-                '_': function() {
-                    return 0;
-                }
-            },
-            args = [1, List.Cons(2, List.Nil)];
+                args = [a, List.Cons(b, List.Nil)];
 
-        //test.ok(_.matcher(options, 'Cons', args) === 2);
-        test.done();
-    }
+            return _.expect(_.matcher(options, 'Cons', args)).toBe(a + b);
+        },
+        [Number, Number]
+    ),
+    'when checking a recursive match with no value should return correct value': _.check(
+        function(a) {
+            var options = {
+                    'Cons(a, Cons(b, _))': _.error('Failed if called'),
+                    '_': function() {
+                        return -1;
+                    }
+                },
+                args = [a, List.Nil];
+
+            return _.expect(_.matcher(options, 'Cons', args)).toBe(-1);
+        },
+        [Number]
+    )
 };

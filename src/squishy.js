@@ -484,6 +484,19 @@ function flip(f) {
 }
 
 //
+//  ## select(a, b)
+//
+//  Select all the fields from an object with the associative field names
+//
+//      select({a: 1}, ['a']);
+//
+function select(o, fields) {
+    return squishy.map(fields, function(v) {
+        return o[v];
+    });
+}
+
+//
 //  ## optional
 //
 //  Optionally calls the function passed if it's not null. This is glue
@@ -547,4 +560,5 @@ squishy = squishy
     .property('point', point)
     .property('zero', zero)
     .property('rest', rest)
-    .property('flip', flip);
+    .property('flip', flip)
+    .property('select', select);

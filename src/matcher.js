@@ -6,6 +6,7 @@ var regexp = Parser.regexp,
     leftBracket = string('('),
     rightBracket = string(')'),
     optionalWhitespace = regexp(/^\s*/),
+    ignoreAsString = '_',
 
     block = ident.many().also(function() {
         return leftBracket.skip(optionalWhitespace).chain(function() {
@@ -15,28 +16,82 @@ var regexp = Parser.regexp,
     expr = block.orElse(ident).orElse(ignore).skip(comma),
     parser = block.orElse(ident);
 
-var extract = curry(function(key, x) {
-    var rest;
-    if (head(x) === key) {
-        rest = tail(x);
-        if (rest.length > 0) {
-            squishy.map(rest, function(v) {
-                if(isArray(v)) {
-                    // recursive
-                    console.log(v);
-                } else if (v !== '_') {
-                    // not a wild card
-                    console.log(v);
-                }
-            });
-            return Option.Some([]);
-        } else {
-            return Option.None;
-        }
-    }
 
-    return Option.None;
+var rec = function(args, a, key) {
+    var zipped;
+
+    if (head(a) === key) {
+
+        zipped = squishy.zip(tail(a), args);
+
+        return squishy.map(
+            zipped,
+            function(tuple) {
+                var name = tuple._1,
+                    value = tuple._2,
+                    possibleArgs,
+                    possibleKey,
+                    possibleFields;
+
+                if (squishy.isArray(name)) {
+
+                    possibleKey = functionName(value);
+                    possibleFields = value._constructors[possibleKey];
+
+                    if(isArray(possibleFields) && possibleFields.length > 0) {
+
+                        possibleArgs = squishy.select(value, possibleFields);
+                        return rec(possibleArgs, [name], possibleKey);
+                    }
+
+                    return Attempt.Failure([]);
+
+                } else if (name !== ignoreAsString) {
+                    return Attempt.of(value);
+                } else {
+                    return Attempt.of('_');
+                }
+            }
+        );
+    } else {
+        return Attempt.Failure([]);
+    }
+};
+
+var extract = curry(function(args, key, x) {
+    var result = rec(args, x, key),
+        flattened = squishy.chain(result, function(a) {
+            return flatten([a]);
+        }),
+        failed = squishy.exists(flattened, function(a) {
+            return a.isFailure;
+        }),
+        filtered,
+        mapped;
+
+    if (failed) {
+        return Option.None;
+    } else {
+        filtered = squishy.filter(flattened, function(a) {
+            return a.fold(
+                function(v) {
+                    return v !== ignoreAsString;
+                },
+                constant(false)
+            );
+        });
+        mapped = squishy.map(filtered, function(a) {
+            return a.extract();
+        });
+        return Option.of(mapped);
+    }
 });
+
+function flatten(a) {
+    return squishy.map(a, function(a){
+        return isArray(a) ? flatten(a) : a;
+    });
+}
 
 function head(a) {
     return squishy.flatten(a)[0];
@@ -53,26 +108,39 @@ function construct(str) {
     );
 }
 
-function matcher(dispatchers, key, args) {
+function matcher(options, key, args) {
     var accessors = [],
-        result;
+        result,
+        valid,
+        value,
+        first,
+        defaultCase;
 
-    for(var i in dispatchers) {
-        accessors.push(construct(i, key).fold(
-            extract(key),
-            identity
-        ));
+    for(var i in options) {
+        result = construct(i, key);
+        value = result.fold(
+            extract(args, key),
+            constant(result)
+        );
+        accessors.push(Tuple2(options[i], value));
     }
 
-    result = squishy.exists(accessors, function(a) {
-        return a.isSome;
+    valid = squishy.filter(accessors, function(t) {
+        return t._2.isSome;
     });
 
-    if(!result) {
-        throw new TypeError("Constructors given to match didn't include: " + key);
+    if(valid.length < 1) {
+        // Handle the default case
+        defaultCase = options[ignoreAsString];
+        if (defaultCase) {
+            return defaultCase.apply(this, []);
+        }
+
+        throw new TypeError("Constructors given to match any pattern for: " + key);
     }
 
-    return false;//accessor.apply(this, args);
+    first = valid[0];
+    return first._1.apply(this, first._2.extract());
 }
 
 squishy = squishy
