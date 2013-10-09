@@ -87,12 +87,6 @@ var extract = curry(function(args, key, x) {
     }
 });
 
-function flatten(a) {
-    return squishy.map(a, function(a){
-        return isArray(a) ? flatten(a) : a;
-    });
-}
-
 function head(a) {
     return squishy.flatten(a)[0];
 }
