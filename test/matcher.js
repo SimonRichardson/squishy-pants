@@ -35,6 +35,23 @@ exports.match = {
         },
         [Number, Number]
     ),
+    'when checking a recursive match multiple times should return correct value': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Cons(a, Cons(b, _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', function() {
+                        return 0;
+                    }]
+                ],
+                args = List.Cons(a, List.Cons(b, List.Nil)),
+                match = _.match(patterns);
+
+            return _.expect(match(args)).toBe(match(args));
+        },
+        [Number, Number]
+    ),
     'when checking a recursive exact match should return correct value': _.check(
         function(a, b) {
             var patterns = [
