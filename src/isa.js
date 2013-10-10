@@ -204,15 +204,6 @@ var isEnvironment = function(a) {
 };
 
 //
-//  ## isPartial(a)
-//
-//  Returns `true` if `a` is an instance of `partial`.
-//
-var isPartial = function(a) {
-    return isInstanceOf(partial, a);
-};
-
-//
 //  ## isComparable(a)
 //
 //  Returns `true` if `a` has a method called `equal`
@@ -298,7 +289,6 @@ squishy = squishy
     .property('isAnyTypeOf', isAnyTypeOf)
     .property('isAnyInstanceOf', isAnyInstanceOf)
     .property('isEnvironment', isEnvironment)
-    .property('isPartial', isPartial)
     .property('isComparable', isComparable)
     .property('isPlainObject', isPlainObject);
 

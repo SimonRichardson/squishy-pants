@@ -66,36 +66,10 @@ function taggedSum(name, constructors) {
         return function(dispatches) {
             var fields = constructors[key],
                 accessor = dispatches[key],
-                args = squishy.select(this, fields),
-                total,
-                first,
-                opt,
-                i, j;
+                args = squishy.select(this, fields);
 
             if(!accessor) {
                 throw new TypeError("Constructors given to match didn't include: " + key);
-            }
-
-            /*
-                Work out if the accessor is an object then if it's a partial
-                definition call that, otherwise see if we can do a recursive pattern
-                match over the first argument.
-            */
-            if (args.length > 0 && isObject(accessor) && !isPartial(accessor)) {
-                /* Possible instance of a taggedSum */
-                first = args[0];
-
-                if (accessor[functionName(first)]) {
-                    opt = {};
-
-                    for (j in first._constructors) {
-                        opt[j] = accessor[j];
-                    }
-
-                    return first.match(opt);
-                }
-
-                throw new TypeError('Constructor not found: ' + key);
             }
 
             return accessor.apply(this, args);
