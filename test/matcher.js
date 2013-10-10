@@ -18,7 +18,7 @@ exports.matcher = {
 
         test.equals(_.matcher(options, value), 3);
         test.done();
-    }/*,
+    },
     'when checking a recursive match should return correct value': _.check(
         function(a, b) {
             var options = {
@@ -29,9 +29,9 @@ exports.matcher = {
                         return 0;
                     }
                 },
-                args = [a, List.Cons(b, List.Nil)];
+                args = List.Cons(a, List.Cons(b, List.Nil));
 
-            return _.expect(_.matcher(options, 'Cons', args)).toBe(a + b);
+            return _.expect(_.matcher(options, args)).toBe(a + b);
         },
         [Number, Number]
     ),
@@ -43,10 +43,10 @@ exports.matcher = {
                         return -1;
                     }
                 },
-                args = [a, List.Nil];
+                args = List.Cons(a, List.Nil);
 
-            return _.expect(_.matcher(options, 'Cons', args)).toBe(-1);
+            return _.expect(_.matcher(options, args)).toBe(-1);
         },
         [Number]
-    )*/
+    )
 };
