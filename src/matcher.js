@@ -30,22 +30,21 @@ var rec = function(args, a, key) {
                 var name = tuple._1,
                     value = tuple._2,
                     possibleArgs,
-                    possibleKey,
-                    possibleFields;
+                    possibleKey;
 
                 if (squishy.isArray(name)) {
 
                     possibleKey = functionName(value);
-                    possibleFields = value._constructors[possibleKey];
+                    possibleArgs = supplied(value, fields(value, possibleKey));
 
-                    if(isArray(possibleFields) && possibleFields.length > 0) {
-
-                        possibleArgs = squishy.select(value, possibleFields);
-                        return rec(possibleArgs, [name], possibleKey);
-                    }
-
-                    return Attempt.Failure([]);
-
+                    return possibleArgs.fold(
+                        function(x) {
+                            return rec(x, [name], possibleKey);
+                        },
+                        function() {
+                            return Attempt.Failure([]);
+                        }
+                    );
                 } else if (name !== ignoreAsString) {
                     return Attempt.of(value);
                 } else {
@@ -102,21 +101,34 @@ function construct(str) {
     );
 }
 
-function matcher(options, key, args) {
+function fields(value, key) {
+    return value._constructors[key];
+}
+
+function supplied(value, fields) {
+    if(isArray(fields) && fields.length > 0) {
+        return Option.Some(squishy.select(value, fields));
+    }
+    return Option.None;
+}
+
+var matcher = curry(function(a, b) {
     var accessors = [],
+        key = functionName(b),
+        args = supplied(b, fields(b, key)).getOrElse(constant([])),
         result,
         valid,
         value,
         first,
         defaultCase;
 
-    for(var i in options) {
+    for(var i in a) {
         result = construct(i, key);
         value = result.fold(
             extract(args, key),
             constant(result)
         );
-        accessors.push(Tuple2(options[i], value));
+        accessors.push(Tuple2(a[i], value));
     }
 
     valid = squishy.filter(accessors, function(t) {
@@ -125,7 +137,7 @@ function matcher(options, key, args) {
 
     if(valid.length < 1) {
         // Handle the default case
-        defaultCase = options[ignoreAsString];
+        defaultCase = a[ignoreAsString];
         if (defaultCase) {
             return defaultCase.apply(this, []);
         }
@@ -135,7 +147,7 @@ function matcher(options, key, args) {
 
     first = valid[0];
     return first._1.apply(this, first._2.extract());
-}
+});
 
 squishy = squishy
     .property('matcher', matcher);
