@@ -185,6 +185,25 @@ var filter = curry(function(a, f) {
 });
 
 //
+//  ### find(f)
+//
+//  Returns the element in this array of an element that satisfies
+//  the predicate.
+//
+var find = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i < total; i++) {
+        if(f(a[i])) {
+            return a[i];
+        }
+    }
+
+    return null;
+});
+
+//
 //  ### fold(v, f)
 //
 //  Combines the elements of this array together using the binary function f,
@@ -378,6 +397,7 @@ squishy = squishy
     .method('exists', isArray, exists)
     .method('flatten', isArray, flatten)
     .method('filter', isArray, filter)
+    .method('find', isArray, find)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
     .method('map', isArray, map)

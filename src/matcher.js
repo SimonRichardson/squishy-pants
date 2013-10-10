@@ -113,23 +113,23 @@ function supplied(value, fields) {
 }
 
 var matcher = curry(function(a, b) {
-    var accessors = [],
-        key = functionName(b),
+    var key = functionName(b),
         args = supplied(b, fields(b, key)).getOrElse(constant([])),
+        accessors,
         result,
         valid,
         value,
         first,
         defaultCase;
 
-    for(var i in a) {
-        result = construct(i, key);
+    accessors = squishy.map(a, function(c) {
+        result = construct(c[0], key);
         value = result.fold(
             extract(args, key),
             constant(result)
         );
-        accessors.push(Tuple2(a[i], value));
-    }
+        return Tuple2(c[1], value);
+    });
 
     valid = squishy.filter(accessors, function(t) {
         return t._2.isSome;
@@ -137,9 +137,11 @@ var matcher = curry(function(a, b) {
 
     if(valid.length < 1) {
         // Handle the default case
-        defaultCase = a[ignoreAsString];
-        if (defaultCase) {
-            return defaultCase.apply(this, []);
+        defaultCase = squishy.find(a, function(x) {
+            return x[0] === ignoreAsString;
+        });
+        if (isArray(defaultCase)) {
+            return defaultCase[1].apply(this, []);
         }
 
         throw new TypeError("Constructors given to match any pattern for: " + key);
