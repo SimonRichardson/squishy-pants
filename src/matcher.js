@@ -112,43 +112,52 @@ function supplied(value, fields) {
     return Option.None;
 }
 
-var matcher = curry(function(a, b) {
-    var key = functionName(b),
-        args = supplied(b, fields(b, key)).getOrElse(constant([])),
-        accessors,
-        result,
-        valid,
-        value,
-        first,
-        defaultCase;
+function until(a, f) {
+    var result,
+        i;
 
-    accessors = squishy.map(a, function(c) {
-        result = construct(c[0], key);
-        value = result.fold(
-            extract(args, key),
-            constant(result)
-        );
-        return Tuple2(c[1], value);
-    });
-
-    valid = squishy.filter(accessors, function(t) {
-        return t._2.isSome;
-    });
-
-    if(valid.length < 1) {
-        // Handle the default case
-        defaultCase = squishy.find(a, function(x) {
-            return x[0] === ignoreAsString;
-        });
-        if (isArray(defaultCase)) {
-            return defaultCase[1].apply(this, []);
+    for(i = 0; i < a.length; i++) {
+        result = f(a[i]);
+        if (result.isSome) {
+            return result;
         }
-
-        throw new TypeError("Constructors given to match any pattern for: " + key);
     }
 
-    first = valid[0];
-    return first._1.apply(this, first._2.extract());
+    return Option.None;
+}
+
+var matcher = curry(function(a, b) {
+    var env = this,
+        key = functionName(b),
+        args = supplied(b, fields(b, key)).getOrElse(constant([])),
+        result = until(a, function(c) {
+            var result = construct(c[0], key),
+                value = result.fold(
+                    extract(args, key),
+                    constant(result)
+                );
+
+            return value.map(
+                function(x) {
+                    return c[1].apply(env, x);
+                }
+            );
+        });
+
+    return result.fold(
+        identity,
+        function() {
+            // Handle the default case
+            var defaultCase = env.find(a, function(x) {
+                return x[0] === ignoreAsString;
+            });
+            if (isArray(defaultCase)) {
+                return defaultCase[1].apply(this, []);
+            }
+
+            throw new TypeError("Constructors given to match any pattern for: " + key);
+        }
+    );
 });
 
 squishy = squishy
