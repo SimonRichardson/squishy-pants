@@ -225,7 +225,7 @@ squishy = squishy
             i;
 
         for(i = 0; i < length; i++) {
-            o[this.arb(String, s - 1)] = this.arb(arrayOf(AnyVal), s - 1);
+            o[this.arb(String, s - 1)] = this.arb(AnyVal, s - 1);
         }
 
         return o;
