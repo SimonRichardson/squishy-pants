@@ -83,8 +83,9 @@ function siblings(value) {
     return [];
 }
 
-function fields(value, key) {
-    return value._constructors[key];
+function fields(a, b) {
+    var key = namespaceName(b);
+    return a._constructors[key];
 }
 
 function supplied(value, fields) {
@@ -108,11 +109,26 @@ function until(a, f) {
     return Option.None;
 }
 
+function namespace(a) {
+    var parent = a._tagged ? functionName(a._tagged) + '.' : '';
+    return squishy.concat(parent, functionName(a));
+}
+
+function namespaceName(a) {
+    var parts = a.split('.'),
+        total = parts.length;
+    return total > 1 ? parts[parts.length - 1] : a;
+}
+
+function namespaceEquality(a, b) {
+    return a === b || namespaceName(a) === namespaceName(b);
+}
+
 function recursiveMatch(args, a, key) {
     var zipped,
         rest;
 
-    if (head(a) === key) {
+    if (namespaceEquality(head(a), key)) {
 
         zipped = squishy.zip(tail(a), args);
 
@@ -121,7 +137,7 @@ function recursiveMatch(args, a, key) {
             function(tuple) {
                 var name = tuple._1,
                     value = tuple._2,
-                    possibleKey = functionName(value),
+                    possibleKey = namespace(value),
                     possibleArgs;
 
                 if (squishy.isArray(name)) {
@@ -160,7 +176,7 @@ function match(patterns) {
         compile = compiler();
 
     return function(argument) {
-        var key = functionName(argument),
+        var key = namespace(argument),
             args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
             result = until(patterns, function(c) {
                 var result = compile(c[0]),

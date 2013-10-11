@@ -155,5 +155,49 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a);
         },
         [Number, Number]
+    ),
+    'when checking nested monad just with just should return correct value': _.check(
+        function(a, b, c) {
+            var patterns = [
+                    ['Cons(a, Cons(Just(Just(b)), _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(Maybe.Just(Maybe.Just(b)), List.Cons(c, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b);
+        },
+        [Number, Number, Number]
+    ),
+    'when checking full recursive match should return correct value': _.check(
+        function(a, b, c) {
+            var patterns = [
+                    ['Cons(a, Cons(Just(Just(b)), Cons(c, Cons(_, Nil)))))', _.error('Failed if called first')],
+                    ['Cons(a, Cons(Just(Just(b)), Cons(c, Nil)))', function(x, y, z) {
+                        return x + y + z;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(Maybe.Just(Maybe.Just(b)), List.Cons(c, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b + c);
+        },
+        [Number, Number, Number]
+    ),
+    'when checking full name match should return correct value': _.check(
+        function(a, b, c) {
+            var patterns = [
+                    ['List.Cons(a, Cons(Maybe.Just(Just(b)), List.Cons(c, List.Cons(_, Nil)))))', _.error('Failed if called first')],
+                    ['List.Cons(a, Cons(Just(Maybe.Just(b)), List.Cons(c, List.Nil)))', function(x, y, z) {
+                        return x + y + z;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(Maybe.Just(Maybe.Just(b)), List.Cons(c, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b + c);
+        },
+        [Number, Number, Number]
     )
 };

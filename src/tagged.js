@@ -98,6 +98,7 @@ function taggedSum(name, constructors) {
 
         definitions[key] = tagged(key, constructors[key]);
         definitions[key].prototype = makeProto(key, constructors);
+        definitions[key].prototype._tagged = definitions;
     }
 
     definitions._name = name;
