@@ -53,6 +53,18 @@ function isArray(a) {
 }
 
 //
+//  ## isSameType
+//
+//  Returns `true` if `a` is the same type of as `b`
+//
+var isSameTypeOf = curry(function(a, b) {
+    if (isArray(a) && isArray(b)) {
+        return true;
+    }
+    return isTypeOf(a) === isTypeOf(b);
+});
+
+//
 //  ## isNull(a)
 //
 //  Returns `true` if `a` is `null`.
@@ -277,6 +289,7 @@ squishy = squishy
     .property('isObject', isObject)
     .property('isString', isString)
     .property('isArray', isArray)
+    .property('isSameTypeOf', isSameTypeOf)
     .property('isNaN', isNaN)
     .property('isNotNaN', isNotNaN)
     .property('isEven', isEven)

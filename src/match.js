@@ -16,8 +16,10 @@ var match = (function() {
     /* Setup the Monadic parser */
     var regexp = Parser.regexp,
         string = Parser.string,
-        ident = regexp(/^[a-zA-Z0-9\.]+/),
-        alpha = regexp(/^[a-z0-9]+/),
+        word = regexp(/^\w+/),
+        quote = regexp(/^"/),
+        ident = regexp(/^[a-zA-Z\_][a-zA-Z0-9\_\-\.]*/),
+        alpha = regexp(/^[a-z0-9\"\']+/),
         ignore = regexp(/^\_/),
         comma = regexp(/^(\s|\,|\s)*/),
         leftBracket = string('('),
@@ -32,6 +34,10 @@ var match = (function() {
         }),
         expr = block.orElse(alpha).orElse(ident).orElse(ignore).skip(comma),
         parser = block.orElse(ident),
+
+        stringValue = quote.chain(function() {
+            return word.skip(quote);
+        }),
 
         /* Start extracting the possible patterns */
         extract = curry(function(args, key, x) {
@@ -191,6 +197,26 @@ var match = (function() {
         return a === b || namespaceName(a) === namespaceName(b);
     }
 
+    function stringEqual(a, b) {
+        return stringValue.parse(a).fold(
+            function(x) {
+                return x[0] === b;
+            },
+            constant(false)
+        );
+    }
+
+    function numberEqual(a, b) {
+        return parseFloat(a, 10) === b;
+    }
+
+    function identEqual(a, b) {
+        return ident.parse(a).fold(
+            constant(true),
+            constant(false)
+        );
+    }
+
     /* Recursively match the parsed stream values against the taggedSum values */
     function recursiveMatch(args, a, key) {
         var zipped,
@@ -217,25 +243,32 @@ var match = (function() {
                                 return recursiveMatch(x, [name], possibleKey);
                             },
                             function() {
-                                return Attempt.Failure([]);
+                                return Attempt.Failure(['Invalid tokens']);
                             }
                         );
                     } else if (name !== ignoreAsString) {
                         possibleSibling = squishy.exists(siblings(value), function(x) {
                             return name === x;
                         });
+
                         if (possibleSibling && name !== possibleKey) {
-                            return Attempt.Failure([]);
+                            return Attempt.Failure(['Invalid taggedSum sibling']);
                         }
-                        // TODO (Simon) : Check for instance of other items.
-                        return Attempt.of(value);
+
+                        if( stringEqual(name, value) ||
+                            numberEqual(name, value) ||
+                            identEqual(name, value)) {
+                            return Attempt.of(value);
+                        }
+
+                        return Attempt.Failure(['Invalid token']);
                     } else {
                         return Attempt.of(ignoreAsString);
                     }
                 }
             );
         } else {
-            return Attempt.Failure([]);
+            return [Attempt.Failure(['Invalid namespace', head(a), key])];
         }
     }
 
