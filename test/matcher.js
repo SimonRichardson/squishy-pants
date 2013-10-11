@@ -25,9 +25,7 @@ exports.match = {
                     ['Cons(a, Cons(b, _))', function(x, y) {
                         return x + y;
                     }],
-                    ['_', function() {
-                        return 0;
-                    }]
+                    ['_', _.error('Failed if called')]
                 ],
                 args = List.Cons(a, List.Cons(b, List.Nil));
 
@@ -41,9 +39,7 @@ exports.match = {
                     ['Cons(a, Cons(b, _))', function(x, y) {
                         return x + y;
                     }],
-                    ['_', function() {
-                        return 0;
-                    }]
+                    ['_', _.error('Failed if called')]
                 ],
                 args = List.Cons(a, List.Cons(b, List.Nil)),
                 match = _.match(patterns);
@@ -58,9 +54,7 @@ exports.match = {
                     ['Cons(a, Cons(b, Nil))', function(x, y) {
                         return x + y;
                     }],
-                    ['_', function() {
-                        return 0;
-                    }]
+                    ['_', _.error('Failed if called')]
                 ],
                 args = List.Cons(a, List.Cons(b, List.Nil));
 
@@ -99,5 +93,35 @@ exports.match = {
             return _.expect(called).toBe(true);
         },
         [Number]
+    ),
+    'when checking first match should return correct value': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Cons(a, Cons(b, Nil))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['Cons(a, Cons(b, _))', _.error('Failed if called second')],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(b, List.Nil));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b);
+        },
+        [Number, Number]
+    ),
+    'when checking second match should return correct value': _.check(
+        function(a, b, c) {
+            var patterns = [
+                    ['Cons(a, Cons(b, Nil))', _.error('Failed if called first')],
+                    ['Cons(a, Cons(b, _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(b, List.Cons(c, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b);
+        },
+        [Number, Number, Number]
     )
 };

@@ -1,6 +1,7 @@
 var regexp = Parser.regexp,
     string = Parser.string,
-    ident = regexp(/^[a-zA-Z0-9]+/),
+    ident = regexp(/^[a-zA-Z0-9\.]+/),
+    alpha = regexp(/^[a-z0-9]+/),
     ignore = regexp(/^\_/),
     comma = regexp(/^(\s|\,|\s)*/),
     leftBracket = string('('),
@@ -13,7 +14,7 @@ var regexp = Parser.regexp,
             return expr.many().skip(rightBracket);
         });
     }),
-    expr = block.orElse(ident).orElse(ignore).skip(comma),
+    expr = block.orElse(alpha).orElse(ident).orElse(ignore).skip(comma),
     parser = block.orElse(ident),
 
     extract = curry(function(args, key, x) {
@@ -69,6 +70,13 @@ function compiler() {
     };
 }
 
+function siblings(value) {
+    if (isObject(value)) {
+        return Object.keys(value._constructors);
+    }
+    return [];
+}
+
 function fields(value, key) {
     return value._constructors[key];
 }
@@ -107,12 +115,10 @@ function recursiveMatch(args, a, key) {
             function(tuple) {
                 var name = tuple._1,
                     value = tuple._2,
-                    possibleArgs,
-                    possibleKey;
+                    possibleKey = functionName(value),
+                    possibleArgs;
 
                 if (squishy.isArray(name)) {
-
-                    possibleKey = functionName(value);
                     possibleArgs = supplied(value, fields(value, possibleKey));
 
                     return possibleArgs.fold(
@@ -124,6 +130,14 @@ function recursiveMatch(args, a, key) {
                         }
                     );
                 } else if (name !== ignoreAsString) {
+                    // Check for possible siblings
+                    var possibleSibling = squishy.exists(siblings(value), function(x) {
+                        return name === x;
+                    });
+                    if (possibleSibling && name !== possibleKey) {
+                        return Attempt.Failure([]);
+                    }
+                    // TODO (Simon) : Check for instance of other items.
                     return Attempt.of(value);
                 } else {
                     return Attempt.of(ignoreAsString);
