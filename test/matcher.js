@@ -2,6 +2,10 @@ var _ = require('./lib/test'),
     List = _.taggedSum('List', {
         Cons: ['head', 'tail'],
         Nil: []
+    }),
+    Maybe = _.taggedSum('Maybe', {
+        Just: ['x'],
+        Nothing: []
     });
 
 exports.match = {
@@ -123,5 +127,33 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b);
         },
         [Number, Number, Number]
+    ),
+    'when checking nested monad just should return correct value': _.check(
+        function(a, b, c) {
+            var patterns = [
+                    ['Cons(a, Cons(Just(b), _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(Maybe.Just(b), List.Cons(c, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b);
+        },
+        [Number, Number, Number]
+    ),
+    'when checking nested monad nothing should return correct value': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Cons(a, Cons(Nothing, _))', function(x) {
+                        return x;
+                    }],
+                    ['_', _.error('Failed if called default')]
+                ],
+                args = List.Cons(a, List.Cons(Maybe.Nothing, List.Cons(b, List.Nil)));
+
+            return _.expect(_.match(patterns)(args)).toBe(a);
+        },
+        [Number, Number]
     )
 };

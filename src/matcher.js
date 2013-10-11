@@ -20,7 +20,7 @@ var regexp = Parser.regexp,
     extract = curry(function(args, key, x) {
         var result = recursiveMatch(args, x, key),
             flattened = squishy.chain(result, function(a) {
-                return flatten([a]);
+                return recursiveFlatten([a]);
             }),
             failed = squishy.exists(flattened, function(a) {
                 return a.isFailure;
@@ -52,6 +52,12 @@ function head(a) {
 
 function tail(a) {
     return a[0].slice(1)[0];
+}
+
+function recursiveFlatten(a) {
+    return squishy.fold(a, [], function(x, y) {
+        return squishy.concat(x, isArray(y) ? recursiveFlatten(y) : y);
+    });
 }
 
 function compiler() {
