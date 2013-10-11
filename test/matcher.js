@@ -199,5 +199,20 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b + c);
         },
         [Number, Number, Number]
+    ),
+    'when checking full name match should return default value': _.check(
+        function(a) {
+            var patterns = [
+                    ['List.Cons(a, Cons(Maybe.Just(Just(b)), List.Cons(c, List.Cons(_, Nil)))))', _.error('Failed if called first')],
+                    ['List.Cons(a, Cons(Just(Maybe.Just(b)), List.Cons(c, List.Nil)))', _.error('Failed if called second')],
+                    ['_', function() {
+                        return -1;
+                    }]
+                ],
+                args = List.Cons(a, List.Nil);
+
+            return _.expect(_.match(patterns)(args)).toBe(-1);
+        },
+        [Number]
     )
 };
