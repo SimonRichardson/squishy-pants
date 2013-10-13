@@ -13,13 +13,25 @@
 //
 var match = (function() {
 
-    /* Setup the Monadic parser */
-    var regexp = Parser.regexp,
+    /* Token */
+    var Token = taggedSum('Token', {
+            TString: ['string'],
+            TNumber: ['number'],
+            TIdent: ['ident']
+        }),
+
+        isToken = isInstanceOf(Token),
+        isTString = isInstanceOf(Token.TString),
+        isTNumber = isInstanceOf(Token.TNumber),
+        isTIdent = isInstanceOf(Token.TIdent),
+
+        /* Setup the Monadic parser */
+        regexp = Parser.regexp,
         string = Parser.string,
         word = regexp(/^\w+/),
         quote = regexp(/^"/),
+        number = regexp(/^[\+\-]?\d+(\.\d+)?/),
         ident = regexp(/^[a-zA-Z\_][a-zA-Z0-9\_\-\.]*/),
-        alpha = regexp(/^[a-z0-9\"\']+/),
         ignore = regexp(/^\_/),
         comma = regexp(/^(\s|\,|\s)*/),
         leftBracket = string('('),
@@ -27,17 +39,31 @@ var match = (function() {
         optionalWhitespace = regexp(/^\s*/),
         ignoreAsString = '_',
 
-        block = ident.many().also(function() {
+        /* Tokens */
+        stringToken = quote.chain(function() {
+            return word.skip(optionalWhitespace).many().skip(quote);
+        }).map(function(a) {
+            return Token.TString(a);
+        }),
+        numberToken = number.map(function(a) {
+            return Token.TNumber(parseFloat(a, 10));
+        }),
+        identToken = ident.map(function(a) {
+            return Token.TIdent(a);
+        }),
+
+        /* Block */
+        block = identToken.many().also(function() {
             return leftBracket.skip(optionalWhitespace).chain(function() {
                 return expr.many().skip(rightBracket);
             });
         }),
-        expr = block.orElse(alpha).orElse(ident).orElse(ignore).skip(comma),
-        parser = block.orElse(ident),
-
-        stringValue = quote.chain(function() {
-            return word.skip(quote);
-        }),
+        expr = block.orElse(stringToken)
+                    .orElse(numberToken)
+                    .orElse(identToken)
+                    .orElse(ignore)
+                    .skip(comma),
+        parser = block.orElse(identToken),
 
         /* Start extracting the possible patterns */
         extract = curry(function(args, key, x) {
@@ -79,6 +105,9 @@ var match = (function() {
                     args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
                     result = until(patterns, function(c) {
                         var result = compile(c[0]),
+                            xx = console.log(JSON.stringify(result));
+
+                            /*
                             value = result.fold(
                                 extract(args, key),
                                 constant(result)
@@ -88,7 +117,8 @@ var match = (function() {
                             function(x) {
                                 return c[1].apply(env, x);
                             }
-                        );
+                        );*/
+                        return Option.Some('1');
                     });
 
                 return result.fold(
@@ -198,23 +228,14 @@ var match = (function() {
     }
 
     function stringEqual(a, b) {
-        return stringValue.parse(a).fold(
-            function(x) {
-                return x[0] === b;
+        return a.match({
+            String: function(x) {
+                return x === b;
             },
-            constant(false)
-        );
-    }
-
-    function numberEqual(a, b) {
-        return parseFloat(a, 10) === b;
-    }
-
-    function identEqual(a, b) {
-        return ident.parse(a).fold(
-            constant(true),
-            constant(false)
-        );
+            Number: function(x) {
+                return x === b;
+            }
+        });
     }
 
     /* Recursively match the parsed stream values against the taggedSum values */
@@ -234,6 +255,8 @@ var match = (function() {
                         possibleKey = namespace(value),
                         possibleArgs,
                         possibleSibling;
+
+                    console.log(name, value);
 
                     if (squishy.isArray(name)) {
                         possibleArgs = supplied(value, fields(value, possibleKey));
