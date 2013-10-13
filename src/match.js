@@ -105,9 +105,6 @@ var match = (function() {
                     args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
                     result = until(patterns, function(c) {
                         var result = compile(c[0]),
-                            xx = console.log(JSON.stringify(result));
-
-                            /*
                             value = result.fold(
                                 extract(args, key),
                                 constant(result)
@@ -117,8 +114,7 @@ var match = (function() {
                             function(x) {
                                 return c[1].apply(env, x);
                             }
-                        );*/
-                        return Option.Some('1');
+                        );
                     });
 
                 return result.fold(
@@ -138,9 +134,31 @@ var match = (function() {
             };
         };
 
+    //
+    //  ## equal
+    //
+    Token.prototype.equal = function(b) {
+        if (this === b) return true;
+
+        return this.match({
+            TIdent: function(c) {
+                return isTIdent(b) && b.ident === c;
+            },
+            TNumber: function(c) {
+                return isTNumber(b) && b.number === c;
+            },
+            TString: function(c) {
+                return isTString(b) && b.string === c;
+            }
+        });
+    };
+
     /* Get the head of the parsed stream */
     function head(a) {
-        return squishy.flatten(a)[0];
+        if (isArray(a)) {
+            return squishy.flatten(a)[0];
+        }
+        return a;
     }
 
     /* Get the tail of the parsed stream */
@@ -217,25 +235,24 @@ var match = (function() {
 
     /* Return the last part of the namespace i.e. `List.Cons` becomes `Cons` */
     function namespaceName(a) {
-        var parts = a.split('.'),
-            total = parts.length;
-        return total > 1 ? parts[parts.length - 1] : a;
+        if (isString(a)) {
+            var parts = a.split('.'),
+                total = parts.length;
+            return total > 1 ? parts[parts.length - 1] : a;
+        }
+
+        return a.match({
+            TIdent: function(x) {
+                return namespaceName(x[0]);
+            },
+            TString: constant(''),
+            TNumber: constant('')
+        });
     }
 
     /* Check to see if the namespace is the same i.e. `List.Cons` now equals `Cons` */
     function namespaceEquality(a, b) {
         return a === b || namespaceName(a) === namespaceName(b);
-    }
-
-    function stringEqual(a, b) {
-        return a.match({
-            String: function(x) {
-                return x === b;
-            },
-            Number: function(x) {
-                return x === b;
-            }
-        });
     }
 
     /* Recursively match the parsed stream values against the taggedSum values */
@@ -255,8 +272,6 @@ var match = (function() {
                         possibleKey = namespace(value),
                         possibleArgs,
                         possibleSibling;
-
-                    console.log(name, value);
 
                     if (squishy.isArray(name)) {
                         possibleArgs = supplied(value, fields(value, possibleKey));
@@ -278,9 +293,7 @@ var match = (function() {
                             return Attempt.Failure(['Invalid taggedSum sibling']);
                         }
 
-                        if( stringEqual(name, value) ||
-                            numberEqual(name, value) ||
-                            identEqual(name, value)) {
+                        if(name === value || name.equal(value)) {
                             return Attempt.of(value);
                         }
 
