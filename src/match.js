@@ -1,3 +1,11 @@
+function println() {
+    var a = squishy.map([].slice.call(arguments), function(x) {
+            return JSON.stringify(x) + '   ';
+        }),
+        log = Function.prototype.bind.call(console.log, console);
+
+    log.apply(console, a);
+}
 //
 //   # Match
 //
@@ -164,13 +172,13 @@ var match = (function() {
     Token.prototype.same = function(b) {
         return this.match({
             TIdent: function(c) {
-                return isArray(b) && squishy.equal(b.ident, c);
+                return squishy.equal(c[0], functionName(b));
             },
             TNumber: function(c) {
-                return isNumber(b) && squishy.equal(b.number, c);
+                return isNumber(b) && squishy.equal(c, b);
             },
             TString: function(c) {
-                return isString(b) && squishy.equal(b.string, c);
+                return isString(b) && squishy.equal(c[0][0], b);
             },
             TWildcard: constant(true)
         });
@@ -186,7 +194,10 @@ var match = (function() {
 
     /* Get the tail of the parsed stream */
     function tail(a) {
-        return a[0].slice(1)[0];
+        if (isArray(a)) {
+            return a[0].slice(1)[0];
+        }
+        return [a];
     }
 
     /* Recursively flatten the arguments */
