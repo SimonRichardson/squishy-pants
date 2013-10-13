@@ -17,13 +17,15 @@ var match = (function() {
     var Token = taggedSum('Token', {
             TString: ['string'],
             TNumber: ['number'],
-            TIdent: ['ident']
+            TIdent: ['ident'],
+            TWildcard: ['wildcard']
         }),
 
         isToken = isInstanceOf(Token),
         isTString = isInstanceOf(Token.TString),
         isTNumber = isInstanceOf(Token.TNumber),
         isTIdent = isInstanceOf(Token.TIdent),
+        isTWildcard = isInstanceOf(Token.TWildcard),
 
         /* Setup the Monadic parser */
         regexp = Parser.regexp,
@@ -32,12 +34,12 @@ var match = (function() {
         quote = regexp(/^"/),
         number = regexp(/^[\+\-]?\d+(\.\d+)?/),
         ident = regexp(/^[a-zA-Z\_][a-zA-Z0-9\_\-\.]*/),
-        ignore = regexp(/^\_/),
+        wildcard = regexp(/^\_/),
         comma = regexp(/^(\s|\,|\s)*/),
         leftBracket = string('('),
         rightBracket = string(')'),
         optionalWhitespace = regexp(/^\s*/),
-        ignoreAsString = '_',
+        wildcardAsString = '_',
 
         /* Tokens */
         stringToken = quote.chain(function() {
@@ -51,6 +53,9 @@ var match = (function() {
         identToken = ident.map(function(a) {
             return Token.TIdent(a);
         }),
+        wildcardToken = wildcard.map(function() {
+            return Token.TWildcard(wildcardAsString);
+        }),
 
         /* Block */
         block = identToken.many().also(function() {
@@ -58,12 +63,13 @@ var match = (function() {
                 return expr.many().skip(rightBracket);
             });
         }),
-        expr = block.orElse(stringToken)
+        expr = block.orElse(wildcardToken)
+                    .orElse(stringToken)
                     .orElse(numberToken)
                     .orElse(identToken)
-                    .orElse(ignore)
                     .skip(comma),
-        parser = block.orElse(identToken),
+        parser = block.orElse(wildcardToken)
+                      .orElse(identToken),
 
         /* Start extracting the possible patterns */
         extract = curry(function(args, key, x) {
@@ -83,7 +89,7 @@ var match = (function() {
                 filtered = squishy.filter(flattened, function(a) {
                     return a.fold(
                         function(v) {
-                            return v !== ignoreAsString;
+                            return v !== wildcardAsString;
                         },
                         constant(false)
                     );
@@ -101,7 +107,7 @@ var match = (function() {
                 compile = compiler();
 
             return function(argument) {
-                var key = namespace(argument),
+                var key = Token.TIdent([functionName(argument)]),
                     args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
                     result = until(patterns, function(c) {
                         var result = compile(c[0]),
@@ -122,7 +128,7 @@ var match = (function() {
                     function() {
                         /* Handle the default case */
                         var defaultCase = env.find(patterns, function(x) {
-                            return x[0] === ignoreAsString;
+                            return x[0] === wildcardAsString;
                         });
                         if (isArray(defaultCase)) {
                             return defaultCase[1].apply(this, []);
@@ -135,21 +141,38 @@ var match = (function() {
         };
 
     //
-    //  ## equal
+    //  ## equal(b)
     //
     Token.prototype.equal = function(b) {
-        if (this === b) return true;
-
         return this.match({
             TIdent: function(c) {
-                return isTIdent(b) && b.ident === c;
+                return isTIdent(b) && squishy.equal(b.ident, c);
             },
             TNumber: function(c) {
-                return isTNumber(b) && b.number === c;
+                return isTNumber(b) && squishy.equal(b.number, c);
             },
             TString: function(c) {
-                return isTString(b) && b.string === c;
-            }
+                return isTString(b) && squishy.equal(b.string, c);
+            },
+            TWildcard: constant(true)
+        });
+    };
+
+    //
+    //  ## same(b)
+    //
+    Token.prototype.same = function(b) {
+        return this.match({
+            TIdent: function(c) {
+                return isArray(b) && squishy.equal(b.ident, c);
+            },
+            TNumber: function(c) {
+                return isNumber(b) && squishy.equal(b.number, c);
+            },
+            TString: function(c) {
+                return isString(b) && squishy.equal(b.string, c);
+            },
+            TWildcard: constant(true)
         });
     };
 
@@ -200,8 +223,18 @@ var match = (function() {
 
     /* Return the fields of the taggedSum */
     function fields(a, b) {
-        var key = namespaceName(b);
-        return a._constructors[key];
+        var key = b.match({
+            TIdent: Option.of,
+            TNumber: Option.empty,
+            TString: Option.empty,
+            TWildcard: Option.empty
+        });
+        return key.match({
+            Some: function(x) {
+                return a._constructors[x];
+            },
+            None: constant([])
+        });
     }
 
     /* Return the values from the value using the fields of the taggedSum */
@@ -227,40 +260,12 @@ var match = (function() {
         return Option.None;
     }
 
-    /* Return the possible namespace locating parent if found */
-    function namespace(a) {
-        var parent = a._tagged ? functionName(a._tagged) + '.' : '';
-        return squishy.concat(parent, functionName(a));
-    }
-
-    /* Return the last part of the namespace i.e. `List.Cons` becomes `Cons` */
-    function namespaceName(a) {
-        if (isString(a)) {
-            var parts = a.split('.'),
-                total = parts.length;
-            return total > 1 ? parts[parts.length - 1] : a;
-        }
-
-        return a.match({
-            TIdent: function(x) {
-                return namespaceName(x[0]);
-            },
-            TString: constant(''),
-            TNumber: constant('')
-        });
-    }
-
-    /* Check to see if the namespace is the same i.e. `List.Cons` now equals `Cons` */
-    function namespaceEquality(a, b) {
-        return a === b || namespaceName(a) === namespaceName(b);
-    }
-
     /* Recursively match the parsed stream values against the taggedSum values */
     function recursiveMatch(args, a, key) {
         var zipped,
             rest;
 
-        if (namespaceEquality(head(a), key)) {
+        if (head(a).equal(key)) {
 
             zipped = squishy.zip(tail(a), args);
 
@@ -269,7 +274,7 @@ var match = (function() {
                 function(tuple) {
                     var name = tuple._1,
                         value = tuple._2,
-                        possibleKey = namespace(value),
+                        possibleKey = Token.TIdent([functionName(value)]),
                         possibleArgs,
                         possibleSibling;
 
@@ -284,22 +289,22 @@ var match = (function() {
                                 return Attempt.Failure(['Invalid tokens']);
                             }
                         );
-                    } else if (name !== ignoreAsString) {
+                    } else if (!isTWildcard(name)) {
                         possibleSibling = squishy.exists(siblings(value), function(x) {
                             return name === x;
                         });
 
-                        if (possibleSibling && name !== possibleKey) {
+                        if (possibleSibling && name.same(possibleKey)) {
                             return Attempt.Failure(['Invalid taggedSum sibling']);
                         }
 
-                        if(name === value || name.equal(value)) {
+                        if(name.same(value) || name.equal(value)) {
                             return Attempt.of(value);
                         }
 
                         return Attempt.Failure(['Invalid token']);
                     } else {
-                        return Attempt.of(ignoreAsString);
+                        return Attempt.of(wildcardAsString);
                     }
                 }
             );
