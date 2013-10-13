@@ -301,14 +301,6 @@ var match = (function() {
                             }
                         );
                     } else if (!isTWildcard(name)) {
-                        possibleSibling = squishy.exists(siblings(value), function(x) {
-                            return name === x;
-                        });
-
-                        if (possibleSibling && name.same(possibleKey)) {
-                            return Attempt.Failure(['Invalid taggedSum sibling']);
-                        }
-
                         if(name.same(value) || name.equal(value)) {
                             return Attempt.of(value);
                         }
