@@ -22,7 +22,7 @@ exports.match = {
 
         test.equals(_.match(patterns)(value), "12");
         test.done();
-    }/*,
+    },
     'when checking a recursive match should return correct value': _.check(
         function(a, b) {
             var patterns = [
@@ -199,7 +199,7 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b + c);
         },
         [Number, Number, Number]
-    ),
+    )/*,
     'when checking full name match should return default value': _.check(
         function(a) {
             var patterns = [
