@@ -1,11 +1,3 @@
-function println() {
-    var a = squishy.map([].slice.call(arguments), function(x) {
-            return JSON.stringify(x) + '   ';
-        }),
-        log = Function.prototype.bind.call(console.log, console);
-
-    log.apply(console, a);
-}
 //
 //   # Match
 //
@@ -26,14 +18,10 @@ var match = (function() {
             TString: ['string'],
             TNumber: ['number'],
             TIdent: ['ident'],
-            TWildcard: ['wildcard']
+            TWildcard: []
         }),
 
         isToken = isInstanceOf(Token),
-        isTString = isInstanceOf(Token.TString),
-        isTNumber = isInstanceOf(Token.TNumber),
-        isTIdent = isInstanceOf(Token.TIdent),
-        isTWildcard = isInstanceOf(Token.TWildcard),
 
         /* Setup the Monadic parser */
         regexp = Parser.regexp,
@@ -62,7 +50,7 @@ var match = (function() {
             return Token.TIdent(a);
         }),
         wildcardToken = wildcard.map(function() {
-            return Token.TWildcard(wildcardAsString);
+            return Token.TWildcard;
         }),
 
         /* Block */
@@ -95,7 +83,7 @@ var match = (function() {
                 return Option.None;
             } else {
                 filtered = squishy.filter(flattened, function(a) {
-                    return !isTWildcard(a);
+                    return !a.value.isWildcard;
                 });
                 mapped = squishy.map(filtered, function(a) {
                     return a.extract();
@@ -142,42 +130,6 @@ var match = (function() {
                 );
             };
         };
-
-    //
-    //  ## equal(b)
-    //
-    Token.prototype.equal = function(b) {
-        return this.match({
-            TIdent: function(c) {
-                return isTIdent(b) && squishy.equal(b.ident, c);
-            },
-            TNumber: function(c) {
-                return isTNumber(b) && squishy.equal(b.number, c);
-            },
-            TString: function(c) {
-                return isTString(b) && squishy.equal(b.string, c);
-            },
-            TWildcard: constant(true)
-        });
-    };
-
-    //
-    //  ## similar(b)
-    //
-    Token.prototype.similar = function(b) {
-        return this.match({
-            TIdent: function(c) {
-                return squishy.equal(c[0], functionName(b));
-            },
-            TNumber: function(c) {
-                return isNumber(b) && squishy.equal(c, b);
-            },
-            TString: function(c) {
-                return isString(b) && squishy.equal(c[0].join(' '), b);
-            },
-            TWildcard: constant(true)
-        });
-    };
 
     /* Get the head of the parsed stream */
     function head(a) {
@@ -229,12 +181,7 @@ var match = (function() {
 
     /* Return the fields of the taggedSum */
     function fields(a, b) {
-        var key = b.match({
-            TIdent: Option.of,
-            TNumber: Option.empty,
-            TString: Option.empty,
-            TWildcard: Option.empty
-        });
+        var key = b.isIdent ? Option.of(b.ident) : Option.empty();
         return key.match({
             Some: function(x) {
                 return a._constructors[x];
@@ -271,12 +218,11 @@ var match = (function() {
         var zipped,
             rest;
 
-        println(head(a), key);
         if (head(a).equal(key)) {
 
             zipped = squishy.zip(tail(a), args);
 
-            var xx = squishy.map(
+            return squishy.map(
                 zipped,
                 function(tuple) {
                     var name = tuple._1,
@@ -288,42 +234,118 @@ var match = (function() {
                     if (squishy.isArray(name)) {
                         possibleArgs = supplied(value, fields(value, possibleKey));
 
-                        println('FIL', possibleArgs);
-
                         return possibleArgs.fold(
                             function(x) {
-                                println('REC', x);
                                 return recursiveMatch(x, [name], possibleKey);
                             },
                             function() {
                                 return Attempt.Failure(['Invalid tokens']);
                             }
                         );
-                    } else if (!isTWildcard(name)) {
+                    } else if (!name.isWildcard) {
+
                         possibleSibling = squishy.exists(siblings(value), function(x) {
-                            return name === x;
+                            return name.isIdent ? squishy.equal(name.ident[0], x) : false;
                         });
 
-                        if (possibleSibling && name.equal(possibleKey)) {
-                            return Attempt.Failure(['Invalid taggedSum sibling']);
+                        if (possibleSibling && name.similar(value)) {
+                            return Attempt.of(Token.TWildcard);
                         } else if(name.equal(value) || name.similar(value)) {
                             return Attempt.of(value);
-                        } else if(isTIdent(name)) {
+                        } else if(name.isIdent) {
                             return Attempt.of(value);
                         }
 
                         return Attempt.Failure(['Invalid token']);
                     } else {
-                        return Attempt.of(wildcardAsString);
+                        return Attempt.of(Token.TWildcard);
                     }
                 }
             );
-            println('ZIP', xx);
-            return xx;
         } else {
             return [Attempt.Failure(['Invalid namespace', head(a), key])];
         }
     }
+
+    //
+    //  ## TIdent(x)
+    //
+    //  Constructor to represent the ident token with a value, `x`.
+    //
+    Token.TIdent.prototype.isIdent = true;
+    Token.TIdent.prototype.isNumber = false;
+    Token.TIdent.prototype.isString = false;
+    Token.TIdent.prototype.isWildcard = false;
+
+    //
+    //  ## TNumber(x)
+    //
+    //  Constructor to represent the number token with a value, `x`.
+    //
+    Token.TNumber.prototype.isIdent = false;
+    Token.TNumber.prototype.isNumber = true;
+    Token.TNumber.prototype.isString = false;
+    Token.TNumber.prototype.isWildcard = false;
+
+    //
+    //  ## TString(x)
+    //
+    //  Constructor to represent the string token with a value, `x`.
+    //
+    Token.TString.prototype.isIdent = false;
+    Token.TString.prototype.isNumber = false;
+    Token.TString.prototype.isString = true;
+    Token.TString.prototype.isWildcard = false;
+
+    //
+    //  ## TWildcard(x)
+    //
+    //  Constructor to represent the wildcard token.
+    //
+    Token.TWildcard.isIdent = false;
+    Token.TWildcard.isNumber = false;
+    Token.TWildcard.isString = false;
+    Token.TWildcard.isWildcard = true;
+
+    //
+    //  ## equal(b)
+    //
+    //  Compare two option values for equality
+    //
+    Token.prototype.equal = function(b) {
+        return this.match({
+            TIdent: function(x) {
+                return b.isWildcard || b.isIdent && squishy.equal(b.ident, x);
+            },
+            TNumber: function(x) {
+                return b.isWildcard || b.isNumber && squishy.equal(b.number, x);
+            },
+            TString: function(x) {
+                return b.isWildcard || b.isString && squishy.equal(b.string, x);
+            },
+            TWildcard: constant(true)
+        });
+    };
+
+    //
+    //  ## similar(b)
+    //
+    //  Compare two option values for similarity
+    //
+    Token.prototype.similar = function(b) {
+        return this.match({
+            TIdent: function(c) {
+                return squishy.equal(c[0], functionName(b));
+            },
+            TNumber: function(c) {
+                return isNumber(b) && squishy.equal(c, b);
+            },
+            TString: function(c) {
+                return isString(b) && squishy.equal(c[0].join(' '), b);
+            },
+            TWildcard: constant(true)
+        });
+    };
 
     return match;
 })();

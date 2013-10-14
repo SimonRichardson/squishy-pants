@@ -11,7 +11,7 @@ var _ = require('./lib/test'),
 exports.match = {
     'test': function(test) {
         var patterns = [
-                ['Cons(a, Cons(b, Nil))', function(a, b) {
+                ['Cons(a, Cons(b, Nil))', function(a, b, c) {
                     return a + b;
                 }],
                 ['_', function() {
