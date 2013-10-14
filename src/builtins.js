@@ -12,6 +12,12 @@ squishy = squishy
     }));
 
 squishy = squishy
+    .method('dimap', isFunction, function(a, b) {
+        var env = this;
+        return function(c) {
+            return compose(compose(b, c), a);
+        };
+    })
     .method('kleisli', isFunction, function(a, b) {
         var env = this;
         return function(x) {

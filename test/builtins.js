@@ -1,4 +1,24 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
+    split = _.curry(function(a, b) {
+        return b.split(a);
+    }),
+    join = _.curry(function(a, b) {
+        return b.join(a);
+    }),
+    push = _.curry(function(a, b) {
+        var c = b.slice();
+        c.push(a);
+        return c;
+    }),
+    list = _.dimap(split(''), join(''));
+
+exports.dimap = {
+    'when testing dimap with truncate should return correct value': function(test) {
+        truncate = list(_.compose(push('...'), _.flip(_.take)(5)));
+        test.ok(_.expect(truncate('Hello World')).toBe('Hello...'));
+        test.done();
+    }
+};
 
 exports.empty = {
     'when testing empty with AnyVal (boolean, number, string) should return any type': function(test) {
@@ -103,7 +123,7 @@ exports.equal = {
     ),
     'when testing equal with Array should not return true': _.check(
         function(a, b) {
-            /* If a and b is length of zero then it'll return true */
+            // If a and b is length of zero then it'll return true
             if (a.length === 0 && a.length === b.length) return true;
 
             return _.not(_.equal(a, b));
@@ -181,7 +201,7 @@ exports.expect = {
     ),
     'when testing expect with Array should not return true': _.check(
         function(a, b) {
-            /* If a and b is length of zero then it'll return true */
+            // If a and b is length of zero then it'll return true
             if (a.length === 0 && a.length === b.length) return true;
 
             return _.not(_.expect(a).toBe(b));
