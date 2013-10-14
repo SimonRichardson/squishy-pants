@@ -11,8 +11,8 @@ var _ = require('./lib/test'),
 exports.match = {
     'test': function(test) {
         var patterns = [
-                ['Cons(1, Cons("2", Nil))', function(x, y) {
-                    return x + y;
+                ['Cons(a, Cons(b, Nil))', function(a, b) {
+                    return a + b;
                 }],
                 ['_', function() {
                     return 0;
@@ -20,7 +20,7 @@ exports.match = {
             ],
             value = List.Cons(1, List.Cons("2", List.Nil));
 
-        test.equals(_.match(patterns)(value), 12);
+        test.equals(_.match(patterns)(value), "12");
         test.done();
     }/*,
     'when checking a recursive match should return correct value': _.check(

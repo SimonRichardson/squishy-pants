@@ -95,12 +95,7 @@ var match = (function() {
                 return Option.None;
             } else {
                 filtered = squishy.filter(flattened, function(a) {
-                    return a.fold(
-                        function(v) {
-                            return v !== wildcardAsString;
-                        },
-                        constant(false)
-                    );
+                    return !isTWildcard(a);
                 });
                 mapped = squishy.map(filtered, function(a) {
                     return a.extract();
@@ -167,9 +162,9 @@ var match = (function() {
     };
 
     //
-    //  ## same(b)
+    //  ## similar(b)
     //
-    Token.prototype.same = function(b) {
+    Token.prototype.similar = function(b) {
         return this.match({
             TIdent: function(c) {
                 return squishy.equal(c[0], functionName(b));
@@ -178,7 +173,7 @@ var match = (function() {
                 return isNumber(b) && squishy.equal(c, b);
             },
             TString: function(c) {
-                return isString(b) && squishy.equal(c[0][0], b);
+                return isString(b) && squishy.equal(c[0].join(' '), b);
             },
             TWildcard: constant(true)
         });
@@ -226,7 +221,7 @@ var match = (function() {
 
     /* Return the siblings of the taggedSum  */
     function siblings(value) {
-        if (isObject(value)) {
+        if (isObject(value) && value._constructors) {
             return Object.keys(value._constructors);
         }
         return [];
@@ -276,11 +271,12 @@ var match = (function() {
         var zipped,
             rest;
 
+        println(head(a), key);
         if (head(a).equal(key)) {
 
             zipped = squishy.zip(tail(a), args);
 
-            return squishy.map(
+            var xx = squishy.map(
                 zipped,
                 function(tuple) {
                     var name = tuple._1,
@@ -292,8 +288,11 @@ var match = (function() {
                     if (squishy.isArray(name)) {
                         possibleArgs = supplied(value, fields(value, possibleKey));
 
+                        println('FIL', possibleArgs);
+
                         return possibleArgs.fold(
                             function(x) {
+                                println('REC', x);
                                 return recursiveMatch(x, [name], possibleKey);
                             },
                             function() {
@@ -301,7 +300,15 @@ var match = (function() {
                             }
                         );
                     } else if (!isTWildcard(name)) {
-                        if(name.same(value) || name.equal(value)) {
+                        possibleSibling = squishy.exists(siblings(value), function(x) {
+                            return name === x;
+                        });
+
+                        if (possibleSibling && name.equal(possibleKey)) {
+                            return Attempt.Failure(['Invalid taggedSum sibling']);
+                        } else if(name.equal(value) || name.similar(value)) {
+                            return Attempt.of(value);
+                        } else if(isTIdent(name)) {
                             return Attempt.of(value);
                         }
 
@@ -311,6 +318,8 @@ var match = (function() {
                     }
                 }
             );
+            println('ZIP', xx);
+            return xx;
         } else {
             return [Attempt.Failure(['Invalid namespace', head(a), key])];
         }
