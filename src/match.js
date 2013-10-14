@@ -267,6 +267,46 @@ var match = (function() {
     }
 
     //
+    //  ## equal(b)
+    //
+    //  Compare two option values for equality
+    //
+    Token.prototype.equal = function(b) {
+        return this.match({
+            TIdent: function(x) {
+                return b.isWildcard || b.isIdent && squishy.equal(b.ident, x);
+            },
+            TNumber: function(x) {
+                return b.isWildcard || b.isNumber && squishy.equal(b.number, x);
+            },
+            TString: function(x) {
+                return b.isWildcard || b.isString && squishy.equal(b.string, x);
+            },
+            TWildcard: constant(true)
+        });
+    };
+
+    //
+    //  ## similar(b)
+    //
+    //  Compare two option values for similarity
+    //
+    Token.prototype.similar = function(b) {
+        return this.match({
+            TIdent: function(c) {
+                return b.isWildcard || squishy.equal(c[0], functionName(b));
+            },
+            TNumber: function(c) {
+                return b.isWildcard || isNumber(b) && squishy.equal(c, b);
+            },
+            TString: function(c) {
+                return b.isWildcard || isString(b) && squishy.equal(c[0].join(' '), b);
+            },
+            TWildcard: constant(true)
+        });
+    };
+
+    //
     //  ## TIdent(x)
     //
     //  Constructor to represent the ident token with a value, `x`.
@@ -307,45 +347,8 @@ var match = (function() {
     Token.TWildcard.isWildcard = true;
 
     //
-    //  ## equal(b)
+    //  Return the match function
     //
-    //  Compare two option values for equality
-    //
-    Token.prototype.equal = function(b) {
-        return this.match({
-            TIdent: function(x) {
-                return b.isWildcard || b.isIdent && squishy.equal(b.ident, x);
-            },
-            TNumber: function(x) {
-                return b.isWildcard || b.isNumber && squishy.equal(b.number, x);
-            },
-            TString: function(x) {
-                return b.isWildcard || b.isString && squishy.equal(b.string, x);
-            },
-            TWildcard: constant(true)
-        });
-    };
-
-    //
-    //  ## similar(b)
-    //
-    //  Compare two option values for similarity
-    //
-    Token.prototype.similar = function(b) {
-        return this.match({
-            TIdent: function(c) {
-                return b.isWildcard || squishy.equal(c[0], functionName(b));
-            },
-            TNumber: function(c) {
-                return b.isWildcard || isNumber(b) && squishy.equal(c, b);
-            },
-            TString: function(c) {
-                return b.isWildcard || isString(b) && squishy.equal(c[0].join(' '), b);
-            },
-            TWildcard: constant(true)
-        });
-    };
-
     return match;
 })();
 
