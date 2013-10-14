@@ -40,7 +40,7 @@ var match = (function() {
         //
         regexp = Parser.regexp,
         string = Parser.string,
-        word = regexp(/^\w+/),
+        word = regexp(/^.[^"]*/),
         quote = regexp(/^"/),
         number = regexp(/^[\+\-]?\d+(\.\d+)?/),
         ident = regexp(/^[a-zA-Z\_][a-zA-Z0-9\_\-\.]*/),
@@ -49,13 +49,19 @@ var match = (function() {
         leftBracket = string('('),
         rightBracket = string(')'),
         optionalWhitespace = regexp(/^\s*/),
+        emptyString = string(''),
         wildcardAsString = '_',
 
         /* Tokens */
         stringToken = quote.chain(function() {
-            return word.skip(optionalWhitespace).many().skip(quote);
+            return word.skip(quote);
         }).map(function(a) {
             return Token.TString(a);
+        }),
+        emptyStringToken = quote.chain(function() {
+            return emptyString.skip(quote);
+        }).map(function() {
+            return Token.TString(['']);
         }),
         numberToken = number.map(function(a) {
             return Token.TNumber(parseFloat(a, 10));
@@ -74,6 +80,7 @@ var match = (function() {
             });
         }),
         expr = block.orElse(wildcardToken)
+                    .orElse(emptyStringToken)
                     .orElse(stringToken)
                     .orElse(numberToken)
                     .orElse(identToken)
@@ -325,7 +332,7 @@ var match = (function() {
                 return isNumber(b) && squishy.equal(c, b);
             },
             TString: function(c) {
-                return isString(b) && squishy.equal(c[0].join(' '), b);
+                return isString(b) && squishy.equal(c[0], b);
             },
             TWildcard: constant(true)
         });

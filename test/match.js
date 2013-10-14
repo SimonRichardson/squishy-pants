@@ -9,9 +9,9 @@ var _ = require('./lib/test'),
     });
 
 exports.match = {
-    'test': function(test) {
+    'when testing a basic set up should return correct value': function(test) {
         var patterns = [
-                ['Cons(a, List.Cons(b, List.Nil))', function(a, b, c) {
+                ['Cons(a, List.Cons("2", List.Nil))', function(a, b, c) {
                     return a + b;
                 }],
                 ['_', function() {
@@ -23,6 +23,35 @@ exports.match = {
         test.equals(_.match(patterns)(value), "12");
         test.done();
     },
+    'when checking a recursive match with numbers should return correct value': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Cons(a, Cons(' + b + ', _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', _.error('Failed if called')]
+                ],
+                args = List.Cons(a, List.Cons(b, List.Nil));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + b);
+        },
+        [Number, Number]
+    ),
+    'when checking a recursive match with strings should return correct value': _.check(
+        function(a, b) {
+            var clean = b.replace('"', ''),
+                patterns = [
+                    ['Cons(a, Cons("' + clean + '", _))', function(x, y) {
+                        return x + y;
+                    }],
+                    ['_', _.error('Failed if called')]
+                ],
+                args = List.Cons(a, List.Cons(clean, List.Nil));
+
+            return _.expect(_.match(patterns)(args)).toBe(a + clean);
+        },
+        [Number, String]
+    ),
     'when checking a recursive match should return correct value': _.check(
         function(a, b) {
             var patterns = [
