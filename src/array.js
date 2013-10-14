@@ -14,13 +14,17 @@
 //   * `dropWhile(a, f)` - Returns the longest suffix of this array whose first element does not satisfy the predicate.
 //   * `exists(a, f)` - Tests the existence in this array of an element that satisfies the predicate.
 //   * `filter(a, f)` - Returns all the elements of this array that satisfy the predicate p.
+//   * `find(a)` - Returns the element in this array of an element that satisfies the predicate.
+//   * `first(a)` - Retrieve the first value.
 //   * `flatten(a)` - Concatenate nested elements of this array.
 //   * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.
 //   * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from Right to Left, and starting with the value v.
+//   * `last(a)` - Retrieve the last value.
 //   * `map(a, f)` - Returns the array resulting from applying the given function f to each element of this array.
 //   * `partition(a, f)` - Partition the array in two sub-arrays according to a predicate.
 //   * `reduce(a, f)` - Combines the elements of this array together using the binary operator op, from Left to Right
 //   * `reduceRight(a, f)` - Combines the elements of this array together using the binary operator op, from Right to Left
+//   * `tail(n)` - Returns the tail elements of this array.
 //   * `take(n)` - Returns the n first elements of this array.
 //   * `takeRight(n)` - Returns the rightmost n elements from this array.
 //   * `takeWhile(f)` - Returns the longest prefix of this array whose elements satisfy the predicate.
@@ -204,6 +208,15 @@ var find = curry(function(a, f) {
 });
 
 //
+//  ### first(a)
+//
+//  Retrieve the first value.
+//
+var first = function(a) {
+    return a[0];
+};
+
+//
 //  ### fold(v, f)
 //
 //  Combines the elements of this array together using the binary function f,
@@ -235,6 +248,15 @@ var foldRight = curry(function(a, v, f) {
 
     return v;
 });
+
+//
+//  ### last(f)
+//
+//  Retrieve the last value
+//
+var last = function(a) {
+    return a[a.length - 1];
+};
 
 //
 //  ### map(f)
@@ -308,6 +330,15 @@ var reduceRight = curry(function(a, f) {
 
     return v;
 });
+
+//
+//  ### tail(a)
+//
+//  Returns the tail elements of this array.
+//
+var tail = function(a) {
+    return a.slice(1);
+};
 
 //
 //  ### take(v, f)
@@ -398,12 +429,15 @@ squishy = squishy
     .method('flatten', isArray, flatten)
     .method('filter', isArray, filter)
     .method('find', isArray, find)
+    .method('first', isArray, first)
     .method('fold', isArray, fold)
     .method('foldRight', isArray, foldRight)
+    .method('last', isArray, last)
     .method('map', isArray, map)
     .method('partition', isArray, partition)
     .method('reduce', isArray, reduce)
     .method('reduceRight', isArray, reduceRight)
+    .method('tail', isArray, tail)
     .method('take', isArray, take)
     .method('takeRight', isArray, takeRight)
     .method('takeWhile', isArray, takeWhile)

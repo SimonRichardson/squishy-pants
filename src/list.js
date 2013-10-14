@@ -24,27 +24,31 @@
 //         1  2 3  4
 //
 //   * `ap(a, b)` - Applicative ap(ply)
+//   * `append(a)` - append
+//   * `appendAll(a)` - append values
 //   * `chain(f)` - monadic flatMap
 //   * `concat(a)` - semigroup concat
 //   * `count(a, f)` - Count the number of elements in the list which satisfy a predicate.
 //   * `drop(a, n)` - Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
 //   * `dropRight(a, n)` - Returns the list without its rightmost `n` elements.
 //   * `dropWhile(a, f)` - Returns the longest suffix of this list whose first element does not satisfy the predicate.
+//   * `exists()` - test by predicate
 //   * `extract()` -  extract the value from option
 //   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `filter()` - filter by predicate
+//   * `find(a)` - Returns the element in this list of an element that satisfies the predicate.
+//   * `first(a)` - Retrieve the first value.
 //   * `fold(a, b)` - applies `a` to value if `Cons` or defaults to `b`
+//   * `last(a)` - Retrieve the last value.
 //   * `map(f)` - functor map
-//   * `append(a)` - append
-//   * `appendAll(a)` - append values
 //   * `prepend(a)` - prepend value
 //   * `prependAll(a)` - prepend values
 //   * `reverse()` - reverse
-//   * `exists()` - test by predicate
-//   * `filter()` - filter by predicate
 //   * `partition()` - partition by predicate
 //   * `reduce(a, f)` - Combines the elements of this list together using the binary operator op, from Left to Right
 //   * `reduceRight(a, f)` - Combines the elements of this list together using the binary operator op, from Right to Left
 //   * `size()` - size of the list
+//   * `tail(n)` - Returns the tail elements of this list.
 //   * `take(n)` - Returns the n first elements of this list.
 //   * `takeRight(n)` - Returns the rightmost n elements from this list.
 //   * `takeWhile(f)` - Returns the longest prefix of this list whose elements satisfy the predicate.
@@ -283,7 +287,6 @@ List.prototype.equal = function(b) {
         a = a.tail;
         b = b.tail;
     }
-    /* Check for length of lists as well */
     return accum ? a.isEmpty && b.isEmpty : false;
 };
 
@@ -306,6 +309,35 @@ List.prototype.filter = function(f) {
         });
     };
     return trampoline(rec(this, List.Nil)).reverse();
+};
+
+//
+//  ### find(f)
+//
+//  Returns the element in this list of an element that satisfies the predicate.
+//
+List.prototype.find = function(f) {
+    var rec = function(a) {
+        if (a.isEmpty) return done(null);
+
+        return cont(function() {
+            if (f(a.head)) {
+                return done(a.head);
+            } else {
+                return rec(a.tail);
+            }
+        });
+    };
+    return trampoline(rec(this));
+};
+
+//
+//  ### first()
+//
+//  Retrieve the first value.
+//
+List.prototype.first = function() {
+    return a.head;
 };
 
 //
@@ -341,6 +373,26 @@ List.prototype.get = function(index) {
         i++;
     }
     return accum;
+};
+
+//
+//  ### last()
+//
+//  Retrieve the last value.
+//
+List.prototype.last = function() {
+    var rec = function(a) {
+        if (a.isEmpty) return done(null);
+
+        return cont(function() {
+            if (a.tail.isEmpty) {
+                return done(a.head);
+            } else {
+                return rec(a.tail);
+            }
+        });
+    };
+    return trampoline(rec(this));
 };
 
 //
@@ -816,8 +868,17 @@ squishy = squishy
     .method('exists', isList, function(a, f) {
         return a.exists(f);
     })
+    .method('find', isList, function(a, f) {
+        return a.find(f);
+    })
+    .method('first', isList, function(a) {
+        return a.first();
+    })
     .method('fold', isList, function(a, f, g) {
         return a.fold(f, g);
+    })
+    .method('last', isList, function(a) {
+        return a.last();
     })
     .method('partition', isList, function(a, f) {
         return a.partition(f);

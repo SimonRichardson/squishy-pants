@@ -272,15 +272,20 @@ var match = (function() {
     //  Compare two option values for equality
     //
     Token.prototype.equal = function(b) {
-        return this.match({
+        if (b.wildcard) return true;
+
+        var env = this;
+        return env.match({
             TIdent: function(x) {
-                return b.isWildcard || b.isIdent && squishy.equal(b.ident, x);
+                var last0 = squishy.last(env.namespace()),
+                    last1 = b.isIdent ? squishy.last(b.namespace()) : [];
+                return squishy.equal(last0, last1);
             },
             TNumber: function(x) {
-                return b.isWildcard || b.isNumber && squishy.equal(b.number, x);
+                return b.isNumber && squishy.equal(b.number, x);
             },
             TString: function(x) {
-                return b.isWildcard || b.isString && squishy.equal(b.string, x);
+                return b.isString && squishy.equal(b.string, x);
             },
             TWildcard: constant(true)
         });
@@ -292,18 +297,24 @@ var match = (function() {
     //  Compare two option values for similarity
     //
     Token.prototype.similar = function(b) {
+        if (b.wildcard) return true;
+
         return this.match({
             TIdent: function(c) {
-                return b.isWildcard || squishy.equal(c[0], functionName(b));
+                return squishy.equal(c[0], functionName(b));
             },
             TNumber: function(c) {
-                return b.isWildcard || isNumber(b) && squishy.equal(c, b);
+                return isNumber(b) && squishy.equal(c, b);
             },
             TString: function(c) {
-                return b.isWildcard || isString(b) && squishy.equal(c[0].join(' '), b);
+                return isString(b) && squishy.equal(c[0].join(' '), b);
             },
             TWildcard: constant(true)
         });
+    };
+
+    Token.TIdent.prototype.namespace = function() {
+        return this.ident.join('').split('.');
     };
 
     //

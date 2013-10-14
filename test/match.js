@@ -11,7 +11,7 @@ var _ = require('./lib/test'),
 exports.match = {
     'test': function(test) {
         var patterns = [
-                ['Cons(a, Cons(b, Nil))', function(a, b, c) {
+                ['Cons(a, List.Cons(b, List.Nil))', function(a, b, c) {
                     return a + b;
                 }],
                 ['_', function() {
@@ -184,7 +184,7 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b + c);
         },
         [Number, Number, Number]
-    )/*,
+    ),
     'when checking full name match should return correct value': _.check(
         function(a, b, c) {
             var patterns = [
@@ -214,5 +214,5 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(-1);
         },
         [Number]
-    )*/
+    )
 };
