@@ -184,7 +184,7 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b + c);
         },
         [Number, Number, Number]
-    ),
+    )/*,
     'when checking full name match should return correct value': _.check(
         function(a, b, c) {
             var patterns = [
@@ -199,7 +199,7 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(a + b + c);
         },
         [Number, Number, Number]
-    )/*,
+    ),
     'when checking full name match should return default value': _.check(
         function(a) {
             var patterns = [

@@ -243,16 +243,15 @@ var match = (function() {
                             }
                         );
                     } else if (!name.isWildcard) {
-
                         possibleSibling = squishy.exists(siblings(value), function(x) {
                             return name.isIdent ? squishy.equal(name.ident[0], x) : false;
                         });
 
                         if (possibleSibling && name.similar(value)) {
                             return Attempt.of(Token.TWildcard);
-                        } else if(name.equal(value) || name.similar(value)) {
+                        } else if(!possibleSibling && name.isIdent) {
                             return Attempt.of(value);
-                        } else if(name.isIdent) {
+                        } else if(name.equal(value) || name.similar(value)) {
                             return Attempt.of(value);
                         }
 
@@ -335,13 +334,13 @@ var match = (function() {
     Token.prototype.similar = function(b) {
         return this.match({
             TIdent: function(c) {
-                return squishy.equal(c[0], functionName(b));
+                return b.isWildcard || squishy.equal(c[0], functionName(b));
             },
             TNumber: function(c) {
-                return isNumber(b) && squishy.equal(c, b);
+                return b.isWildcard || isNumber(b) && squishy.equal(c, b);
             },
             TString: function(c) {
-                return isString(b) && squishy.equal(c[0].join(' '), b);
+                return b.isWildcard || isString(b) && squishy.equal(c[0].join(' '), b);
             },
             TWildcard: constant(true)
         });
