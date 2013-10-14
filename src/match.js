@@ -13,7 +13,12 @@
 //
 var match = (function() {
 
-    /* Token */
+    //
+    //  ## Token
+    //
+    //  The token type encodes the presence of a certain data type from
+    //  the parser.
+    //
     var Token = taggedSum('Token', {
             TString: ['string'],
             TNumber: ['number'],
@@ -21,9 +26,18 @@ var match = (function() {
             TWildcard: []
         }),
 
+        //
+        //  ### isToken(a)
+        //
+        //  Returns `true` if `a` is an instance of `token`.
+        //
         isToken = isInstanceOf(Token),
 
-        /* Setup the Monadic parser */
+        //
+        //  ### Parser
+        //
+        //  Monadic parser creation.
+        //
         regexp = Parser.regexp,
         string = Parser.string,
         word = regexp(/^\w+/),
@@ -92,7 +106,11 @@ var match = (function() {
             }
         }),
 
-        /* Main access point */
+        //
+        //  ## match(patterns)
+        //
+        //  Constructor for the patterns expression.
+        //
         match = function(patterns) {
             var env = this,
                 compile = compiler();
