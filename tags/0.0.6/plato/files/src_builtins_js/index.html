@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/builtins.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">85.28</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">153</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">38.64</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.23</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">squishy = squishy
+    .method(&#039;map&#039;, isFunction, curry(function(a, b) {
+        return compose(b, a);
+    }))
+    .method(&#039;concat&#039;, isFunction, curry(function(a, b) {
+        return a().concat(b());
+    }))
+    .method(&#039;ap&#039;, isFunction, curry(function(a, b) {
+        return function(x) {
+            return a(x)(b(x));
+        };
+    }));
+
+squishy = squishy
+    .method(&#039;dimap&#039;, isFunction, function(a, b) {
+        var env = this;
+        return function(c) {
+            return compose(compose(b, c), a);
+        };
+    })
+    .method(&#039;kleisli&#039;, isFunction, function(a, b) {
+        var env = this;
+        return function(x) {
+            return env.chain(a(x), b);
+        };
+    });
+
+squishy = squishy
+    .method(&#039;concat&#039;, isBoolean, curry(function(a, b) {
+        return a &amp; b;
+    }))
+    .method(&#039;concat&#039;, squishy.liftA2(or, isNumber, isString), curry(function(a, b) {
+        return a + b;
+    }))
+    .method(&#039;map&#039;, isBoolean, curry(function(a, b) {
+        return b(a);
+    }))
+    .method(&#039;map&#039;, squishy.liftA2(or, isNumber, isString), curry(function(a, b) {
+        return b(a);
+    }))
+    .method(&#039;negate&#039;, isBoolean, function(a) {
+        return !a;
+    })
+    .method(&#039;negate&#039;, isNumber, function(a) {
+        return -a;
+    });
+
+//
+//  ### equal(a, b)
+//
+//  Checks to see if a type equals another type. This is a uses deep equality for
+//  complex structures like `object` and `array`s.
+//
+squishy = squishy
+    .method(&#039;equal&#039;, isNull, strictEquals)
+    .method(&#039;equal&#039;, isBoolean, strictEquals)
+    .method(&#039;equal&#039;, isFunction, strictEquals)
+    .method(&#039;equal&#039;, isNumber, strictEquals)
+    .method(&#039;equal&#039;, isString, strictEquals)
+    .method(&#039;equal&#039;, isArray, function(a, b) {
+        var env = this;
+        /* We need to be sure that the lengths do actually match here. */
+        if (and(a, b) &amp;&amp; isArray(b) &amp;&amp; strictEquals(a.length, b.length)) {
+            return env.fold(env.zip(a, b), true, function(v, t) {
+                return v &amp;&amp; env.equal(t._1, t._2);
+            });
+        }
+        return false;
+    })
+    .method(&#039;equal&#039;, strictEquals(undefined), strictEquals)
+    .method(&#039;equal&#039;, squishy.liftA2(and, isObject, andThen(isComparable, not)), function(a, b) {
+        var i;
+        /* We need to be sure that the there is an `a` and a `b` here. */
+        if (and(a, b) &amp;&amp; isObject(b)) {
+            /* This would be better if we turn objects into ordered
+               arrays so we can pass it through equal(a, b) */
+            for (i in a) {
+                if (!squishy.equal(a[i], b[i]))
+                    return false;
+            }
+            for (i in b) {
+                if (!squishy.equal(b[i], a[i]))
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    })
+    .property(&#039;expect&#039;, function(a) {
+        var env = this;
+        return singleton(&#039;toBe&#039;,
+            function (b) {
+                return env.equal(b, a);
+            }
+        );
+    });
+
+//
+//  ### of(a)
+//
+//  Creates a value from the type.
+//
+//  The left identity of `squishy.of(m, a).chain(f)` is equivalent to
+//  `f(squishy.of(m, a))` and then equivalent of `f(a)` without using `squishy.of`.
+//  Similarly the right identity of `squishy.chain(m, m.of)` is equivalent to
+//  `m` or `m.chain(m.of)` without using `squishy.of`.
+//
+//       console.log(squishy.of(Array, [1, 2, 3])); // Outputs `[1, 2, 3]`
+//
+squishy = squishy
+    .method(&#039;of&#039;, strictEquals(AnyVal), function() {
+        var types = [Boolean, Number, String];
+        return this.of(this.oneOf(types));
+    })
+    .method(&#039;of&#039;, strictEquals(Array), identity)
+    .method(&#039;of&#039;, strictEquals(Boolean), identity)
+    .method(&#039;of&#039;, strictEquals(Function), identity)
+    .method(&#039;of&#039;, strictEquals(Number), identity)
+    .method(&#039;of&#039;, strictEquals(Object), identity)
+    .method(&#039;of&#039;, strictEquals(String), identity);
+
+//
+//  ### empty()
+//
+//  Creates an empty value depending on the type. Each resulting value
+//  will be classified as falsy for the type. Boolean will be
+//  `false` and Array will be an empty `[]` for example.
+//
+//       console.log(squishy.empty(Array)); // Outputs `[]`
+//
+squishy = squishy
+    .method(&#039;empty&#039;, strictEquals(AnyVal), function() {
+        var types = [Boolean, Number, String];
+        return this.empty(this.oneOf(types));
+    })
+    .method(&#039;empty&#039;, strictEquals(Array), function() {
+        return [];
+    })
+    .method(&#039;empty&#039;, strictEquals(Boolean), function() {
+        return false;
+    })
+    .method(&#039;empty&#039;, strictEquals(Function), function() {
+        return function() {};
+    })
+    .method(&#039;empty&#039;, strictEquals(Number), function() {
+        return 0;
+    })
+    .method(&#039;empty&#039;, strictEquals(Object), function() {
+        return {};
+    })
+    .method(&#039;empty&#039;, strictEquals(String), function() {
+        return &#039;&#039;;
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

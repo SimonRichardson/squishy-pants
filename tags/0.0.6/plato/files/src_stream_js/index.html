@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/stream.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">86.02</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">526</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">50.45</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.71</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  ## Stream(fork)
+//
+//  The Stream type represents a flow of data ever evolving values over time.
+//
+//  Here is an example of a number piped through to the console.
+//
+//        Stream.of(1).map(
+//            function (a) {
+//                return a + 1;
+//            }
+//        ).fork(console.log);
+//
+//
+//   * `ap(a, b)` - Applicative ap(ply)
+//   * `concat(a, b)` - Appends two stream objects.
+//   * `drop(a, n)` - Returns the stream without its n first elements. If this stream has less than n elements, the empty stream is returned.
+//   * `filter(a, f)` - Returns all the elements of this stream that satisfy the predicate p.
+//   * `chain(a, f)` - Applies the given function f to each element of this stream, then concatenates the results.
+//   * `fold(a, v, f)` - Combines the elements of this stream together using the binary function f, from Left to Right, and starting with the value v.
+//   * `map(a, f)` - Returns the stream resulting from applying the given function f to each element of this stream.
+//   * `scan(a, f)` - Combines the elements of this stream together using the binary operator op, from Left to Right
+//   * `take(n)` - Returns the n first elements of this stream.
+//   * `zip(a, b)` - Returns a stream formed from this stream and the specified stream that by associating each element of the former with the element at the same position in the latter.
+//   * `zipWithIndex(a)` -  Returns a stream form from this stream and a index of the value that is associated with each element index position.
+//
+var Stream = tagged(&#039;Stream&#039;, [&#039;fork&#039;]);
+
+//
+//  ### of(x)
+//
+//  Creates a stream that contains a successful value.
+//
+Stream.of = function(a) {
+    return Stream(
+        function(next, done) {
+            squishy.toOption(a).fold(
+                next,
+                nothing
+            );
+            return done();
+        }
+    );
+};
+
+//
+//  ### empty()
+//
+//  Creates a Empty stream that contains no value.
+//
+Stream.empty = function() {
+    return Stream.of();
+};
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the success of this stream
+//  Applicative ap(ply)
+//
+Stream.prototype.ap = function(a) {
+    return this.chain(
+        function(f) {
+            return a.map(f);
+        }
+    );
+};
+
+//
+//  ### both(a)
+//
+//  returns a stream formed from this stream and the specified stream that
+//  by associating each element to the current element.
+//
+Stream.prototype.both = function(a, t) {
+    var env = this,
+        x = Tuple2.lens(0),
+        y = Tuple2.lens(1);
+
+    return Stream(
+        function(next, done) {
+            var end = once(function() {
+                    return once(done);
+                });
+
+            env.fork(
+                function(v) {
+                    t = x.run(t).set(v);
+                    next(t);
+                },
+                end
+            );
+
+            a.fork(
+                function(v) {
+                    t = y.run(t).set(v);
+                    next(t);
+                },
+                end
+            );
+        }
+    );
+};
+
+//
+//  ### chain(f)
+//
+//  Returns a new stream that evaluates `f` when the current stream
+//  is successfully fulfilled. `f` must return a new stream.
+//
+Stream.prototype.chain = function(f) {
+    var env = this;
+    return Stream(function(next, done) {
+        return env.fork(
+            function(a) {
+                return f(a).fork(next, nothing);
+            },
+            done
+        );
+    });
+};
+
+//
+//  ### concat(s, f)
+//
+//  Concatenate two streams associatively together.
+//  Semigroup concat
+//
+Stream.prototype.concat = function(a) {
+    var env = this;
+    return Stream(function(next, done) {
+        return env.fork(
+            next,
+            function() {
+                return a.fork(next, done);
+            }
+        );
+    });
+};
+
+//
+//  ### drop(f)
+//
+//  Returns the stream without its n first elements.
+//
+Stream.prototype.drop = function(n) {
+    var dropped = 0;
+    return this.chain(
+        function(a) {
+            if (dropped &lt; n) {
+                dropped++;
+                return Stream.empty();
+            } else {
+                return Stream.of(a);
+            }
+        }
+    );
+};
+
+//
+//  ### equal(a)
+//
+//  Compare two stream values for equality
+//
+Stream.prototype.equal = function(a) {
+    return this.zip(a).fold(
+        true,
+        function(v, t) {
+            return v &amp;&amp; squishy.equal(t._1, t._2);
+        }
+    );
+};
+
+//
+//  ### extract(a)
+//
+//  Extract the value from the stream.
+//
+Stream.prototype.extract = function() {
+    return this.fork(
+        identity,
+        constant(null)
+    );
+};
+
+//
+//  ### filter(f)
+//
+//  Returns all the elements of this stream that satisfy the predicate p.
+//
+Stream.prototype.filter = function(f) {
+    var env = this;
+    return Stream(function(next, done) {
+        return env.fork(
+            function(a) {
+                if (f(a)) {
+                    next(a);
+                }
+            },
+            done
+        );
+    });
+};
+
+//
+//  ### fold(v, f)
+//
+//  Combines the elements of this stream together using the binary function f
+//
+Stream.prototype.fold = function(v, f) {
+    var env = this;
+    return Stream(
+        function(next, done) {
+            return env.fork(
+                function(a) {
+                    v = f(v, a);
+                    return v;
+                },
+                function() {
+                    next(v);
+                    return done();
+                }
+            );
+        }
+    );
+};
+
+//
+//  ### length()
+//
+//  Returns the length of the stream
+//
+Stream.prototype.length = function() {
+    return this.map(
+        constant(1)
+    ).fold(
+        0,
+        curry(function(x, y) {
+            return x + y;
+        })
+    );
+};
+
+//
+//  ### map(f)
+//
+//  Returns the stream resulting from applying the given function f to each
+//  element of this stream.
+//
+Stream.prototype.map = function(f) {
+    return this.chain(
+        function(a) {
+            return Stream.of(f(a));
+        }
+    );
+};
+
+//
+//  ### merge(a)
+//
+//  Merge the values of two streams in to one stream
+//
+Stream.prototype.merge = function(a) {
+    var env = this;
+
+    return Stream(
+        function(next, done) {
+            var end = once(done);
+
+            env.fork(next, end);
+            a.fork(next, end);
+        }
+    );
+};
+
+//
+//  ### pipe(a)
+//
+//  Pipe a stream to a state or writer monad.
+//
+Stream.prototype.pipe = function(o) {
+    var env = this;
+    return Stream(
+        function(next, done) {
+            return env.fork(
+                function(v) {
+                    return o.run(v);
+                },
+                done
+            );
+        }
+    );
+};
+
+//
+//  ### scan(a)
+//
+//  Combines the elements of this stream together using the binary operator
+//  op, from Left to Right
+//
+Stream.prototype.scan = function(a, f) {
+    var env = this;
+    return Stream(
+        function(next, done) {
+            return env.fork(
+                function(b) {
+                    a = f(a, b);
+                    return next(a);
+                },
+                done
+            );
+        });
+};
+
+//
+//  ### take(v, f)
+//
+//  Returns the n first elements of this stream.
+//
+Stream.prototype.take = function(n) {
+    var taken = 0;
+    return this.chain(
+        function(a) {
+            return (++taken &lt; n) ? Stream.of(a) : Stream.empty();
+        }
+    );
+};
+
+//
+//  ### zip(b)
+//
+//  Returns a stream formed from this stream and the specified stream that
+//  by associating each element of the former with the element at the same
+//  position in the latter.
+//
+Stream.prototype.zip = function(a) {
+    var env = this;
+
+    return Stream(
+        function(next, done) {
+            var left = [],
+                right = [],
+                end = once(done);
+
+            env.fork(
+                function(a) {
+                    if (right.length &gt; 0) {
+                        next(Tuple2(a, right.shift()));
+                    } else {
+                        left.push(a);
+                    }
+                },
+                end
+            );
+
+            a.fork(
+                function(a) {
+                    if (left.length &gt; 0) {
+                        next(Tuple2(left.shift(), a));
+                    } else {
+                        right.push(a);
+                    }
+                },
+                end
+            );
+        }
+    );
+};
+
+//
+//  ### zipWithIndex()
+//
+//  Returns a stream form from this stream and a index of the value that
+//  is associated with each element index position.
+//
+Stream.prototype.zipWithIndex = function() {
+    var index = 0;
+    return this.map(
+        function(a) {
+            return Tuple2(a, index++);
+        }
+    );
+};
+
+//
+//  ## fromArray(a)
+//
+//  Returns a new stream which iterates over each element of the array.
+//
+Stream.fromArray = function(a) {
+    return Stream(
+        function(next, done) {
+            squishy.map(a, next);
+            return done();
+        }
+    );
+};
+
+//
+//  ## isStream(a)
+//
+//  Returns `true` if `a` is `Stream`.
+//
+var isStream = isInstanceOf(Stream);
+
+//
+//  ## Stream Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//
+
+var StreamT = tagged(&#039;StreamT&#039;, [&#039;run&#039;]);
+
+Stream.StreamT = transformer(StreamT);
+
+//
+//  ### fork(a, b)
+//
+//  Open up fork from the reader transformer
+//
+StreamT.prototype.fork = function(a, b) {
+    return this.run.fork(a, b);
+};
+
+//
+//  ## isStreamT(a)
+//
+//  Returns `true` if `a` is `StreamT`.
+//
+var isStreamT = isInstanceOf(StreamT);
+
+//
+//  ## streamOf(type)
+//
+//  Sentinel value for when an stream of a particular type is needed:
+//
+//       streamOf(Number)
+//
+function streamOf(type) {
+    var self = getInstance(this, streamOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStreamOf(a)
+//
+//  Returns `true` if `a` is `streamOf`.
+//
+var isStreamOf = isInstanceOf(streamOf);
+
+//
+//  ## streamTOf(type)
+//
+//  Sentinel value for when an stream of a particular type is needed:
+//
+//       streamTOf(Number)
+//
+function streamTOf(type) {
+    var self = getInstance(this, streamTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStreamTOf(a)
+//
+//  Returns `true` if `a` is an instance of `streamTOf`.
+//
+var isStreamTOf = isInstanceOf(streamTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Stream.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an reader structure.
+//
+Stream.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Stream(s);
+            },
+            function() {
+                return a.fork;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Stream&#039;, Stream)
+    .property(&#039;StreamT&#039;, StreamT)
+    .property(&#039;streamOf&#039;, streamOf)
+    .property(&#039;streamTOf&#039;, streamTOf)
+    .property(&#039;isStream&#039;, isStream)
+    .property(&#039;isStreamT&#039;, isStreamT)
+    .property(&#039;isStreamOf&#039;, isStreamOf)
+    .property(&#039;isStreamTOf&#039;, isStreamTOf)
+    .method(&#039;of&#039;, strictEquals(Stream), function(x) {
+        return Stream.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Stream), function() {
+        return Stream.empty();
+    })
+
+    .method(&#039;arb&#039;, isStreamOf, function(a, b) {
+        var args = this.arb(a.type, b - 1);
+        return Stream.fromArray(args);
+    })
+    .method(&#039;arb&#039;, isStreamTOf, function(a, b) {
+        return Stream.StreamT(this.arb(streamOf(a.type), b - 1));
+    })
+
+    .method(&#039;concat&#039;, isStream, function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;extract&#039;, isStream, function(a) {
+        return a.extract();
+    })
+    .method(&#039;fold&#039;, isStream, function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;zip&#039;, isStream, function(b) {
+        return a.zip(b);
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

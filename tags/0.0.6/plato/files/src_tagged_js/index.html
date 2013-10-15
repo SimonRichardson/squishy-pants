@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/tagged.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">72.43</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">144</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">35.38</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">0.85</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  ## tagged(name, fields)
+//
+//  Creates a simple constructor for a tagged object.
+//
+//       var Tuple = tagged(&#039;Tuple&#039;, [&#039;a&#039;, &#039;b&#039;]);
+//       var x = Tuple(1, 2);
+//       var y = new Tuple(3, 4);
+//       x instanceof Tuple &amp;&amp; y instanceof Tuple;
+//
+function tagged(name, fields) {
+    function wrapped() {
+        var self = getInstance(this, wrapped),
+            total = fields.length,
+            values = [].slice.call(arguments),
+            i;
+
+        if (values.length != total) {
+            throw new TypeError(&quot;Expected &quot; + fields.length + &quot; arguments, got &quot; + values.length + &quot; for &quot; + name);
+        }
+
+        for (i = 0; i &lt; total; i++) {
+            self[fields[i]] = values[i];
+        }
+
+        self.toString = makeToString(values);
+
+        /* Make sure we don&#039;t overwrite already existing implementations */
+        if (!self.toArray) {
+            self.toArray = makeToArray(values);
+        }
+
+        return self;
+    }
+
+    function makeToString(a) {
+        return function() {
+            var values = squishy.map(a, function(x) {
+                    return x.toString ? x.toString() : &#039;&#039; + x;
+                }),
+                flattened = squishy.reduce(values, function(x, y) {
+                    return x + &#039;, &#039; + y;
+                });
+            return name + (values.length &gt; 0 ? &#039;(&#039; + flattened + &#039;)&#039; : &#039;&#039;);
+        };
+    }
+
+    function makeToArray(a) {
+        return function() {
+            var values = squishy.map(a, function(x) {
+                    return x.toArray ? x.toArray() : x;
+                }),
+                flattened = squishy.fold(values, [], function(x, y) {
+                    return squishy.concat(x, y);
+                });
+            return flattened;
+        };
+    }
+
+    /* Make sure the fields is an array */
+    if (!isArray(fields)) {
+        throw new TypeError(&quot;Expected Array but got `&quot; + (typeof fields) + &quot;`&quot;);
+    }
+
+    /* Make sure the tagged are named */
+    wrapped._name = name;
+    wrapped._length = fields.length;
+
+    return wrapped;
+}
+
+//
+//  ## taggedSum(constructors)
+//
+//  Creates a disjoint union of constructors, with a catamorphism.
+//
+//        var List = taggedSum({
+//            Cons: [&#039;car&#039;, &#039;cdr&#039;],
+//            Nil: []
+//        });
+//        function listLength(l) {
+//            return l.match({
+//                Cons: function(car, cdr) {
+//                    return 1 + listLength(cdr);
+//                },
+//                Nil: function() {
+//                    return 0;
+//                }
+//            });
+//        }
+//        listLength(List.Cons(1, new List.Cons(2, List.Nil()))) == 2;
+//
+function taggedSum(name, constructors) {
+    var key,
+        proto;
+
+    function definitions() {
+        throw new TypeError(&#039;Tagged sum was called instead of one of its properties.&#039;);
+    }
+
+    function constructMatch(key) {
+        return function(dispatches) {
+            var fields = constructors[key],
+                accessor = dispatches[key],
+                args = squishy.select(this, fields);
+
+            if(!accessor) {
+                throw new TypeError(&quot;Constructors given to match didn&#039;t include: &quot; + key);
+            }
+
+            return accessor.apply(this, args);
+        };
+    }
+
+    function makeProto(key, constructors) {
+        var proto = create(definitions.prototype);
+        proto.match = constructMatch(key);
+
+        /*
+            - Make sure the taggedSum are named
+            - Pass the constructors around so we can then do recursive matching.
+            - Make sure that taggedSum items have a toString
+        */
+        proto._name = key;
+        proto._tagged = definitions;
+        proto._constructors = constructors;
+
+        proto.toString = constant(key);
+
+        return proto;
+    }
+
+    for (key in constructors) {
+        if (!constructors[key].length) {
+            definitions[key] = makeProto(key, definitions);
+            definitions[key].toArray = constant([]);
+            continue;
+        }
+
+        definitions[key] = tagged(key, constructors[key]);
+        definitions[key].prototype = makeProto(key, constructors);
+    }
+
+    definitions._name = name;
+
+    return definitions;
+}
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;tagged&#039;, tagged)
+    .property(&#039;taggedSum&#039;, taggedSum);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

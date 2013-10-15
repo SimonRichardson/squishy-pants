@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/environment.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">68.72</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">79</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">40.92</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">0.55</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//   # Environment
+//
+//   Environments are very important in squishy-pants. The library itself is
+//   implemented as a single environment.
+//
+//   An environment holds methods and properties.
+//
+//   Methods are implemented as multi-methods, which allow a form of
+//   *ad-hoc polymorphism*. Duck typing is another example of ad-hoc
+//   polymorphism, but only allows a single implementation at a time, via
+//   prototype mutation.
+//
+//   A method instance is a product of a name, a predicate and an
+//   implementation:
+//
+//       var env = squishy.environment()
+//           .method(
+//               // Name
+//               &#039;negate&#039;,
+//               // Predicate
+//               function(n) {
+//                   return typeof n == &#039;number&#039;;
+//               },
+//               // Implementation
+//               function(n) {
+//                   return -n;
+//               }
+//           );
+//
+//       env.negate(100) == -100;
+//
+//   We can now override the environment with Some more implementations:
+//
+//       var env2 = env
+//           .method(
+//               &#039;negate&#039;,
+//               function(b) {
+//                   return typeof b == &#039;boolean&#039;;
+//               },
+//               function(b) {
+//                   return !b;
+//               }
+//           );
+//
+//       env2.negate(100) == -100;
+//       env2.negate(true) == false;
+//
+//   Environments are immutable; references to `env` won&#039;t see an
+//   implementation for boolean. The `env2` environment could have
+//   overwritten the implementation for number and code relying on `env`
+//   would still work.
+//
+//   Properties can be accessed without dispatching on arguments. They
+//   can almost be thought of as methods with predicates that always
+//   return true:
+//
+//       var env = squishy.environment()
+//           .property(&#039;name&#039;, &#039;Squishy&#039;);
+//
+//       env.name === &#039;Squishy&#039;;
+//
+function findRegistered(name, registrations, args) {
+    var i,
+        total;
+
+    for(i = 0, total = registrations.length; i &lt; total; i++) {
+        if(registrations[i].predicate.apply(this, args))
+            return registrations[i].f;
+    }
+
+    throw new Error(&#039;Method `&#039; + name + &#039;` not implemented for this input&#039;);
+}
+
+function makeMethod(name, registrations) {
+    return function() {
+        var args = rest(arguments);
+        return findRegistered(name, registrations, args).apply(this, args);
+    };
+}
+
+//
+//   ## environment(methods, properties)
+//
+//   * `method(name, predicate, f)` - adds an multimethod implementation
+//   * `property(name, value)` - sets a property to value
+//   * `isDefined(name)` - is a multimethod implement defined
+//   * `isDefinedAt(name, ...rest)` - is a multimethod implemented with arguments
+//
+function environment(methods, properties) {
+    var self = getInstance(this, environment),
+        i;
+
+    methods = methods || {};
+    properties = properties || {};
+
+    self.method = function(name, predicate, f) {
+        var newMethods = extend(methods, singleton(name, (methods[name] || []).concat({
+            predicate: predicate,
+            f: f
+        })));
+        return environment(newMethods, properties);
+    };
+
+    self.property = function(name, value) {
+        var newProperties = extend(properties, singleton(name, value));
+        return environment(methods, newProperties);
+    };
+
+    self.isDefined = function(name) {
+        return self[name] &amp;&amp; functionName(self[name]) === name;
+    };
+
+    self.isDefinedAt = function(name) {
+        var result = false,
+            args = rest(arguments).slice(1);
+
+        try {
+            result = !!findRegistered(name, methods[name], args);
+        } catch (e) {}
+
+        return result;
+    };
+
+    for(i in methods) {
+        if(self[i]) throw new Error(&quot;Method `&quot; + i + &quot;` already in environment.&quot;);
+        else {
+            /* Make sure the methods are names */
+            var method = makeMethod(i, methods[i]);
+            method._name = i;
+            self[i] = method;
+        }
+    }
+
+    for(i in properties) {
+        if(self[i]) throw new Error(&quot;Property `&quot; + i + &quot;` already in environment.&quot;);
+        else self[i] = properties[i];
+    }
+
+    return self;
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/writer.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">89.02</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">206</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">16.06</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.00</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//   ## Writer(run)
+//
+//  Writer represents a computation, which can write values, passes values from
+//  function to functions.
+//
+//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `map(f)` - Functor map
+//
+var Writer = tagged(&#039;Writer&#039;, [&#039;run&#039;]);
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating a `Writer`.
+//
+Writer.of = function(a) {
+    return Writer(function() {
+        return Tuple2(a, &#039;&#039;);
+    });
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating a `Writer`.
+//
+Writer.empty = function() {
+    return Writer(function() {
+        return Tuple2(null, &#039;&#039;);
+    });
+};
+
+//
+//  ## put()
+//
+//  Constructor `put` to return the value of `t`.
+//
+Writer.put = function(t) {
+    return Writer(function() {
+        return t;
+    });
+};
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the value of this writer
+//  Applicative ap(ply)
+//
+Writer.prototype.ap = function(a) {
+    return this.chain(function(f) {
+        return squishy.map(a, function(b) {
+            return f(b);
+        });
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the value of the writer
+//  Monadic flatMap/bind
+//
+Writer.prototype.chain = function(f) {
+    var env = this;
+    return Writer(function(e) {
+        var a = env.run(e),
+            b = f(a._1).run(a._1);
+
+        return Tuple2(b._1, squishy.concat(a._2, b._2));
+    });
+};
+
+//
+//  ### map(f)
+//
+//  Map on the value of this writer.
+//  Functor map
+//
+Writer.prototype.map = function(f) {
+    return this.chain(function(a) {
+        return Writer.of(f(a));
+    });
+};
+
+//
+//  ## isWriter(a)
+//
+//  Returns `true` if `a` is `Writer`.
+//
+var isWriter = isInstanceOf(Writer);
+
+//
+//  ## Writer Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//
+
+var WriterT = tagged(&#039;WriterT&#039;, [&#039;run&#039;]);
+
+Writer.WriterT = transformer(WriterT);
+
+//
+//  ## isWriterT(a)
+//
+//  Returns `true` if `a` is `WriterT`.
+//
+var isWriterT = isInstanceOf(WriterT);
+
+//
+//  ## writerOf(type)
+//
+//  Sentinel value for when an writer of a particular type is needed:
+//
+//       writerOf(Number)
+//
+function writerOf(type) {
+    var self = getInstance(this, writerOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isWriterOf(a)
+//
+//  Returns `true` if `a` is an instance of `writerOf`.
+//
+var isWriterOf = isInstanceOf(writerOf);
+
+//
+//  ## writerTOf(type)
+//
+//  Sentinel value for when an writer of a particular type is needed:
+//
+//       writerTOf(Number)
+//
+function writerTOf(type) {
+    var self = getInstance(this, writerTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isWriterTOf(a)
+//
+//  Returns `true` if `a` is an instance of `writerTOf`.
+//
+var isWriterTOf = isInstanceOf(writerTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Writer.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an state structure.
+//
+Writer.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Writer(s);
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Writer&#039;, Writer)
+    .property(&#039;WriterT&#039;, WriterT)
+    .property(&#039;writerOf&#039;, writerOf)
+    .property(&#039;writerTOf&#039;, writerTOf)
+    .property(&#039;isWriter&#039;, isWriter)
+    .property(&#039;isWriterT&#039;, isWriterT)
+    .property(&#039;isWriterOf&#039;, isWriterOf)
+    .property(&#039;isWriterTOf&#039;, isWriterTOf)
+    .method(&#039;of&#039;, strictEquals(Writer), function(x) {
+        return Writer.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Writer), function(x) {
+        return Writer.empty();
+    })
+
+    .method(&#039;arb&#039;, isWriterOf, function(a, b) {
+        return Writer.of(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isWriterTOf, function(a, b) {
+        return Writer.WriterT(this.arb(writerOf(a.type), b - 1));
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

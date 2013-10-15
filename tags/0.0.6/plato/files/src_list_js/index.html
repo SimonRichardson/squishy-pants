@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/list.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">79.79</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">843</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">120.27</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">6.08</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  # List
+//
+//      List a = Cons a + Nil
+//
+//  The list type data type constructs objects which points to values. The `Cons`
+//  constructor represents a value, the left is the head (the first element)
+//  and the right represents the tail (the second element). The `Nil`
+//  constructor is defined as an empty list.
+//
+//  The following example creates a list of values 1 and 2, where the Nil terminates
+//  the list:
+//
+//      Cons(1, Cons(2, Nil));
+//
+//  The following can also represent tree like structures (Binary Trees):
+//
+//      Cons(Cons(1, Cons(2, Nil)), Cons(3, Cons(4, Nil)));
+//
+//             *
+//            / \
+//           *   *
+//          / \ / \
+//         1  2 3  4
+//
+//   * `ap(a, b)` - Applicative ap(ply)
+//   * `append(a)` - append
+//   * `appendAll(a)` - append values
+//   * `chain(f)` - monadic flatMap
+//   * `concat(a)` - semigroup concat
+//   * `count(a, f)` - Count the number of elements in the list which satisfy a predicate.
+//   * `drop(a, n)` - Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
+//   * `dropRight(a, n)` - Returns the list without its rightmost `n` elements.
+//   * `dropWhile(a, f)` - Returns the longest suffix of this list whose first element does not satisfy the predicate.
+//   * `exists()` - test by predicate
+//   * `extract()` -  extract the value from option
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `filter()` - filter by predicate
+//   * `find(a)` - Returns the element in this list of an element that satisfies the predicate.
+//   * `first(a)` - Retrieve the first value.
+//   * `fold(a, b)` - applies `a` to value if `Cons` or defaults to `b`
+//   * `last(a)` - Retrieve the last value.
+//   * `map(f)` - functor map
+//   * `prepend(a)` - prepend value
+//   * `prependAll(a)` - prepend values
+//   * `reverse()` - reverse
+//   * `partition()` - partition by predicate
+//   * `reduce(a, f)` - Combines the elements of this list together using the binary operator op, from Left to Right
+//   * `reduceRight(a, f)` - Combines the elements of this list together using the binary operator op, from Right to Left
+//   * `size()` - size of the list
+//   * `tail(n)` - Returns the tail elements of this list.
+//   * `take(n)` - Returns the n first elements of this list.
+//   * `takeRight(n)` - Returns the rightmost n elements from this list.
+//   * `takeWhile(f)` - Returns the longest prefix of this list whose elements satisfy the predicate.
+//   * `zip(a, b)` - Returns a list formed from this list and the specified list that by associating each element of the former with the element at the same position in the latter.
+//   * `zipWithIndex(a)` -  Returns a list form from this list and a index of the value that is associated with each element index position.
+//   * `toArray()` - Returns a array from a list.
+//
+var List = taggedSum(&#039;List&#039;, {
+    Cons: [&#039;head&#039;, &#039;tail&#039;],
+    Nil: []
+});
+
+//
+//  ### range(a, b)
+//
+//  Create a list from a range of values.
+//
+List.range = curry(function(a, b) {
+    var total = b - a;
+    var rec = function(x, y) {
+        if (y - a &gt;= total) return done(x);
+        return cont(function() {
+            return rec(List.Cons(y, x), ++y);
+        });
+    };
+    return trampoline(rec(List.Nil, a));
+});
+
+//
+//  ### fromArray()
+//
+//  Returns a list from an array.
+//
+List.fromArray = function(array) {
+    var index = array.length,
+        accum = List.Nil;
+
+    while(--index &gt; -1) {
+        accum = accum.prepend(array[index]);
+    }
+
+    return accum;
+};
+
+//
+//  ### ap(b, [concat])
+//
+//  Apply a function in the applicative of each function
+//  Applicative ap(ply)
+//
+List.prototype.ap = function(b) {
+    var accum = List.Nil,
+        a = this,
+        x = b;
+
+    while(a.isNonEmpty) {
+        b = x;
+        while(b.isNonEmpty) {
+            accum = accum.prepend(a.head(b.head));
+            b = b.tail;
+        }
+        a = a.tail;
+    }
+
+    return accum.reverse();
+};
+
+//
+//  ### append(a)
+//
+//  Append a value to the current list returning a new list.
+//
+List.prototype.append = function(a) {
+    return this.appendAll(List.Cons(a, List.Nil));
+};
+
+//
+//  ### appendAll(a)
+//
+//  Append a list of values to the current list returning a new list.
+//
+List.prototype.appendAll = function(a) {
+    var accum = a;
+    var p = this.reverse();
+
+    while(p.isNonEmpty) {
+        accum = List.Cons(p.head, accum);
+        p = p.tail;
+    }
+
+    return accum;
+};
+
+//
+//  ### chain(f)
+//
+//  Applies the given function f to each element of this list, then
+//  concatenates the results.
+//
+List.prototype.chain = function(f) {
+    return this.fold(
+        List.Nil,
+        function(a, b) {
+            return a.appendAll(f(b));
+        }
+    );
+};
+
+//
+//  ### concat(s)
+//
+//  Appends two list objects.
+//  semigroup concat
+//
+List.prototype.concat = function(s) {
+    return this.appendAll(s);
+};
+
+//
+//  ### count(f)
+//
+//  Count the number of elements in the list which satisfy a predicate.
+//
+List.prototype.count = function(f) {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, f(a.head) ? inc(b) : b);
+        });
+    };
+    return trampoline(rec(this, 0));
+};
+
+//
+//  ### drop(n)
+//
+//  Returns the list without its n first elements. If this list has less than n elements, the empty list is returned.
+//
+List.prototype.drop = function(n) {
+    var rec = function(a, b) {
+        if (a.isEmpty || b &lt; 1) return done(a);
+
+        return cont(function() {
+            return rec(a.tail, --b);
+        });
+    };
+    return trampoline(rec(this, n));
+};
+
+//
+//  ### dropRight(n)
+//
+//  Returns the list without its rightmost `n` elements.
+//
+List.prototype.dropRight = function(n) {
+    if (n &lt; 1) return List.Nil;
+
+    var rec = function(a, b, c) {
+        if (a.isEmpty || c &lt; 1) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, b.prepend(a.head), --c);
+        });
+    };
+    return trampoline(rec(this, List.Nil, this.size() - n)).reverse();
+};
+
+//
+//  ### dropWhile(f)
+//
+//  Returns the longest suffix of this array whose first element
+//  does not satisfy the predicate.
+//
+List.prototype.dropWhile = function(f) {
+    var env = this,
+        rec = function(a, b) {
+            if (a.isEmpty) return done(0);
+            else if(!f(a.head)) return done(b);
+
+            return cont(function() {
+                return rec(a.tail, ++b);
+            });
+        },
+        index = trampoline(rec(this, 0));
+
+    return this.drop(index);
+};
+
+//
+//  ### exists(f)
+//
+//  Tests the existence in this list of an element that satisfies
+//  the predicate.
+//
+List.prototype.exists = function(f) {
+    var p = this;
+
+    while(p.isNonEmpty) {
+        if(f(p.head)) {
+            return true;
+        }
+        p = p.tail;
+    }
+    return false;
+};
+
+//
+//  ### extract()
+//
+//  Extract the value from the list.
+//
+List.prototype.extract = function() {
+    return this.match({
+        Cons: function(a) {
+            return a;
+        },
+        Nil: constant(null)
+    });
+};
+
+//
+//  ### equal(b)
+//
+//  Compare two list values for equality
+//
+List.prototype.equal = function(b) {
+    var accum = true,
+        a = this;
+    while(a.isNonEmpty &amp;&amp; b.isNonEmpty) {
+        accum = accum &amp;&amp; squishy.equal(a.head, b.head);
+
+        if (!accum) {
+            break;
+        }
+
+        a = a.tail;
+        b = b.tail;
+    }
+    return accum ? a.isEmpty &amp;&amp; b.isEmpty : false;
+};
+
+//
+//  ### filter(f)
+//
+//  Returns all the elements of this list that satisfy the predicate p.
+//
+List.prototype.filter = function(f) {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            var c = curry(rec)(a.tail);
+            if (f(a.head)) {
+                return c(List.Cons(a.head, b));
+            } else {
+                return c(b);
+            }
+        });
+    };
+    return trampoline(rec(this, List.Nil)).reverse();
+};
+
+//
+//  ### find(f)
+//
+//  Returns the element in this list of an element that satisfies the predicate.
+//
+List.prototype.find = function(f) {
+    var rec = function(a) {
+        if (a.isEmpty) return done(null);
+
+        return cont(function() {
+            if (f(a.head)) {
+                return done(a.head);
+            } else {
+                return rec(a.tail);
+            }
+        });
+    };
+    return trampoline(rec(this));
+};
+
+//
+//  ### first()
+//
+//  Retrieve the first value.
+//
+List.prototype.first = function() {
+    return a.head;
+};
+
+//
+//  ### fold(v, f)
+//
+//  Combines the elements of this list together using the binary function f,
+//  from Left to Right, and starting with the value v.
+//
+List.prototype.fold = function(v, f) {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, f(b, a.head));
+        });
+    };
+    return trampoline(rec(this, v));
+};
+
+//
+//  ### get(index)
+//
+//  Get the given item at the correct index
+//
+List.prototype.get = function(index) {
+    var accum = null,
+        i = -1,
+        p = this;
+
+    while(p.isNonEmpty &amp;&amp; i &lt; index) {
+        accum = p.head;
+        p = p.tail;
+        i++;
+    }
+    return accum;
+};
+
+//
+//  ### last()
+//
+//  Retrieve the last value.
+//
+List.prototype.last = function() {
+    var rec = function(a) {
+        if (a.isEmpty) return done(null);
+
+        return cont(function() {
+            if (a.tail.isEmpty) {
+                return done(a.head);
+            } else {
+                return rec(a.tail);
+            }
+        });
+    };
+    return trampoline(rec(this));
+};
+
+//
+//  ### map(f)
+//
+//  Returns the list resulting from applying the given function f to each
+//  element of this list.
+//
+List.prototype.map = function(f) {
+    return this.fold(
+        List.Nil,
+        function(a, b) {
+            return List.Cons(f(b), a);
+        }
+    );
+};
+
+//
+//  ### partition(f)
+//
+//  Partition the list in two sub-lists according to a predicate.
+//
+List.prototype.partition = function(f) {
+    if (this.isEmpty) return Tuple2(this, this);
+
+    var rec = function(a, l, r) {
+        if (a.isEmpty) return done(Tuple2(l.reverse(), r.reverse()));
+
+        return cont(function() {
+            var h = a.head;
+            var cur = curry(List.Cons)(h);
+            if (f(h)) {
+                return rec(a.tail, cur(l), r);
+            } else {
+                return rec(a.tail, l, cur(r));
+            }
+        });
+    };
+    return trampoline(rec(this, List.Nil, List.Nil));
+};
+
+//
+//  ### prepend(a)
+//
+//  Prepend a value to the current list returning a new list.
+//
+List.prototype.prepend = function(a) {
+    return List.Cons(a, this);
+};
+
+//
+//  ### prependAll(a)
+//
+//  Prepend a list of values to the current list returning a new list.
+//
+List.prototype.prependAll = function(a) {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, List.Cons(a.head, b));
+        });
+    };
+    return trampoline(rec(a, this));
+};
+
+//
+//  ### reduce(f)
+//
+//  Combines the elements of this list together using the binary operator
+//  op, from Left to Right
+//
+List.prototype.reduce = function(f) {
+    if (this.isEmpty) return null;
+
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, f(b, a.head));
+        });
+    };
+    return trampoline(rec(this.tail, this.head));
+};
+
+//
+//  ### reduceRight(f)
+//
+//  Combines the elements of this list together using the binary operator
+//  op, from Right to Left
+//
+List.prototype.reduceRight = function(f) {
+    return this.reverse().reduce(f);
+};
+
+//
+//  ### reverse()
+//
+//  Reverse the list as a new list.
+//
+List.prototype.reverse = function() {
+    var rec = function(p, accum) {
+        return p.match({
+            Cons: function(a, b) {
+                return cont(function() {
+                    return rec(p.tail, List.Cons(a, accum));
+                });
+            },
+            Nil: function() {
+                return done(accum);
+            }
+        });
+    };
+    return trampoline(rec(this, List.Nil));
+};
+
+//
+//  ### size()
+//
+//  size of the list
+//
+List.prototype.size = function() {
+    var rec = function(a, b) {
+        if (a.isEmpty) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, ++b);
+        });
+    };
+    return trampoline(rec(this, 0));
+};
+
+//
+//  ### take(n)
+//
+//  Returns the n first elements of this list.
+//
+List.prototype.take = function(n) {
+    var accum = List.Nil,
+        i = 0,
+        p = this;
+
+    while(p.isNonEmpty &amp;&amp; i &lt; n) {
+        accum = List.Cons(p.head, accum);
+        p = p.tail;
+        i++;
+    }
+    return accum.reverse();
+};
+
+//
+//  ### takeRight(n)
+//
+//  Returns the rightmost n elements from this list.
+//
+List.prototype.takeRight = function(n) {
+    if (n &lt; 1) return this;
+
+    var rec = function(a, b, c) {
+        if (a.isEmpty || c &lt; 1) return done(b);
+
+        return cont(function() {
+            return rec(a.tail, b.prepend(a.head), --c);
+        });
+    };
+    return trampoline(rec(this.reverse(), List.Nil, n));
+};
+
+//
+//  ### takeWhile(f)
+//
+//  Returns the longest prefix of this list whose elements satisfy
+//  the predicate.
+//
+List.prototype.takeWhile = function(f) {
+    var env = this,
+        rec = function(a, b) {
+            if (a.isEmpty) return done(0);
+            else if(!f(a.head)) return done(b);
+
+            return cont(function() {
+                return rec(a.tail, ++b);
+            });
+        },
+        index = trampoline(rec(this, 0));
+
+    return this.take(index);
+};
+
+//
+//  ### zip(b)
+//
+//  Returns a list formed from this list and the specified list that
+//  by associating each element of the former with the element at the same
+//  position in the latter.
+//
+List.prototype.zip = function(b) {
+    var accum = List.Nil,
+        x = this,
+        y = b;
+
+    while(x.isNonEmpty &amp;&amp; y.isNonEmpty) {
+        accum = List.Cons(Tuple2(x.head, y.head), accum);
+        x = x.tail;
+        y = y.tail;
+    }
+    return accum.reverse();
+};
+
+//
+//  ### zipWithIndex(b)
+//
+//  Returns a list form from this list and a index of the value that
+//  is associated with each element index position.
+//
+List.prototype.zipWithIndex = function(b) {
+    var accum = List.Nil,
+        index = 0,
+        p = this;
+
+    while(p.isNonEmpty) {
+        accum = List.Cons(Tuple2(p.head, index++), accum);
+        p = p.tail;
+    }
+    return accum.reverse();
+};
+
+//
+//  ## Cons(a, b)
+//
+//  Constructor to represent the existence of a value in a list, `a`
+//  and a reference to another `b`.
+//
+List.Cons.prototype.isEmpty = false;
+List.Cons.prototype.isNonEmpty = true;
+
+//
+//  ## Nil
+//
+//  Represents an empty list (absence of a list).
+//
+List.Nil.isEmpty = true;
+List.Nil.isNonEmpty = false;
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `List.Cons` with value of `x`.
+//
+List.of = function(x) {
+    return List.Cons(x, List.Nil);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `List.Nil`.
+//
+List.empty = function() {
+    return List.Nil;
+};
+
+//
+//  ## isList(a)
+//
+//  Returns `true` if `a` is a `Cons` or `Nil`.
+//
+var isList = isInstanceOf(List);
+
+//
+//  ## List Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var ListT = tagged(&#039;ListT&#039;, [&#039;run&#039;]);
+
+List.ListT = transformer(ListT);
+
+//
+//  ## isListT(a)
+//
+//  Returns `true` if `a` is `ListT`.
+//
+var isListT = isInstanceOf(ListT);
+
+//
+//  ## listOf(type)
+//
+//  Sentinel value for when an list of a particular type is needed:
+//
+//       listOf(Number)
+//
+function listOf(type) {
+    var self = getInstance(this, listOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isListOf(a)
+//
+//  Returns `true` if `a` is an instance of `listOf`.
+//
+var isListOf = isInstanceOf(listOf);
+
+//
+//  ## listTOf(type)
+//
+//  Sentinel value for when an list of a particular type is needed:
+//
+//       listTOf(Number)
+//
+function listTOf(type) {
+    var self = getInstance(this, listTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isListTOf(a)
+//
+//  Returns `true` if `a` is an instance of `listTOf`.
+//
+var isListTOf = isInstanceOf(listTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(List.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an list at a given index.
+//
+List.lens = function(index) {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                var accum = List.Nil,
+                    lens = List.Cons.lens(),
+                    p = a;
+
+                while(p.isNonEmpty) {
+                    accum = List.Cons(p.head, accum);
+
+                    if (--index === -1) {
+                        accum = lens.run(accum).set(s);
+                    }
+
+                    p = p.tail;
+                }
+
+                return accum.reverse();
+            },
+            function() {
+                return a.get(index);
+            }
+        );
+    });
+};
+
+//
+//  ### lens
+//
+//  Lens access for an list.cons.
+//
+List.Cons.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return List.Cons(s, a.tail);
+            },
+            function() {
+                return a.head;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;List&#039;, List)
+    .property(&#039;ListT&#039;, ListT)
+    .property(&#039;Cons&#039;, List.Cons)
+    .property(&#039;Nil&#039;, List.Nil)
+    .property(&#039;isList&#039;, isList)
+    .property(&#039;listOf&#039;, listOf)
+    .property(&#039;listTOf&#039;, listTOf)
+    .property(&#039;isListOf&#039;, isListOf)
+    .property(&#039;isListTOf&#039;, isListTOf)
+    .property(&#039;listRange&#039;, List.range)
+    .method(&#039;of&#039;, strictEquals(List), function(x) {
+        return List.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(List), function(x) {
+        return List.empty();
+    })
+
+    .method(&#039;arb&#039;, isListOf, function(a, b) {
+        var accum = List.Nil,
+            length = this.randomRange(0, b),
+            i;
+
+        for(i = 0; i &lt; length; i++) {
+            accum = accum.prepend(this.arb(a.type, b - 1));
+        }
+
+        return accum.reverse();
+    })
+    .method(&#039;arb&#039;, isListTOf, function(a, b) {
+        return List.ListT(this.arb(listOf(a.type), b - 1));
+    })
+
+    .method(&#039;shrink&#039;, isList, function(a) {
+        var accum = [List.Nil],
+            x = a.size();
+
+        while(x) {
+            x = Math.floor(x / 2);
+
+            if (x) accum.push(a.take(x));
+        }
+
+        return accum;
+    })
+    .method(&#039;shrink&#039;, isListT, function(a) {
+        return [];
+    })
+
+    .method(&#039;concat&#039;, isList, function(a, b) {
+        return a.concat(b);
+    })
+    .method(&#039;count&#039;, isList, function(a, b) {
+        return a.count(b);
+    })
+    .method(&#039;drop&#039;, isList, function(a, b) {
+        return a.drop(b);
+    })
+    .method(&#039;dropRight&#039;, isList, function(a, b) {
+        return a.dropRight(b);
+    })
+    .method(&#039;dropWhile&#039;, isList, function(a, b) {
+        return a.dropWhile(b);
+    })
+    .method(&#039;exists&#039;, isList, function(a, f) {
+        return a.exists(f);
+    })
+    .method(&#039;find&#039;, isList, function(a, f) {
+        return a.find(f);
+    })
+    .method(&#039;first&#039;, isList, function(a) {
+        return a.first();
+    })
+    .method(&#039;fold&#039;, isList, function(a, f, g) {
+        return a.fold(f, g);
+    })
+    .method(&#039;last&#039;, isList, function(a) {
+        return a.last();
+    })
+    .method(&#039;partition&#039;, isList, function(a, f) {
+        return a.partition(f);
+    })
+    .method(&#039;reduce&#039;, isList, function(a, f) {
+        return a.reduce(f);
+    })
+    .method(&#039;reduceRight&#039;, isList, function(a, f) {
+        return a.reduceRight(f);
+    })
+    .method(&#039;take&#039;, isList, function(a, b) {
+        return a.take(b);
+    })
+    .method(&#039;takeRight&#039;, isList, function(a, b) {
+        return a.takeRight(b);
+    })
+    .method(&#039;zip&#039;, isList, function(a, b) {
+        return a.zip(b);
+    })
+    .method(&#039;zipWithIndex&#039;, isList, function(a, b) {
+        return a.zipWithIndex(b);
+    })
+    .method(&#039;toArray&#039;, isList, function(a) {
+        return a.toArray();
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isList, isListT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isList, isListT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isList, isListT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isList, isListT), function(a, b) {
+        return a.map(b);
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

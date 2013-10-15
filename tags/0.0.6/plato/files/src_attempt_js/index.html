@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/attempt.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">84.61</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">404</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">26.03</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.19</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//   # Attempt
+//
+//        Attempt e v = Failure e + Success v
+//
+//   The Attempt data type represents a &quot;Success&quot; value or a
+//   semigroup of &quot;Failure&quot; values. Attempt has an applicative
+//   functor which collects Failures&#039; errors or creates a new Success
+//   value.
+//
+//   Here&#039;s an example function which validates a String:
+//
+//        function nonEmpty(field, string) {
+//            return string
+//                ? squishy.Success(string)
+//                : squishy.Failure([field + &quot; must be non-empty&quot;]);
+//        }
+//
+//   ## Success(value)
+//
+//   Represents a Successful `value`.
+//
+//   ## Failure(errors)
+//
+//   Represents a Failure.
+//
+//   * `ap(b)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `equal(a)` - `true` if `a` is equal to `this`
+//   * `extract()` - extract the value from attempt
+//   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
+//   * `map(f)` - Functor map
+//   * `swap()` - Swap values
+//   * `isSuccess` - `true` if `this` is `Success(x)`
+//   * `isFailure` - `true` if `this` is `Failure(x)`
+//   * `toArray()` - `[x]` if `Success(x)`, `[]` if `Failure(x)`
+//   * `toOption()` - `Some(x)` if `Success(x)`, `None` if `Failure(x)`
+//   * `toStream()` - `Stream.of(x)` if `Success(x)`, `Stream.empty()` if `Failure(x)`
+//   * `toLeft(r)` - `Left(x)` if `Success(x)`, `Right(r)` if `Failure(x)`
+//   * `toRight(l)` - `Right(x)` if `Success(x)`, `Left(l)` if `Failure(x)`
+//
+var Attempt = taggedSum(&#039;Attempt&#039;, {
+    Success: [&#039;value&#039;],
+    Failure: [&#039;errors&#039;]
+});
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the success of this attempt,
+//  accumulating errors
+//  Applicative ap(ply)
+//
+Attempt.prototype.ap = function(b) {
+    var env = this;
+    return env.match({
+        Success: function(value) {
+            return squishy.map(b, value);
+        },
+        Failure: function(e) {
+            return b.match({
+                Success: constant(env),
+                Failure: function(errors) {
+                    return Attempt.Failure(squishy.concat(e, errors));
+                }
+            });
+        }
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the success of the attempt
+//  Monadic flatMap/bind
+//
+Attempt.prototype.chain = function(f) {
+    var env = this;
+    return env.match({
+        Success: f,
+        Failure: constant(env)
+    });
+};
+
+//
+//  ### equal(a)
+//
+//  Compare two attempt values for equality
+//
+Attempt.prototype.equal = function(a) {
+    return this.match({
+        Success: function(x) {
+            return a.match({
+                Success: function(y) {
+                    return squishy.equal(x, y);
+                },
+                Failure: constant(false)
+            });
+        },
+        Failure: function(x) {
+            return a.match({
+                Success: constant(false),
+                Failure: function(y) {
+                    return squishy.equal(x, y);
+                }
+            });
+        }
+    });
+};
+
+//
+//  ### extract()
+//
+//  Extract the value from the attempt.
+//
+Attempt.prototype.extract = function() {
+    return this.match({
+        Success: identity,
+        Failure: identity
+    });
+};
+
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Success`, `b` if `Failure`
+//
+Attempt.prototype.fold = function(a, b) {
+    return this.match({
+        Success: a,
+        Failure: b
+    });
+};
+
+//
+//  ### map(f)
+//
+//  Map on the success of this attempt.
+//  Functor map
+//
+Attempt.prototype.map = function(f) {
+    return this.match({
+        Success: function(a) {
+            return Attempt.Success(f(a));
+        },
+        Failure: function(e) {
+            return Attempt.Failure(e);
+        }
+    });
+};
+
+//
+//  ### swap()
+//
+//  Flip the failure/success values in this attempt.
+//
+Attempt.prototype.swap = function() {
+    return this.match({
+        Success: Attempt.Failure,
+        Failure: Attempt.Success
+    });
+};
+
+//
+//  ### toOption()
+//
+//  Return an empty option or option with one element on the success
+//  of this attempt.
+//  `Some(x)` if `Success(x)`, `None` if `Failure()`
+//
+Attempt.prototype.toOption = function() {
+    return this.match({
+        Success: Option.Some,
+        Failure: function() {
+            return Option.None;
+        }
+    });
+};
+
+//
+//  ### toLeft()
+//
+//  Return an left either bias if attempt is a success.
+//  `Left(x)` if `Success(x)`, `Right(x)` if `Failure(x)`
+//
+Attempt.prototype.toLeft = function() {
+    return this.match({
+        Success: Either.Left,
+        Failure: Either.Right
+    });
+};
+
+//
+//  ### toRight()
+//
+//  Return an right either bias if attempt is a success.
+//  `Right(x)` if `Success(x)`, `Left(x)` if `Failure(x)`
+//
+Attempt.prototype.toRight = function() {
+    return this.match({
+        Success: Either.Left,
+        Failure: Either.Right
+    });
+};
+
+//
+//  ### toArray()
+//
+//  Return an empty array for a `Failure` `Attempt`.
+//
+Attempt.Failure.prototype.toArray = function() {
+    return [];
+};
+
+//
+//  ### toStream()
+//
+//  Return an empty stream or stream with one element on the success
+//  of this attempt.
+//
+Attempt.prototype.toStream = function() {
+    return this.match({
+        Success: Stream.of,
+        Failure: Stream.empty
+    });
+};
+
+//
+//  ## Success(x)
+//
+//  Constructor to represent the existance of a value, `x`.
+//
+Attempt.Success.prototype.isSuccess = true;
+Attempt.Success.prototype.isFailure = false;
+
+//
+//  ## Failure(x)
+//
+//  Constructor to represent the existance of a value, `x`.
+//
+Attempt.Failure.prototype.isSuccess = false;
+Attempt.Failure.prototype.isFailure = true;
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
+//
+Attempt.of = function(x) {
+    return Attempt.Success(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Attempt.Failure`.
+//
+Attempt.empty = function() {
+    return Attempt.Failure();
+};
+
+//
+//  ## isAttempt(a)
+//
+//  Returns `true` if `a` is a `Success` or a `Failure`.
+//
+var isAttempt = isInstanceOf(Attempt);
+
+//
+//  ## Attempt Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+var AttemptT = tagged(&#039;AttemptT&#039;, [&#039;run&#039;]);
+
+Attempt.AttemptT = transformer(AttemptT);
+
+//
+//  ## isAttemptT(a)
+//
+//  Returns `true` if `a` is `AttemptT`.
+//
+var isAttemptT = isInstanceOf(AttemptT);
+
+//
+//  ## successOf(type)
+//
+//  Sentinel value for when an success of a particular type is needed:
+//
+//       successOf(Number)
+//
+function successOf(type) {
+    var self = getInstance(this, successOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isSuccessOf(a)
+//
+//  Returns `true` if `a` is an instance of `successOf`.
+//
+var isSuccessOf = isInstanceOf(successOf);
+
+//
+//  ## failureOf(type)
+//
+//  Sentinel value for when an failure of a particular type is needed:
+//
+//       failureOf(Number)
+//
+function failureOf(type) {
+    var self = getInstance(this, failureOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isFailureOf(a)
+//
+//  Returns `true` if `a` is an instance of `failureOf`.
+//
+var isFailureOf = isInstanceOf(failureOf);
+
+//
+//  ## attemptTOf(type)
+//
+//  Sentinel value for when an attempt of a particular type is needed:
+//
+//       attemptTOf(Number)
+//
+function attemptTOf(type) {
+    var self = getInstance(this, attemptTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isAttemptTOf(a)
+//
+//  Returns `true` if `a` is an instance of `attemptTOf`.
+//
+var isAttemptTOf = isInstanceOf(attemptTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Attempt.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Attempt.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Success: function() {
+                        return Attempt.of(s);
+                    },
+                    Failure: function() {
+                        return Attempt.Failure(s);
+                    }
+                });
+            },
+            function() {
+                return a.match({
+                    Success: identity,
+                    Failure: identity
+                });
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Attempt&#039;, Attempt)
+    .property(&#039;AttemptT&#039;, Attempt.AttemptT)
+    .property(&#039;Success&#039;, Attempt.Success)
+    .property(&#039;Failure&#039;, Attempt.Failure)
+    .property(&#039;successOf&#039;, successOf)
+    .property(&#039;failureOf&#039;, failureOf)
+    .property(&#039;attemptTOf&#039;, attemptTOf)
+    .property(&#039;isAttempt&#039;, isAttempt)
+    .property(&#039;isSuccessOf&#039;, isSuccessOf)
+    .property(&#039;isFailureOf&#039;, isFailureOf)
+    .property(&#039;isAttemptT&#039;, isAttemptT)
+    .property(&#039;isAttemptTOf&#039;, isAttemptTOf)
+    .method(&#039;of&#039;, strictEquals(Attempt), function(x) {
+        return Attempt.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Attempt), function() {
+        return Attempt.empty();
+    })
+
+    .method(&#039;arb&#039;, isSuccessOf, function(a, b) {
+        return Attempt.Success(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isFailureOf, function(a, b) {
+        return Attempt.Failure(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isAttemptTOf, function(a, b) {
+        return Attempt.AttemptT(this.arb(successOf(a.type), b - 1));
+    })
+
+    .method(&#039;extract&#039;, isAttempt, function(a) {
+        return a.extract();
+    })
+    .method(&#039;fold&#039;, isAttempt, function(a, b, c) {
+        return a.fold(b, c);
+    })
+    .method(&#039;toArray&#039;, isAttempt, function(a) {
+        return a.toArray();
+    })
+    .method(&#039;toStream&#039;, isAttempt, function(a) {
+        return a.toStream();
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isAttempt, isAttemptT), function(a) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

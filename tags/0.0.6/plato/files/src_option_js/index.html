@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/option.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">85.72</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">409</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">30.35</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.17</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//   # Option
+//
+//       Option a = Some a + None
+//
+//   The option type encodes the presence and absence of a value. The
+//   `Some` constructor represents a value and `None` represents the
+//   absence.
+//
+//   * `ap(s)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `concat(s, plus)` - Semigroup concat
+//   * `equal(a)` -  `true` if `a` is equal to `this`
+//   * `extract()` -  extract the value from option
+//   * `fold(a, b)` - Applies `a` to value if `Some` or defaults to `b`
+//   * `get()` - get the value from option
+//   * `getOrElse(a)` - Default value for `None`
+//   * `map(f)` - Functor map
+//   * `isSome` - `true` if `this` is `Some`
+//   * `isNone` - `true` if `this` is `None`
+//   * `toAttempt(r)` - `Success(x)` if `Some(x)`, `Failure(r)` if `None`
+//   * `toArray()` - `[x]` if `Some(x)`, `[]` if `None`
+//   * `toStream()` - `Stream.of(x)` if `Some(x)`, `Stream.empty()` if `None`
+//   * `toLeft(r)` - `Left(x)` if `Some(x)`, `Right(r)` if None
+//   * `toRight(l)` - `Right(x)` if `Some(x)`, `Left(l)` if None
+//
+var Option = taggedSum(&#039;Option&#039;, {
+    Some: [&#039;value&#039;],
+    None: []
+});
+
+//
+//  ### toOption(a)
+//  @deprecated
+//
+Option.toOption = function(a) {
+    return a !== null ? Option.Some(a) : Option.None;
+};
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the some of this option,
+//  accumulating errors
+//  Applicative ap(ply)
+//
+Option.prototype.ap = function(a) {
+    return this.chain(
+        function(f) {
+            return squishy.map(a, f);
+        }
+    );
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the success of the option
+//  Monadic flatMap/bind
+//
+Option.prototype.chain = function(f) {
+    return this.match({
+        Some: f,
+        None: constant(this)
+    });
+};
+
+//
+//  ### concat(s, f)
+//
+//  Concatenate two options associatively together.
+//  Semigroup concat
+//
+Option.prototype.concat = function(s) {
+    return this.match({
+        Some: function(x) {
+            return squishy.map(
+                s,
+                function(y) {
+                    return squishy.concat(x, y);
+                }
+            );
+        },
+        None: constant(this)
+    });
+};
+
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Option.prototype.equal = function(a) {
+    return this.match({
+        Some: function(x) {
+            return a.match({
+                Some: function(y) {
+                    return squishy.equal(x, y);
+                },
+                None: constant(false)
+            });
+        },
+        None: function() {
+            return a.match({
+                Some: constant(false),
+                None: constant(true)
+            });
+        }
+    });
+};
+
+//
+//  ### extract()
+//
+//  Extract the value from the option.
+//
+Option.prototype.extract = function() {
+    return this.match({
+        Some: identity,
+        None: constant(null)
+    });
+};
+
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Some`, `b` if `None`
+//
+Option.prototype.fold = function(f, g) {
+    return this.match({
+        Some: f,
+        None: g
+    });
+};
+
+//
+//  ### get()
+//
+//  Get the value from the option.
+//
+Option.prototype.get = function() {
+    return this.match({
+        Some: identity,
+        None: error(&#039;Unexpected value&#039;)
+    });
+};
+
+//
+//  ### get()
+//
+//  Get the value from the option or else
+//
+Option.prototype.getOrElse = function(x) {
+    return this.match({
+        Some: identity,
+        None: constant(x)
+    });
+};
+
+//
+//  ### map(f)
+//
+//  Map on the some of this option.
+//  Functor map
+//
+Option.prototype.map = function(f) {
+    return this.chain(
+        function(a) {
+            return Option.of(f(a));
+        }
+    );
+};
+
+//
+//  ### toAttempt()
+//
+//  Return failure if option is a some and success if option is none.
+//  `None` if `Failure(x)`, `Some(x)` if `Success(e)`
+//
+Option.prototype.toAttempt = function() {
+    return this.match({
+        Some: Attempt.Success,
+        None: function() {
+            return Attempt.Failure(squishy.empty(Array));
+        }
+    });
+};
+
+//
+//  ### toLeft()
+//
+//  Return an left either bias if option is a some.
+//  `Left(x)` if `Some(x)`, `Right(x)` if `None`
+//
+Option.prototype.toLeft = function(o) {
+    return this.match({
+        Some: Either.Left,
+        None: function() {
+            return Either.Right(o);
+        }
+    });
+};
+
+//
+//  ### toRight()
+//
+//  Return an right either bias if option is a some.
+//  `Right(x)` if `Some(x)`, `Left(x)` if `None`
+//
+Option.prototype.toRight = function(o) {
+    return this.match({
+        Some: Either.Right,
+        None: function() {
+            return Either.Left(o);
+        }
+    });
+};
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Option` with value of `x`.
+//
+Option.of = function(x) {
+    return Option.Some(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Option` with no value.
+//
+Option.empty = function() {
+    return Option.None;
+};
+
+//
+//  ## Some(x)
+//
+//  Constructor to represent the existence of a value, `x`.
+//
+Option.Some.prototype.isSome = true;
+Option.Some.prototype.isNone = false;
+
+//
+//  ## None
+//
+//  Represents the absence of a value.
+//
+Option.None.isSome = false;
+Option.None.isNone = true;
+
+//
+//  ## isOption(a)
+//
+//  Returns `true` if `a` is a `Some` or `None`.
+//
+var isOption = isInstanceOf(Option);
+
+//
+//  ## Option Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var OptionT = tagged(&#039;OptionT&#039;, [&#039;run&#039;]);
+
+Option.OptionT = transformer(OptionT);
+
+//
+//  ## isOptionT(a)
+//
+//  Returns `true` if `a` is `OptionT`.
+//
+var isOptionT = isInstanceOf(OptionT);
+
+//
+//  ## someOf(type)
+//
+//  Sentinel value for when an some of a particular type is needed:
+//
+//       someOf(Number)
+//
+function someOf(type) {
+    var self = getInstance(this, someOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isSomeOf(a)
+//
+//  Returns `true` if `a` is an instance of `someOf`.
+//
+var isSomeOf = isInstanceOf(someOf);
+
+//
+//  ## noneOf()
+//
+//  Sentinel value for when an none is needed:
+//
+//       noneOf()
+//
+function noneOf() {
+    var self = getInstance(this, noneOf);
+    return self;
+}
+
+//
+//  ## isNoneOf(a)
+//
+//  Returns `true` if `a` is an instance of `noneOf`.
+//
+var isNoneOf = isInstanceOf(noneOf);
+
+//
+//  ## optionTOf(type)
+//
+//  Sentinel value for when an option of a particular type is needed:
+//
+//       optionTOf(Number)
+//
+function optionTOf(type) {
+    var self = getInstance(this, optionTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isOptionTOf(a)
+//
+//  Returns `true` if `a` is an instance of `optionTOf`.
+//
+var isOptionTOf = isInstanceOf(optionTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Option.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an option structure.
+//
+Option.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Some: function() {
+                        return Option.Some(s);
+                    },
+                    None: constant(Option.None)
+                });
+            },
+            function() {
+                return a.match({
+                    Some: identity,
+                    None: identity
+                });
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Option&#039;, Option)
+    .property(&#039;OptionT&#039;, OptionT)
+    .property(&#039;Some&#039;, Option.Some)
+    .property(&#039;None&#039;, Option.None)
+    .property(&#039;someOf&#039;, someOf)
+    .property(&#039;noneOf&#039;, noneOf)
+    .property(&#039;optionTOf&#039;, optionTOf)
+    .property(&#039;isOption&#039;, isOption)
+    .property(&#039;isOptionT&#039;, isOptionT)
+    .property(&#039;isSomeOf&#039;, isSomeOf)
+    .property(&#039;isNoneOf&#039;, isNoneOf)
+    .property(&#039;isOptionTOf&#039;, isOptionTOf)
+    .property(&#039;toOption&#039;, Option.toOption)
+    .method(&#039;of&#039;, strictEquals(Option.Some), function(x) {
+        return Option.Some.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Option.Some), function(x) {
+        return Option.None;
+    })
+
+    .method(&#039;arb&#039;, isSomeOf, function(a, b) {
+        return Option.Some(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isNoneOf, function(a, b) {
+        return Option.None;
+    })
+    .method(&#039;arb&#039;, isOptionTOf, function(a, b) {
+        return Option.OptionT(this.arb(someOf(a.type), b - 1));
+    })
+
+    .method(&#039;concat&#039;, isOption, function(a, b) {
+        return a.concat(b);
+    })
+    .method(&#039;extract&#039;, isOption, function(a) {
+        return a.extract();
+    })
+    .method(&#039;fold&#039;, isOption, function(a, b, c) {
+        return a.fold(b, c);
+    })
+    .method(&#039;toArray&#039;, isOption, function(a) {
+        return a.toArray();
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isOption, isOptionT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isOption, isOptionT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isOption, isOptionT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isOption, isOptionT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isOption, isOptionT), function(a) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

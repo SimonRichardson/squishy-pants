@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/identity.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">89.69</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">220</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">18.24</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.11</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  # Identity
+//
+//  The Identity monad is a monad that does not embody any computational
+//  strategy. It simply applies the bound function to its input without
+//  any modification.
+//
+//   * `ap(a)` - applicative ap(ply)
+//   * `chain(f)` - chain values
+//   * `concat(s, plus)` - Semigroup concat
+//   * `map(f)` - functor map
+//   * `toArray()` - `[x]` if `Identity(x)`
+//
+var Identity = tagged(&#039;Identity&#039;, [&#039;x&#039;]);
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Identity` for the value of `x`.
+//
+Identity.of = Identity;
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the value of the identity
+//  Applicative ap(ply)
+//
+Identity.prototype.ap = function(a) {
+    return this.chain(function(f) {
+        return squishy.map(a, f);
+    });
+};
+
+//
+//  ### concat(b)
+//
+//  Concatenate two identities associatively together.
+//  Semigroup concat
+//
+Identity.prototype.concat = function(a) {
+    var env = this;
+    return this.map(function(f) {
+        return squishy.concat(env.x, a.x);
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the value of the identity
+//  Monadic flatMap/bind
+//
+Identity.prototype.chain = function(f) {
+    return f(this.x);
+};
+
+//
+//  ### equal(a)
+//
+//  Compare two option values for equality
+//
+Identity.prototype.equal = function(b) {
+    return squishy.equal(this.x, b.x);
+};
+
+//
+//  ### map(f)
+//
+//  Map on the value of this identity.
+//  Functor map
+//
+Identity.prototype.map = function(f) {
+    return this.chain(function(a) {
+        return Identity.of(f(a));
+    });
+};
+
+//
+//  ### negate(b)
+//
+//  Negate two identities associatively together.
+//
+Identity.prototype.negate = function() {
+    var env = this;
+    return this.map(function(f) {
+        return squishy.negate(env.x);
+    });
+};
+
+//
+//  ## isIdentity(a)
+//
+//  Returns `true` if `a` is `Identity`.
+//
+var isIdentity = isInstanceOf(Identity);
+
+//
+//  ## Identity Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+
+var IdentityT = tagged(&#039;IdentityT&#039;, [&#039;run&#039;]);
+
+Identity.IdentityT = transformer(IdentityT);
+
+//
+//  ## isIdentityT(a)
+//
+//  Returns `true` if `a` is `IdentityT`.
+//
+var isIdentityT = isInstanceOf(IdentityT);
+
+//
+//  ## identityOf(type)
+//
+//  Sentinel value for when an identity of a particular type is needed:
+//
+//       identityOf(Number)
+//
+function identityOf(type) {
+    var self = getInstance(this, identityOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isIdentityOf(a)
+//
+//  Returns `true` if `a` is an instance of `identityOf`.
+//
+var isIdentityOf = isInstanceOf(identityOf);
+
+//
+//  ## identityTOf(type)
+//
+//  Sentinel value for when an identity of a particular type is needed:
+//
+//       identityTOf(Number)
+//
+function identityTOf(type) {
+    var self = getInstance(this, identityTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isIdentityTOf(a)
+//
+//  Returns `true` if `a` is an instance of `identityTOf`.
+//
+var isIdentityTOf = isInstanceOf(identityTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Identity.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Identity.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Identity.of(s);
+            },
+            function() {
+                return a.x;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Identity&#039;, Identity)
+    .property(&#039;IdentityT&#039;, Identity.IdentityT)
+    .property(&#039;identityOf&#039;, identityOf)
+    .property(&#039;identityTOf&#039;, identityTOf)
+    .property(&#039;isIdentity&#039;, isIdentity)
+    .property(&#039;isIdentityOf&#039;, isIdentityOf)
+    .property(&#039;isIdentityT&#039;, isIdentityT)
+    .property(&#039;isIdentityTOf&#039;, isIdentityTOf)
+    .method(&#039;of&#039;, strictEquals(Identity), function(x) {
+        return Identity.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Identity), function(x) {
+        return Identity.empty();
+    })
+
+    .method(&#039;arb&#039;, isIdentityOf, function(a, b) {
+        return Identity(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isIdentityTOf, function(a, b) {
+        return Identity.IdentityT(this.arb(identityOf(a.type), b - 1));
+    })
+
+    .method(&#039;concat&#039;, isIdentity, function(a, b) {
+        return a.concat(b);
+    })
+    .method(&#039;negate&#039;, isIdentity, function(a) {
+        return a.negate();
+    })
+    .method(&#039;toArray&#039;, isIdentity, function(a) {
+        return a.toArray();
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isIdentity, isIdentityT), function(a) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

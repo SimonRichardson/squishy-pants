@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/promise.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">89.62</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">263</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">18.77</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.12</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  ## Promise(deferred)
+//
+//  Promise is a constructor which takes a `deferred` function. The `deferred`
+//  function takes two arguments:
+//
+//       deferred(resolve, reject)
+//
+//  `resolve` are side-effecting callbacks.
+//
+//  ### deferred(resolve, reject)
+//
+//  The `resolve` callback will be called with an `Attempt`. The `Attempt` can
+//  either be a Success or a Failure.
+//
+//  * `chain(f)` - Monadic flatMap/bind
+//  * `extend(f)` - Returns a new promise that evaluates `f` over the promise to get a value.
+//  * `extract()` - extract the value from promise
+//  * `map(f)` - Functor map for resolve
+//  * `reject(f)` - Functor map for reject
+//
+var Promise = tagged(&#039;Promise&#039;, [&#039;fork&#039;]);
+
+//
+//  ### of(x)
+//
+//  Creates a Promise that contains a successful value.
+//
+Promise.of = function(x) {
+    return Promise(
+        function(resolve, reject) {
+            return resolve(x);
+        }
+    );
+};
+
+//
+//  ### empty()
+//
+//  Creates a Empty Promise that contains no value.
+//
+Promise.empty = function() {
+    return Promise.of();
+};
+
+//
+//  ### error(x)
+//
+//  Creates a Promise that contains a failure value.
+//
+Promise.error = function(x) {
+    return Promise(
+        function(resolve, reject) {
+            return reject(x);
+        }
+    );
+};
+
+//
+//  ### chain(f)
+//
+//  Returns a new promise that evaluates `f` when the current promise
+//  is successfully fulfilled. `f` must return a new promise.
+//
+Promise.prototype.chain = function(f) {
+    var env = this;
+    return Promise(
+        function(resolve, reject) {
+            return env.fork(
+                function(a) {
+                    return f(a).fork(resolve, reject);
+                },
+                reject
+            );
+        }
+    );
+};
+
+//
+//  ### expand()
+//
+//  Returns a new promise that evaluates `f` over the promise to get a value.
+//
+Promise.prototype.expand = function(f) {
+    var env = this;
+    return env.map(
+        function(a) {
+            return f(Promise.of(a));
+        }
+    );
+};
+
+//
+//  ### extract()
+//
+//  Executes a promise to get a value.
+//
+Promise.prototype.extract = function() {
+    return this.fork(
+        identity,
+        identity
+    );
+};
+
+//
+//  ### map(f)
+//
+//  Returns a new promise that evaluates `f` on a value and passes it
+//  through to the resolve function.
+//
+Promise.prototype.map = function(f) {
+    var env = this;
+    return Promise(
+        function(resolve, reject) {
+            return env.fork(
+                function(a) {
+                    return resolve(f(a));
+                },
+                reject
+            );
+        }
+    );
+};
+
+//
+//  ### reject(f)
+//
+//  Returns a new promise that evaluates `f` when the current promise
+//  fails. `f` must return a new promise.
+//
+Promise.prototype.reject = function(f) {
+    var env = this;
+    return Promise(
+        function(resolve, reject) {
+            return env.fork(
+                resolve,
+                function(a) {
+                    return f(a).fork(resolve, reject);
+                }
+            );
+        }
+    );
+};
+
+//
+//  ## isPromise(a)
+//
+//  Returns `true` if `a` is `Promise`.
+//
+var isPromise = isInstanceOf(Promise);
+
+//
+//  ## Promise Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//
+
+var PromiseT = tagged(&#039;PromiseT&#039;, [&#039;run&#039;]);
+
+Promise.PromiseT = transformer(PromiseT);
+
+//
+//  ### fork(a, b)
+//
+//  Open up fork from the reader transformer
+//
+PromiseT.prototype.fork = function(a, b) {
+    return this.run.fork(a, b);
+};
+
+//
+//  ## isPromiseT(a)
+//
+//  Returns `true` if `a` is `PromiseT`.
+//
+var isPromiseT = isInstanceOf(PromiseT);
+
+//
+//  ## promiseOf(type)
+//
+//  Sentinel value for when an promise of a particular type is needed:
+//
+//       promiseOf(Number)
+//
+function promiseOf(type) {
+    var self = getInstance(this, promiseOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isPromiseOf(a)
+//
+//  Returns `true` if `a` is an instance of `promiseOf`.
+//
+var isPromiseOf = isInstanceOf(promiseOf);
+
+//
+//  ## promiseTOf(type)
+//
+//  Sentinel value for when an promise of a particular type is needed:
+//
+//       promiseTOf(Number)
+//
+function promiseTOf(type) {
+    var self = getInstance(this, promiseTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isPromiseTOf(a)
+//
+//  Returns `true` if `a` is an instance of `promiseTOf`.
+//
+var isPromiseTOf = isInstanceOf(promiseTOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Promise.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an promise structure.
+//
+Promise.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return Promise(s);
+            },
+            function() {
+                return a.fork;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Promise&#039;, Promise)
+    .property(&#039;PromiseT&#039;, PromiseT)
+    .property(&#039;promiseOf&#039;, promiseOf)
+    .property(&#039;promiseTOf&#039;, promiseTOf)
+    .property(&#039;isPromise&#039;, isPromise)
+    .property(&#039;isPromiseOf&#039;, isPromiseOf)
+    .property(&#039;isPromiseTOf&#039;, isPromiseTOf)
+    .method(&#039;of&#039;, strictEquals(Promise), function(x) {
+        return Promise.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Promise), function() {
+        return Promise.empty();
+    })
+
+    .method(&#039;arb&#039;, isPromiseOf, function(a, b) {
+        return Promise.of(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isPromiseTOf, function(a, b) {
+        return Promise.PromiseT(this.arb(promiseOf(a.type), b - 1));
+    })
+
+    .method(&#039;expand&#039;, isPromise, function(a, b) {
+        return a.expand(b);
+    })
+    .method(&#039;extract&#039;, isPromise, function(a) {
+        return a.extract();
+    })
+
+    .method(&#039;chain&#039;, squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

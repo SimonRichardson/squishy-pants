@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/either.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">84.81</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">415</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">27.65</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.26</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//   # Either
+//
+//        Either a b = Left a + Right b
+//
+//   Represents a tagged disjunction between two sets of values; `a` or
+//   `b`. Methods are Right-biased.
+//
+//   * `ap(e)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `concat(s, f)` - Semigroup concat
+//   * `fold(a, b)` - `a` applied to value if `Left(x)`, `b` if `Right(x)`
+//   * `map(f)` - Functor map
+//   * `swap()` - If this is a Left, then return the Left value in Right or vice versa.
+//   * `isLeft` - `true` iff `this` is `Left(x)`
+//   * `isRight` - `true` iff `this` is `Right(x)`
+//   * `toOption()` - `None` if `Left(x)`, `Some(x)` value of `Right(x)`
+//   * `toArray()` - `[]` if `Left(x)`, `[x]` value if `Right(x)`
+//   * `toAttempt()` - `Failure(x)` if `Left(x)`, `Success(x)` value if `Right(x)`
+//   * `toStream()` - `Stream.empty()` if `Left(x)`, `Stream.of(x)` value if `Right(x)`
+//
+var Either = taggedSum(&#039;Either&#039;, {
+    Left: [&#039;value&#039;],
+    Right: [&#039;value&#039;]
+});
+
+//
+//  ### ap(b, concat)
+//
+//  Apply a function in the environment of the right of this either,
+//  accumulating errors
+//  Applicative ap(ply)
+//
+Either.prototype.ap = function(e) {
+    var env = this;
+    return env.match({
+        Left: constant(env),
+        Right: function(x) {
+            return squishy.map(e, x);
+        }
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the success of the either
+//  Monadic flatMap/bind
+//
+Either.prototype.chain = function(f) {
+    var env = this;
+    return env.match({
+        Left: constant(env),
+        Right: f
+    });
+};
+
+//
+//  ### concat(s, f)
+//
+//  Concatenate two eithers associatively together.
+//  Semigroup concat
+//
+Either.prototype.concat = function(s, f) {
+    var env = this;
+    return env.match({
+        Left: function() {
+            return squishy.fold(
+                s,
+                constant(env),
+                constant(s)
+            );
+        },
+        Right: function(y) {
+            return squishy.map(s, function(x) {
+                return f(x, y);
+            });
+        }
+    });
+};
+
+//
+//  ### equal(a)
+//
+//  Compare two attempt values for equality
+//
+Either.prototype.equal = function(a) {
+    return this.match({
+        Left: function(x) {
+            return a.match({
+                Left: function(y) {
+                    return squishy.equal(x, y);
+                },
+                Right: constant(false)
+            });
+        },
+        Right: function(x) {
+            return a.match({
+                Left: constant(false),
+                Right: function(y) {
+                    return squishy.equal(x, y);
+                }
+            });
+        }
+    });
+};
+
+//
+//  ### extract(a)
+//
+//  Extract the value from the either.
+//
+Either.prototype.extract = function() {
+    return this.match({
+        Left: identity,
+        Right: identity
+    });
+};
+
+//
+//  ### fold(a, b)
+//
+//  Catamorphism. Run the first given function if failure, otherwise,
+//  the second given function.
+//   `a` applied to value if `Left`, `b` if `Right`
+//
+Either.prototype.fold = function(a, b) {
+    return this.match({
+        Left: a,
+        Right: b
+    });
+};
+
+//
+//  ### map(f)
+//
+//  Map on the right of this either.
+//  Functor map
+//
+Either.prototype.map = function(f) {
+    var env = this;
+    return env.match({
+        Left: constant(env),
+        Right: function(x) {
+            return Either.Right(f(x));
+        }
+    });
+};
+
+//
+//  ### swap()
+//
+//  Flip the left/right values in this either.
+//
+Either.prototype.swap = function() {
+    return this.match({
+        Left: function(x) {
+            return Either.Right(x);
+        },
+        Right: function(x) {
+            return Either.Left(x);
+        }
+    });
+};
+
+//
+//  ### toOption()
+//
+//  Return an empty option or option with one element on the right
+//  of this either.
+//  `Some(x)` if `Success(x)`, `None` if `Failure()`
+//
+Either.prototype.toOption = function() {
+    return this.match({
+        Left: function() {
+            return Option.None;
+        },
+        Right: Option.Some
+    });
+};
+
+//
+//  ### toAttempt()
+//
+//  Return failure if either is a left and success if either is right.
+//  `Left(x)` if `Failure(x)`, `Right(x)` if `Success(x)`
+//
+Either.prototype.toAttempt = function() {
+    return this.match({
+        Left: Attempt.Failure,
+        Right: Attempt.Success
+    });
+};
+
+//
+//  ### toArray()
+//
+//  Return an empty array for a `Left` `Either`.
+//
+Either.Left.prototype.toArray = function() {
+    return [];
+};
+
+//
+//  ### toStream()
+//
+//  Return an empty stream or stream with one element on the right
+//  of this either.
+//
+Attempt.prototype.toStream = function() {
+    return this.match({
+        Left: Stream.empty,
+        Right: Stream.of
+    });
+};
+
+//
+//  ## Left(x)
+//
+//  Constructor to represent the Left case.
+//
+Either.Left.prototype.isLeft = true;
+Either.Left.prototype.isRight = false;
+
+//
+//  ## Right(x)
+//
+//  Constructor to represent the (biased) Right case.
+//
+Either.Right.prototype.isLeft = false;
+Either.Right.prototype.isRight = true;
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Either.Right` with value of `x`.
+//
+Either.of = function(x) {
+    return Either.Right(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Either.Left`.
+//
+Either.Right.empty = function() {
+    return Either.Left();
+};
+
+
+//
+//  ## isEither(a)
+//
+//  Returns `true` if `a` is a `Left` or a `Right`.
+//
+var isEither = isInstanceOf(Either);
+
+//
+//  ## Either Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//  * `equal(a)` - `true` if `a` is equal to `this`
+//
+var EitherT = tagged(&#039;EitherT&#039;, [&#039;run&#039;]);
+
+Either.EitherT = transformer(EitherT);
+
+//
+//  ## isEitherT(a)
+//
+//  Returns `true` if `a` is `EitherT`.
+//
+var isEitherT = isInstanceOf(EitherT);
+
+//
+//  ## leftOf(type)
+//
+//  Sentinel value for when an left of a particular type is needed:
+//
+//       leftOf(Number)
+//
+function leftOf(type) {
+    var self = getInstance(this, leftOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isLeftOf(a)
+//
+//  Returns `true` if `a` is an instance of `leftOf`.
+//
+var isLeftOf = isInstanceOf(leftOf);
+
+//
+//  ## rightOf(type)
+//
+//  Sentinel value for when an right of a particular type is needed:
+//
+//       rightOf(Number)
+//
+function rightOf(type) {
+    var self = getInstance(this, rightOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isRightOf(a)
+//
+//  Returns `true` if `a` is an instance of `rightOf`.
+//
+var isRightOf = isInstanceOf(rightOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(Either.prototype);
+
+//
+//  ## eitherTOf(type)
+//
+//  Sentinel value for when an either of a particular type is needed:
+//
+//       eitherTOf(Number)
+//
+function eitherTOf(type) {
+    var self = getInstance(this, eitherTOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isEitherTOf(a)
+//
+//  Returns `true` if `a` is an instance of `eitherTOf`.
+//
+var isEitherTOf = isInstanceOf(eitherTOf);
+
+//
+//  ### lens
+//
+//  Lens access for an attempt structure.
+//
+Either.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return a.match({
+                    Left: function() {
+                        return Either.Left(s);
+                    },
+                    Right: function() {
+                        return Either.Right(s);
+                    }
+                });
+            },
+            function() {
+                return a.match({
+                    Left: identity,
+                    Right: identity
+                });
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;Either&#039;, Either)
+    .property(&#039;EitherT&#039;, EitherT)
+    .property(&#039;Left&#039;, Either.Left)
+    .property(&#039;Right&#039;, Either.Right)
+    .property(&#039;leftOf&#039;, leftOf)
+    .property(&#039;rightOf&#039;, rightOf)
+    .property(&#039;eitherTOf&#039;, eitherTOf)
+    .property(&#039;isEither&#039;, isEither)
+    .property(&#039;isEitherT&#039;, isEitherT)
+    .property(&#039;isLeftOf&#039;, isLeftOf)
+    .property(&#039;isRightOf&#039;, isRightOf)
+    .property(&#039;isEitherTOf&#039;, isEitherTOf)
+    .method(&#039;of&#039;, strictEquals(Either), function(x) {
+        return Either.of(x);
+    })
+    .method(&#039;empty&#039;, strictEquals(Either), function(x) {
+        return Either.Left.empty();
+    })
+
+    .method(&#039;arb&#039;, isLeftOf, function(a, b) {
+        return Either.Left(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isRightOf, function(a, b) {
+        return Either.Right(this.arb(a.type, b - 1));
+    })
+    .method(&#039;arb&#039;, isEitherTOf, function(a, b) {
+        return Either.EitherT(Either.of(this.arb(a.type, b - 1)));
+    })
+
+    .method(&#039;concat&#039;, isEither, function(a, b) {
+        return a.concat(b, this.concat);
+    })
+    .method(&#039;extract&#039;, isEither, function(a) {
+        return a.extract();
+    })
+    .method(&#039;fold&#039;, isEither, function(a, b, c) {
+        return a.fold(b, c);
+    })
+    .method(&#039;toArray&#039;, isEither, function(a) {
+        return a.toArray();
+    })
+    .method(&#039;toStream&#039;, isAttempt, function(a) {
+        return a.toStream();
+    })
+
+    .method(&#039;ap&#039;, squishy.liftA2(or, isEither, isEitherT), function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, squishy.liftA2(or, isEither, isEitherT), function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;equal&#039;, squishy.liftA2(or, isEither, isEitherT), function(a, b) {
+        return a.equal(b);
+    })
+    .method(&#039;map&#039;, squishy.liftA2(or, isEither, isEitherT), function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;shrink&#039;, squishy.liftA2(or, isEither, isEitherT), function(a) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

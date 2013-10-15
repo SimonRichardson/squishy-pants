@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/array.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">71.98</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">405</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">65.57</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.20</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//   # Array
+//
+//        Array a
+//
+//   Represents a sequence of values that are indexed by integers.
+//
+//   * `ap(a, b)` - Applicative ap(ply)
+//   * `chain(a, f)` - Applies the given function f to each element of this array, then concatenates the results.
+//   * `concat(a, b)` - Appends two array objects.
+//   * `count(a, f)` - Count the number of elements in the array which satisfy a predicate.
+//   * `drop(a, n)` - Returns the array without its n first elements. If this array has less than n elements, the empty array is returned.
+//   * `dropRight(a, n)` - Returns the array without its rightmost `n` elements.
+//   * `dropWhile(a, f)` - Returns the longest suffix of this array whose first element does not satisfy the predicate.
+//   * `exists(a, f)` - Tests the existence in this array of an element that satisfies the predicate.
+//   * `filter(a, f)` - Returns all the elements of this array that satisfy the predicate p.
+//   * `find(a)` - Returns the element in this array of an element that satisfies the predicate.
+//   * `first(a)` - Retrieve the first value.
+//   * `flatten(a)` - Concatenate nested elements of this array.
+//   * `fold(a, v, f)` - Combines the elements of this array together using the binary function f, from Left to Right, and starting with the value v.
+//   * `foldRight(a, v, f)` - Combines the elements of this array together using the binary function f, from Right to Left, and starting with the value v.
+//   * `last(a)` - Retrieve the last value.
+//   * `map(a, f)` - Returns the array resulting from applying the given function f to each element of this array.
+//   * `partition(a, f)` - Partition the array in two sub-arrays according to a predicate.
+//   * `reduce(a, f)` - Combines the elements of this array together using the binary operator op, from Left to Right
+//   * `reduceRight(a, f)` - Combines the elements of this array together using the binary operator op, from Right to Left
+//   * `tail(n)` - Returns the tail elements of this array.
+//   * `take(n)` - Returns the n first elements of this array.
+//   * `takeRight(n)` - Returns the rightmost n elements from this array.
+//   * `takeWhile(f)` - Returns the longest prefix of this array whose elements satisfy the predicate.
+//   * `zip(a, b)` - Returns a array formed from this array and the specified array that by associating each element of the former with the element at the same position in the latter.
+//   * `zipWithIndex(a)` -  Returns a array form from this array and a index of the value that is associated with each element index position.
+//
+
+//
+//  ### ap(b, [concat])
+//
+//  Apply a function in the applicative of each function
+//  Applicative ap(ply)
+//
+var ap = curry(function(a, b) {
+    var accum = [],
+        x = a.length,
+        y = b.length,
+        i,
+        j;
+
+    for(i = 0; i &lt; x; i++) {
+        for(j = 0; j &lt; y; j++) {
+            accum.push(a[i](b[j]));
+        }
+    }
+
+    return accum;
+});
+
+//
+//  ### chain(f)
+//
+//  Applies the given function f to each element of this array, then
+//  concatenates the results.
+//
+var chain = curry(function(a, f) {
+    var accum = [],
+        total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        accum = accum.concat(f(a[i]));
+    }
+
+    return accum;
+});
+
+//
+//  ### concat(b)
+//
+//  Appends two array objects.
+//  semigroup concat
+//
+var concat = curry(function(a, b) {
+    return a.concat(b);
+});
+
+//
+//  ### count(f)
+//
+//  Count the number of elements in the array which satisfy a predicate.
+//
+var count = curry(function(a, f) {
+    var accum = 0,
+        total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(f(a[i])) {
+            accum = inc(accum);
+        }
+    }
+
+    return accum;
+});
+
+//
+//  ### drop(f)
+//
+//  Returns the array without its n first elements. If this array has
+//  less than n elements, the empty array is returned.
+//
+var drop = curry(function(a, n) {
+    return a.slice(n);
+});
+
+//
+//  ### dropRight(n)
+//
+//  Returns the array without its rightmost `n` elements.
+//
+var dropRight = curry(function(a, n) {
+    return a.slice(0, -n);
+});
+
+//
+//  ### dropWhile(f)
+//
+//  Returns the longest suffix of this array whose first element
+//  does not satisfy the predicate.
+//
+var dropWhile = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(!f(a[i])) {
+            return a.slice(i);
+        }
+    }
+
+    return a.slice();
+});
+
+//
+//  ### exists(f)
+//
+//  Tests the existence in this array of an element that satisfies
+//  the predicate.
+//
+var exists = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(f(a[i])) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ### flatten(a)
+//
+//  Concatenate nested elements of this array.
+//
+var flatten = curry(function(a) {
+    return chain(a, function(b) {
+        return isArray(b) ? b : [b];
+    });
+});
+
+//
+//  ### filter(f)
+//
+//  Returns all the elements of this array that satisfy the predicate p.
+//
+var filter = curry(function(a, f) {
+    var accum = [],
+        total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if (f(a[i])) {
+            accum.push(a[i]);
+        }
+    }
+
+    return accum;
+});
+
+//
+//  ### find(f)
+//
+//  Returns the element in this array of an element that satisfies
+//  the predicate.
+//
+var find = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(f(a[i])) {
+            return a[i];
+        }
+    }
+
+    return null;
+});
+
+//
+//  ### first(a)
+//
+//  Retrieve the first value.
+//
+var first = function(a) {
+    return a[0];
+};
+
+//
+//  ### fold(v, f)
+//
+//  Combines the elements of this array together using the binary function f,
+//  from Left to Right, and starting with the value v.
+//
+var fold = curry(function(a, v, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        v = f(v, a[i]);
+    }
+
+    return v;
+});
+
+//
+//  ### foldRight(v, f)
+//
+//  Combines the elements of this array together using the binary function f,
+//  from Right to Left, and starting with the value v.
+//
+var foldRight = curry(function(a, v, f) {
+    var i;
+
+    for (i = a.length - 1; i &gt;= 0; --i) {
+        v = f(v, a[i]);
+    }
+
+    return v;
+});
+
+//
+//  ### last(f)
+//
+//  Retrieve the last value
+//
+var last = function(a) {
+    return a[a.length - 1];
+};
+
+//
+//  ### map(f)
+//
+//  Returns the array resulting from applying the given function f to each
+//  element of this array.
+//
+var map = curry(function(a, f) {
+    var accum = [],
+        total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        accum[i] = f(a[i]);
+    }
+
+    return accum;
+});
+
+//
+//  ### partition(f)
+//
+//  Partition the array in two sub-arrays according to a predicate.
+//
+var partition = curry(function(a, f) {
+    var left = [],
+        right = [],
+        total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(f(a[i])) left.push(a[i]);
+        else right.push(a[i]);
+    }
+
+    return Tuple2(left, right);
+});
+
+//
+//  ### reduce(f)
+//
+//  Combines the elements of this array together using the binary operator
+//  op, from Left to Right
+//
+var reduce = curry(function(a, f) {
+    var v = a[0] || null,
+        total,
+        i;
+
+    for (i = 1, total = a.length; i &lt; total; i++) {
+        v = f(v, a[i]);
+    }
+
+    return v;
+});
+
+//
+//  ### reduceRight(f)
+//
+//  Combines the elements of this array together using the binary operator
+//  op, from Right to Left
+//
+var reduceRight = curry(function(a, f) {
+    var total = a.length,
+        v = a[total - 1] || null,
+        i;
+
+    for (i = total - 2; i &gt;= 0; --i) {
+        v = f(v, a[i]);
+    }
+
+    return v;
+});
+
+//
+//  ### tail(a)
+//
+//  Returns the tail elements of this array.
+//
+var tail = function(a) {
+    return a.slice(1);
+};
+
+//
+//  ### take(v, f)
+//
+//  Returns the n first elements of this array.
+//
+var take = curry(function(a, m) {
+    return a.slice(0, m);
+});
+
+//
+//  ### takeRight(n)
+//
+//  Returns the rightmost n elements from this array.
+//
+var takeRight = curry(function(a, n) {
+    return a.slice(-n);
+});
+
+//
+//  ### takeWhile(v, f)
+//
+//  Returns the longest prefix of this array whose elements satisfy
+//  the predicate.
+//
+var takeWhile = curry(function(a, f) {
+    var total,
+        i;
+
+    for (i = 0, total = a.length; i &lt; total; i++) {
+        if(!f(a[i])) {
+            return a.slice(0, i);
+        }
+    }
+
+    return [];
+});
+
+//
+//  ### zip(b)
+//
+//  Returns a array formed from this array and the specified array that
+//  by associating each element of the former with the element at the same
+//  position in the latter.
+//
+var zip = curry(function(a, b) {
+    var accum = [],
+        total = Math.min(a.length, b.length),
+        i;
+
+    for (i = 0; i &lt; total; i++) {
+        accum[i] = Tuple2(a[i], b[i]);
+    }
+
+    return accum;
+});
+
+//
+//  ### zipWithIndex()
+//
+//  Returns a array form from this array and a index of the value that
+//  is associated with each element index position.
+//
+var zipWithIndex = curry(function(a) {
+    var accum = [],
+        total = a.length,
+        i;
+
+    for (i = 0; i &lt; total; i++) {
+        accum[i] = Tuple2(a[i], i);
+    }
+
+    return accum;
+});
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .method(&#039;ap&#039;, isArray, ap)
+    .method(&#039;chain&#039;, isArray, chain)
+    .method(&#039;concat&#039;, isArray, concat)
+    .method(&#039;count&#039;, isArray, count)
+    .method(&#039;drop&#039;, isArray, drop)
+    .method(&#039;dropRight&#039;, isArray, dropRight)
+    .method(&#039;dropWhile&#039;, isArray, dropWhile)
+    .method(&#039;exists&#039;, isArray, exists)
+    .method(&#039;flatten&#039;, isArray, flatten)
+    .method(&#039;filter&#039;, isArray, filter)
+    .method(&#039;find&#039;, isArray, find)
+    .method(&#039;first&#039;, isArray, first)
+    .method(&#039;fold&#039;, isArray, fold)
+    .method(&#039;foldRight&#039;, isArray, foldRight)
+    .method(&#039;last&#039;, isArray, last)
+    .method(&#039;map&#039;, isArray, map)
+    .method(&#039;partition&#039;, isArray, partition)
+    .method(&#039;reduce&#039;, isArray, reduce)
+    .method(&#039;reduceRight&#039;, isArray, reduceRight)
+    .method(&#039;tail&#039;, isArray, tail)
+    .method(&#039;take&#039;, isArray, take)
+    .method(&#039;takeRight&#039;, isArray, takeRight)
+    .method(&#039;takeWhile&#039;, isArray, takeWhile)
+    .method(&#039;zip&#039;, isArray, zip)
+    .method(&#039;zipWithIndex&#039;, isArray, zipWithIndex);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

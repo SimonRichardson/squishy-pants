@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/squishy.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">83.97</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">552</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">55.18</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.44</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  # Helpers
+//
+//  The helpers module is a collection of functions used often inside
+//  of bilby.js or are generally useful for programs.
+//
+
+//
+//  ## functionName(f)
+//
+//  Returns the name of function `f`.
+//
+function functionName(f) {
+    return f._name || f.name;
+}
+
+//
+//  ## functionLength(f)
+//
+//  Returns the arity of function `f`.
+//
+function functionLength(f) {
+    return f._length || f.length;
+}
+
+//
+//  ## create(proto)
+//
+//  Partial polyfill for Object.create - creates a new instance of the
+//  given prototype.
+//
+function create(proto) {
+    function Ctor() {}
+    Ctor.prototype = proto;
+    return new Ctor();
+}
+
+//
+//  ## getInstance(self, constructor)
+//
+//  Always returns an instance of constructor.
+//
+//  Returns self if it is an instanceof constructor, otherwise
+//  constructs an object with the correct prototype.
+//
+function getInstance(self, constructor) {
+    return self instanceof constructor ? self : create(constructor.prototype);
+}
+
+//
+//  ## singleton(k, v)
+//
+//  Creates a new single object using `k` as the key and `v` as the
+//  value. Useful for creating arbitrary keyed objects without
+//  mutation:
+//
+//       squishy.singleton([&#039;Hello&#039;, &#039;world&#039;].join(&#039; &#039;), 42) == {&#039;Hello world&#039;: 42}
+//
+function singleton(k, v) {
+    var o = {};
+    o[k] = v;
+    return o;
+}
+
+//
+//  ## extend(a, b)
+//
+//  Right-biased key-value concat of objects `a` and `b`:
+//
+//       squishy.extend({a: 1, b: 2}, {b: true, c: false}) == {a: 1, b: true, c: false}
+//
+function extend(a, b) {
+    var rec = function(a, b) {
+        var i;
+        for(i in b) {
+            a[i] = b[i];
+        }
+        return a;
+    };
+    return rec(rec({}, a), b);
+}
+
+//
+//  ## bind(f)(o)
+//
+//  Makes `this` inside of `f` equal to `o`:
+//
+//       squishy.bind(function() { return this; })(a)() == a
+//
+//  Also partially applies arguments:
+//
+//       squishy.bind(squishy.add)(null, 10)(32) == 42
+//
+function bind(f) {
+    function curriedBind(o) {
+        /* If native bind doesn&#039;t exist, use a polyfill. */
+        var args = [].slice.call(arguments, 1),
+            g;
+
+        if(f.bind) g = f.bind.apply(f, [o].concat(args));
+        else {
+            g = function() {
+                return f.apply(o, args.concat(rest(arguments)));
+            };
+        }
+
+        /*
+           Let&#039;s try and associate all curried functions with the same name as the originator.
+           Can&#039;t override length but can set _length for currying
+        */
+        g._name = functionName(f);
+        g._length = Math.max(functionLength(f) - args.length, 0);
+
+        return g;
+    }
+
+    /* Manual currying since `curry` relies in bind. */
+    if(arguments.length &gt; 1) return curriedBind.apply(this, [].slice.call(arguments, 1));
+    else return curriedBind;
+}
+
+//
+//  ## curry(f)
+//
+//  Takes a normal function `f` and allows partial application of its
+//  named arguments:
+//
+//       var add = bilby.curry(function(a, b) {
+//              return a + b;
+//          }),
+//          add15 = add(15);
+//
+//       add15(27) == 42;
+//
+//  Retains ability of complete application by calling the function
+//  when enough arguments are filled:
+//
+//       add(15, 27) == 42;
+//
+function curry(f) {
+    var a = function() {
+        var g = bind(f).apply(f, [this].concat(rest(arguments)));
+
+        if(!functionLength(g)) return g();
+        else return curry(g);
+    };
+
+    /*
+       Let&#039;s try and associate all curried functions with the same name as the originator.
+       Can&#039;t override length but can set _length for currying
+    */
+    a._name = functionName(f);
+    a._length = functionLength(f);
+
+    return a;
+}
+
+//
+//  ## compose(f, g)
+//
+//  Creates a new function that applies `f` to the result of `g` of the
+//  input argument:
+//
+//       forall f g x. compose(f, g)(x) == f(g(x))
+//
+function compose(f, g) {
+    return function() {
+        return f(g.apply(this, rest(arguments)));
+    };
+}
+
+//
+//  ## identity(o)
+//
+//  Identity function. Returns `o`:
+//
+//       forall a. identity(a) == a
+//
+function identity(o) {
+    return o;
+}
+
+//
+//  ## constant(c)
+//
+//  Constant function. Creates a function that always returns `c`, no
+//  matter the argument:
+//
+//      forall a b. constant(a)(b) == a
+//
+function constant(c) {
+    return function() {
+        return c;
+    };
+}
+
+//
+//  ## access(p)(o)
+//
+//  Access a object property in a lazy fashion.
+//
+//      access(&#039;prop&#039;)(object) == object[&#039;prop&#039;]
+//
+var access = curry(function(p, o) {
+    return o[p];
+});
+
+//
+//  ## andThen(g)(f)
+//
+//  Lazy composition using currying.
+//  See: compose(f, g)
+//
+var andThen = curry(function(g, f) {
+    return compose(f, g);
+});
+
+//
+//  ## sequence(a)(b)
+//
+//  Lazy chaining of structures / containers together.
+//
+var sequence = curry(function(a, b) {
+    return squishy.chain(a, function() {
+        return b;
+    });
+});
+
+//
+//  ## minus(a)(b)
+//
+//  Lazy concatenation of structures / containers together with negate.
+//
+var minus = curry(function(a, b) {
+    return squishy.concat(a, squishy.negate(b));
+});
+
+//
+//  ## then(a, [b])
+//
+//  Then flatten arguments passed via then into the function
+//
+//      then(f, [1, 2]) == f.apply(null, [1, 2])
+//
+var then = curry(function(f, b) {
+    return f.apply(null, b);
+});
+
+//
+//  ## liftA2(f, a, b)
+//
+//  Lifts a curried, binary function `f` into the applicative passes
+//  `a` and `b` as parameters.
+//
+function liftA2(f, a, b) {
+    return this.ap(this.map(a, f), b);
+}
+
+//
+//  ## arrayOf(type)
+//
+//  Sentinel value for when an array of a particular type is needed:
+//
+//       arrayOf(Number)
+//
+function arrayOf(type) {
+    var self = getInstance(this, arrayOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## objectLike(props)
+//
+//  Sentinel value for when an object with specified properties is
+//  needed:
+//
+//       objectLike({
+//           age: Number,
+//           name: String
+//       })
+//
+function objectLike(props) {
+    var self = getInstance(this, objectLike);
+    self.props = props;
+    return self;
+}
+
+//
+//  ## or(a)(b)
+//
+//  Curried function for `||`.
+//
+var or = curry(function(a, b) {
+    return a || b;
+});
+
+//
+//  ## and(a)(b)
+//
+//  Curried function for `&amp;&amp;`.
+//
+var and = curry(function(a, b) {
+    /* Make sure we coerce the value to true. */
+    return !!(a &amp;&amp; b);
+});
+
+//
+//  ## add(a)(b)
+//
+//  Curried function for `+`.
+//
+var add = curry(function(a, b) {
+    return a + b;
+});
+
+//
+//  ## times(a)(b)
+//
+//  Curried function for `+`.
+//
+var times = curry(function(a, b) {
+    return a * b;
+});
+
+//
+//  ## strictEquals(a)(b)
+//
+//  Curried function for `===`.
+//
+var strictEquals = curry(function(a, b) {
+    return a === b;
+});
+
+//
+//  ## has(a)(b)
+//
+//  Has a object got a property
+//
+//        squishy.has(o, &#039;p&#039;);
+//
+var has = curry(function(a, b) {
+    return b in a;
+});
+
+//
+//  ## not(a)
+//
+//  Returns `true` if `a` is not a valid value.
+//
+function not(a) {
+    return !a;
+}
+
+//
+//  ## error(s)
+//
+//  Turns the `throw new Error(s)` statement into an expression.
+//
+function error(s) {
+    return function() {
+        throw new Error(s);
+    };
+}
+
+//
+//  ## oneOf
+//
+//  Selects one of the values at random.
+//
+function oneOf(a) {
+    return a[Math.floor(this.randomRange(0, a.length))];
+}
+
+//
+//  ## fill(s)(t)
+//
+//  Curried function for filling array.
+//
+var fill = curry(function(s, t) {
+    return this.map(range(0, s), t);
+});
+
+//
+//  ## range(a, b)
+//
+//  Create an array with a given range (length).
+//
+function range(a, b) {
+    var total = b - a;
+    var rec = function(x, y) {
+        if (y - a &gt;= total) return x;
+
+        x[y] = y++;
+        return rec(x, y);
+    };
+    return rec([], a);
+}
+
+//
+//  ## randomRange(a, b)
+//
+//  Returns a random number between the range.
+//
+function randomRange(a, b) {
+    return Math.random() * (b - a) + a;
+}
+
+//
+//  ## randomIntRangeWithout(a, b, c)
+//
+//        randomIntRangeWithout(1, 100, [50, 51])
+//
+//  Returns a random integer between the range, but excluding c
+//
+function randomIntRangeWithout(a, b, c) {
+    var x = Math.floor(randomRange(a, b));
+    return c.indexOf(x) &lt; 0 ? x : randomIntRangeWithout(a, b, c);
+}
+
+
+//
+//  ## inc(a)
+//
+//  Increments the number by 1
+//
+function inc(x) {
+    return x + 1;
+}
+
+//
+//  ## dec(a)
+//
+//  Decrement the number by 1
+//
+function dec(x) {
+    return x - 1;
+}
+
+//
+//  ## retrieveMethod(a, n)
+//
+//  Has the `a` got a method with the name either on the instance or
+//  the constructor.
+//
+function retrieveMethod(a, n) {
+    return a[n] || a.constructor[n] || (a.prototype &amp;&amp; a.prototype[n]);
+}
+
+//
+//  ## point(a)
+//
+function point(a) {
+    return retrieveMethod(a, &#039;of&#039;) || retrieveMethod(a.constructor, &#039;of&#039;);
+}
+
+//
+//  ## zero(a)
+//
+function zero(a) {
+    return retrieveMethod(a, &#039;empty&#039;) || retrieveMethod(a.constructor, &#039;empty&#039;);
+}
+
+//
+//  ## rest(...)
+//
+//  Convert the rest of the arguments to an array
+//
+function rest(args) {
+    return [].slice.call(args);
+}
+
+//
+//  ## flip(a)
+//
+//  Flip the first two arguments of a functions arguments.
+//
+function flip(f) {
+    return curry(function(a, b) {
+        var args = rest(arguments).slice(2);
+
+        return f.apply(null, [b, a].concat(args));
+    });
+}
+
+//
+//  ## select(a, b)
+//
+//  Select all the fields from an object with the associative field names
+//
+//      select({a: 1}, [&#039;a&#039;]);
+//
+function select(o, fields) {
+    return squishy.map(fields, function(v) {
+        return o[v];
+    });
+}
+
+//
+//  ## optional
+//
+//  Optionally calls the function passed if it&#039;s not null. This is glue
+//  for calling methods that might not be set yet. If you&#039;re looking at this
+//  you should seriously consider using Option, which is a lot better at handling
+//  these sorts of issues.
+//
+/* Internal use only - not exposed */
+function optional(f) {
+    return function() {
+        return f ? f.apply(null, rest(arguments)) : null;
+    };
+}
+
+//
+//  ## nothing
+//
+//  Empty function that can be called with no side affects and does nothing.
+//
+/* Internal use only - not exposed */
+function nothing() {}
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;functionName&#039;, functionName)
+    .property(&#039;functionLength&#039;, functionLength)
+    .property(&#039;create&#039;, create)
+    .property(&#039;getInstance&#039;, getInstance)
+    .property(&#039;singleton&#039;, singleton)
+    .property(&#039;extend&#039;, extend)
+    .property(&#039;bind&#039;, bind)
+    .property(&#039;curry&#039;, curry)
+    .property(&#039;compose&#039;, compose)
+    .property(&#039;identity&#039;, identity)
+    .property(&#039;constant&#039;, constant)
+    .property(&#039;access&#039;, access)
+    .property(&#039;andThen&#039;, andThen)
+    .property(&#039;sequence&#039;, sequence)
+    .property(&#039;minus&#039;, minus)
+    .property(&#039;then&#039;, then)
+    .property(&#039;liftA2&#039;, liftA2)
+    .property(&#039;arrayOf&#039;, arrayOf)
+    .property(&#039;objectLike&#039;, objectLike)
+    .property(&#039;or&#039;, or)
+    .property(&#039;and&#039;, and)
+    .property(&#039;add&#039;, add)
+    .property(&#039;times&#039;, times)
+    .property(&#039;strictEquals&#039;, strictEquals)
+    .property(&#039;has&#039;, has)
+    .property(&#039;not&#039;, not)
+    .property(&#039;error&#039;, error)
+    .property(&#039;oneOf&#039;, oneOf)
+    .property(&#039;fill&#039;, fill)
+    .property(&#039;range&#039;, range)
+    .property(&#039;randomRange&#039;, randomRange)
+    .property(&#039;randomIntRangeWithout&#039;, randomIntRangeWithout)
+    .property(&#039;inc&#039;, inc)
+    .property(&#039;dec&#039;, dec)
+    .property(&#039;point&#039;, point)
+    .property(&#039;zero&#039;, zero)
+    .property(&#039;rest&#039;, rest)
+    .property(&#039;flip&#039;, flip)
+    .property(&#039;select&#039;, select);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

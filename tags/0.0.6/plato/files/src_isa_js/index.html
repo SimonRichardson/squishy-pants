@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/isa.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">79.09</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">301</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">43.88</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.37</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  ## isTypeOf(a)(b)
+//
+//  Returns `true` if `b` has `typeof a`.
+//
+var isTypeOf = curry(function(a, b) {
+    return typeof b === a;
+});
+
+//
+//  ## isBoolean(a)
+//
+//  Returns `true` if `a` is a `Boolean`.
+//
+var isBoolean = isTypeOf(&#039;boolean&#039;);
+
+//
+//  ## isFunction(a)
+//
+//  Returns `true` if `a` is a `Function`.
+//
+var isFunction = isTypeOf(&#039;function&#039;);
+
+//
+//  ## isNumber(a)
+//
+//  Returns `true` if `a` is a `Number`.
+//
+var isNumber = isTypeOf(&#039;number&#039;);
+
+//
+//  ## isObject(a)
+//
+//  Returns `true` if `a` is a `Object`.
+//
+var isObject = isTypeOf(&#039;object&#039;);
+
+//
+//  ## isString(a)
+//
+//  Returns `true` if `a` is a `String`.
+//
+var isString = isTypeOf(&#039;string&#039;);
+
+//
+//  ## isArray(a)
+//
+//  Returns `true` if `a` is an `Array`.
+//
+function isArray(a) {
+    if(Array.isArray) return Array.isArray(a);
+    else return Object.prototype.toString.call(a) === &quot;[object Array]&quot;;
+}
+
+//
+//  ## isSameType
+//
+//  Returns `true` if `a` is the same type of as `b`
+//
+var isSameTypeOf = curry(function(a, b) {
+    if (isArray(a) &amp;&amp; isArray(b)) {
+        return true;
+    }
+    return isTypeOf(a) === isTypeOf(b);
+});
+
+//
+//  ## isNull(a)
+//
+//  Returns `true` if `a` is `null`.
+//
+function isNull(a) {
+    return a === null;
+}
+
+//
+//  ## isUndefined(a)
+//
+//  Returns `true` if `a` is `null`.
+//
+function isUndefined(a) {
+    return a === void(0);
+}
+
+//
+//  ## isNaN(a)
+//
+//  Returns `true` if `a` is a not a number including `NaN` and `Infinity`.
+//
+function isNaN(a) {
+    return typeof a === &#039;number&#039; ? (a * 0) !== 0 : true;
+}
+
+//
+//  ## isNotNaN(a)
+//
+//  Returns `true` if `a` is not a `NaN`.
+//
+function isNotNaN(a) {
+    return !isNaN(a);
+}
+
+
+//
+//  ## isEven(a)
+//
+//  Returns `true` if `a` is even.
+//
+function isEven(a) {
+    return (a &amp; 1) === 0;
+}
+
+//
+//  ## isOdd(a)
+//
+//  Returns `true` if `a` is odd.
+//
+function isOdd(a) {
+    return !isEven(a);
+}
+
+//
+//  ## isPalindrome(a)
+//
+//  Returns `true` if `a` is a valid palindrome.
+//
+function isPalindrome(s) {
+    var total = s.length;
+    if(total &lt; 2) return true;
+    if(s.charAt(0) !== s.charAt(total - 1)) return false;
+
+    return isPalindrome(s.substr(1, total - 2));
+}
+
+//
+//  ## isInstanceOf(a)(b)
+//
+//  Returns `true` if `a` is an instance of `b`.
+//
+var isInstanceOf = curry(function(a, b) {
+    return b instanceof a;
+});
+
+//
+//  ## isArrayOf(a)
+//
+//  Returns `true` if `a` is an instance of `arrayOf`.
+//
+var isArrayOf = isInstanceOf(arrayOf);
+
+//
+//  ## isObjectLike(a)
+//
+//  Returns `true` if `a` is an instance of `objectLike`.
+//
+var isObjectLike = isInstanceOf(objectLike);
+
+//
+//  ## isAnyOf(a)(b)
+//
+//  Returns `true` if `b` is any `strictEquals [a]`.
+//
+var isAnyOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i &lt; a.length; i++) {
+        if(strictEquals(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ## isAnyTypeOf(a)(b)
+//
+//  Returns `true` if `b` is any `typeof [a]`.
+//
+var isAnyTypeOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i &lt; a.length; i++) {
+        if(isTypeOf(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ## isAnyInstanceOf(a)(b)
+//
+//  Returns `true` if `b` is any `instanceof [a]`.
+//
+var isAnyInstanceOf = curry(function(a, b) {
+    var i;
+
+    for(i = 0; i &lt; a.length; i++) {
+        if(isInstanceOf(a[i])(b)) {
+            return true;
+        }
+    }
+
+    return false;
+});
+
+//
+//  ## isEnvironment(a)
+//
+//  Returns `true` if `a` is an instance of `environment`.
+//
+var isEnvironment = function(a) {
+    return isInstanceOf(environment, a);
+};
+
+//
+//  ## isComparable(a)
+//
+//  Returns `true` if `a` has a method called `equal`
+//
+var isComparable = flip(has)(&#039;equal&#039;);
+
+//
+//  ## isPlainObject(a)
+//
+//  Returns `true` if `a` is a plain object
+//
+/* We need a secure stateless object to test against */
+var own = {};
+
+function isPlainObject(a) {
+    if(!isObject(a)) {
+        return false;
+    }
+
+    /* Trap any errors that we can receive from testing host objects */
+    try {
+        if (a.constructor &amp;&amp; !own.hasOwnProperty.call(a.constructor.prototype, &#039;isPrototypeOf&#039;)) {
+            return false;
+        }
+    } catch (e) {
+        return false;
+    }
+
+    return true;
+}
+
+//
+//  ### isEmpty(a)
+//
+//  Checks to see if a value is empty or not.
+//
+//       console.log(squishy.isEmpty([])); // Outputs `true`
+//
+squishy = squishy
+    .method(&#039;isEmpty&#039;, isBoolean, not)
+    .method(&#039;isEmpty&#039;, isFunction, not)
+    .method(&#039;isEmpty&#039;, isNumber, function(a) {
+        return isNaN(a) || a &lt; 1;
+    })
+    .method(&#039;isEmpty&#039;, isString, function(a) {
+        return !/\S/.test(a);
+    })
+    .method(&#039;isEmpty&#039;, isArray, function(a) {
+        return a.length &lt; 1;
+    })
+    .method(&#039;isEmpty&#039;, isObject, function(a) {
+        var i,
+            index;
+
+        for(i in o) {
+            index++;
+        }
+        return index &lt; 1;
+    })
+    .method(&#039;isEmpty&#039;, strictEquals(null), constant(false))
+    .method(&#039;isEmpty&#039;, strictEquals(undefined), constant(false));
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;isTypeOf&#039;, isTypeOf)
+    .property(&#039;isBoolean&#039;, isBoolean)
+    .property(&#039;isFunction&#039;, isFunction)
+    .property(&#039;isNumber&#039;, isNumber)
+    .property(&#039;isObject&#039;, isObject)
+    .property(&#039;isString&#039;, isString)
+    .property(&#039;isArray&#039;, isArray)
+    .property(&#039;isSameTypeOf&#039;, isSameTypeOf)
+    .property(&#039;isNaN&#039;, isNaN)
+    .property(&#039;isNotNaN&#039;, isNotNaN)
+    .property(&#039;isEven&#039;, isEven)
+    .property(&#039;isOdd&#039;, isOdd)
+    .property(&#039;isPalindrome&#039;, isPalindrome)
+    .property(&#039;isInstanceOf&#039;, isInstanceOf)
+    .property(&#039;isArrayOf&#039;, isArrayOf)
+    .property(&#039;isObjectLike&#039;, isObjectLike)
+    .property(&#039;isAnyOf&#039;, isAnyOf)
+    .property(&#039;isAnyTypeOf&#039;, isAnyTypeOf)
+    .property(&#039;isAnyInstanceOf&#039;, isAnyInstanceOf)
+    .property(&#039;isEnvironment&#039;, isEnvironment)
+    .property(&#039;isComparable&#039;, isComparable)
+    .property(&#039;isPlainObject&#039;, isPlainObject);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

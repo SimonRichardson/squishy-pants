@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/state.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">87.38</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">306</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">22.58</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.32</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+//  ## State(run)
+//
+//  Monadic state.
+//
+//   * `ap(b, concat)` - Applicative ap(ply)
+//   * `chain(f)` - Monadic flatMap/bind
+//   * `map(f)` - Functor map
+//
+var State = tagged(&#039;State&#039;, [&#039;run&#039;]);
+
+//
+//  ## of(x)
+//
+//  Constructor `of` Monad creating a `State`.
+//
+State.of = function(a) {
+    return State(function(b) {
+        return Tuple2(a, b);
+    });
+};
+
+//
+//  ## get()
+//
+//  Constructor `get` to retrieve the state value.
+//
+State.get = State(function(s) {
+    return Tuple2(s, s);
+});
+
+//
+//  ## modify(f)
+//
+//  Constructor `modify` to alter the state value using the function.
+//
+State.modify = function(f) {
+    return State(function(s) {
+        return Tuple2(null, f(s));
+    });
+};
+
+//
+//  ## put(s)
+//
+//  Constructor `put` to return the value of `s`.
+//
+State.put = function(s) {
+    return State.modify(function(a) {
+        return s;
+    });
+};
+
+//
+//  ### ap(b)
+//
+//  Apply a function in the environment of the value of this state
+//  Applicative ap(ply)
+//
+State.prototype.ap = function(a) {
+    return this.chain(function(f) {
+        return squishy.map(a, f);
+    });
+};
+
+//
+//  ### chain(f)
+//
+//  Bind through the value of the state
+//  Monadic flatMap/bind
+//
+State.prototype.chain = function(f) {
+    var env = this;
+    return State(function(s) {
+        var result = env.run(s);
+        return f(result._1).run(result._2);
+    });
+};
+
+//
+//  ### evalState(s)
+//
+//  Evaluate the state with `s`.
+//
+State.prototype.evalState = function(s) {
+    return this.run(s)._1;
+};
+
+//
+//  ### execState(s)
+//
+//  Execute the state with `s`.
+//
+State.prototype.execState = function(s) {
+    return this.run(s)._2;
+};
+
+//
+//  ### map(f)
+//
+//  Map on the value of this state.
+//  Functor map
+//
+State.prototype.map = function(f) {
+    return this.chain(function(a) {
+        return State.of(f(a));
+    });
+};
+
+// Transformer
+State.StateT = function(M) {
+
+    //
+    //  Monadic state transformer.
+    //
+    //   * `ap(b, concat)` - Applicative ap(ply)
+    //   * `chain(f)` - Monadic flatMap/bind
+    //   * `map(f)` - Functor map
+    //
+    var StateT = tagged(&#039;StateT&#039;, [&#039;run&#039;]);
+
+    //
+    //  ## lift(m)
+    //
+    //  Constructor `lift` Monad creating a `StateT`.
+    //
+    StateT.lift = function(m) {
+        return StateT(function(b) {
+            return m;
+        });
+    };
+
+    //
+    //  ## of(x)
+    //
+    //  Constructor `of` Monad creating a `StateT`.
+    //
+    StateT.of = function(a) {
+        return StateT(function(b) {
+            return M.of(Tuple2(a, b));
+        });
+    };
+
+    //
+    //  ## get()
+    //
+    //  Constructor `get` to retrieve the stateT value.
+    //
+    StateT.get = StateT(function(s) {
+        return M.of(Tuple2(s, s));
+    });
+
+    //
+    //  ## modify(f)
+    //
+    //  Constructor `modify` to alter the stateT value using the function.
+    //
+    StateT.modify = function(f) {
+        return StateT(function(s) {
+            return M.of(Tuple2(null, f(s)));
+        });
+    };
+
+    //
+    //  ## put(s)
+    //
+    //  Constructor `put` to return the value of s.
+    //
+    StateT.put = function(s) {
+        return StateT.modify(function(a) {
+            return s;
+        });
+    };
+
+    //
+    //  ### ap(b)
+    //
+    //  Apply a function in the environment of the value of this stateT
+    //  Applicative ap(ply)
+    //
+    StateT.prototype.ap = function(a) {
+        return this.chain(function(f) {
+            return squishy.map(a, f);
+        });
+    };
+
+    //
+    //  ### chain(f)
+    //
+    //  Bind through the value of the stateT
+    //  Monadic flatMap/bind
+    //
+    StateT.prototype.chain = function(f) {
+        var state = this;
+        return StateT(function(s) {
+            var result = state.run(s);
+            return result.chain(function(t) {
+                return f(t._1).run(t._2);
+            });
+        });
+    };
+
+    //
+    //  ### evalState(s)
+    //
+    //  Evaluate the stateT with `s`.
+    //
+    StateT.prototype.evalState = function(s) {
+        return this.run(s).chain(function(t) {
+            return t._1;
+        });
+    };
+
+    //
+    //  ### execState(s)
+    //
+    //  Execute the stateT with `s`.
+    //
+    StateT.prototype.execState = function(s) {
+        return this.run(s).chain(function(t) {
+            return t._2;
+        });
+    };
+
+    //
+    //  ### map(f)
+    //
+    //  Map on the value of this stateT.
+    //  Functor map
+    //
+    StateT.prototype.map = function(f) {
+        return this.chain(function(a) {
+            return StateT.of(f(a));
+        });
+    };
+
+    return StateT;
+};
+
+//
+//  ## isState(a)
+//
+//  Returns `true` if `a` is `State`.
+//
+var isState = isInstanceOf(State);
+
+//
+//  ## stateOf(type)
+//
+//  Sentinel value for when an state of a particular type is needed:
+//
+//       stateOf(Number)
+//
+function stateOf(type) {
+    var self = getInstance(this, stateOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStateOf(a)
+//
+//  Returns `true` if `a` is an instance of `stateOf`.
+//
+var isStateOf = isInstanceOf(stateOf);
+
+//
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(State.prototype);
+
+//
+//  ### lens
+//
+//  Lens access for an state structure.
+//
+State.lens = function() {
+    return Lens(function(a) {
+        return Store(
+            function(s) {
+                return State(s);
+            },
+            function() {
+                return a.run;
+            }
+        );
+    });
+};
+
+//
+//  append methods to the squishy environment.
+//
+squishy = squishy
+    .property(&#039;State&#039;, State)
+    .property(&#039;isState&#039;, isState)
+    .property(&#039;stateOf&#039;, stateOf)
+    .property(&#039;isStateOf&#039;, isStateOf)
+    .method(&#039;of&#039;, strictEquals(State), function(x) {
+        return State.of(x);
+    })
+    .method(&#039;ap&#039;, isState, function(a, b) {
+        return a.ap(b);
+    })
+    .method(&#039;chain&#039;, isState, function(a, b) {
+        return a.chain(b);
+    })
+    .method(&#039;map&#039;, isState, function(a, b) {
+        return a.map(b);
+    })
+    .method(&#039;arb&#039;, isStateOf, function(a, b) {
+        return State.of(this.arb(a.type, b - 1));
+    })
+    .method(&#039;shrink&#039;, isState, function(a, b) {
+        return [];
+    });</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
