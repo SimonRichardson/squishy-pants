@@ -12,14 +12,32 @@ function tagged(name, fields) {
     function wrapped() {
         var self = getInstance(this, wrapped),
             total = fields.length,
+            values = [].slice.call(arguments),
             i;
-        if(arguments.length != total) {
-            throw new TypeError("Expected " + fields.length + " arguments, got " + arguments.length + " for " + name);
+
+        if(values.length != total) {
+            throw new TypeError("Expected " + fields.length + " arguments, got " + values.length + " for " + name);
         }
         for(i = 0; i < total; i++) {
-            self[fields[i]] = arguments[i];
+            self[fields[i]] = values[i];
         }
+
+        /* Make sure we're creating an immutable toString */
+        self.toString = makeToString(values);
+
         return self;
+    }
+
+    function makeToString(a) {
+        return function() {
+            var values = squishy.map(a, function(x) {
+                    return x.toString ? x.toString() : '' + x;
+                }),
+                flattened = squishy.reduce(values, function(x, y) {
+                    return x + ', ' + y;
+                });
+            return name + (values.length > 0 ? '(' + flattened + ')' : '');
+        };
     }
 
     /* Make sure the fields is an array */
@@ -56,7 +74,8 @@ function tagged(name, fields) {
 //        listLength(List.Cons(1, new List.Cons(2, List.Nil()))) == 2;
 //
 function taggedSum(name, constructors) {
-    var key, proto;
+    var key,
+        proto;
 
     function definitions() {
         throw new TypeError('Tagged sum was called instead of one of its properties.');
@@ -81,11 +100,13 @@ function taggedSum(name, constructors) {
         proto.match = constructMatch(key);
 
         /*
-            Make sure the taggedSum are named
-            Pass the constructors around so we can then do recursive matching.
+            - Make sure the taggedSum are named
+            - Pass the constructors around so we can then do recursive matching.
+            - Make sure that taggedSum items have a toString
         */
         proto._name = key;
         proto._constructors = constructors;
+        proto.toString = constant(key);
 
         return proto;
     }

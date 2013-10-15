@@ -16,5 +16,11 @@ exports.tagged = {
             return _.equal(_.tagged('T', ['a', 'b'])(a, b).a, a);
         },
         [_.AnyVal, _.AnyVal]
+    ),
+    'when creating a tagged type, should return correct toString value': _.check(
+        function(a, b, c) {
+            return _.equal(_.tagged(a, ['b', 'c'])(b, c).toString(), a + '(' + b + ', ' + c + ')');
+        },
+        [String, Number, Number]
     )
 };
