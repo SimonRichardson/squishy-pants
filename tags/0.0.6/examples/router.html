@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Router with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../squishy-pants.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML += x + '<br />';
+              })),
+              logger = _.curry(function(prefix, value) {
+                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              }),
+              format = function(str) {
+                  // Taken from Backbone.js
+                  return str
+                          .replace(/[\-{}\[\]+?.,\\\^$|#\s]/g, '\\$&')
+                          .replace(/\((.*?)\)/g, '(?:$1)?')
+                          .replace(/(\(\?)?:\w+/g, function(match, optional){
+                              return optional ? match : '([^\/]+)';
+                          })
+                          .replace(/\*\w+/g, '(.*?)');
+              },
+              toRegExp = function(v) {
+                  return new RegExp('^' + v + '$');
+              },
+              is = _.curry(function(pattern, value) {
+                  return pattern().test(value);
+              }),
+              perform = _.curry(function(pattern, value) {
+                  var match = pattern().exec(value);
+                  return match.slice(match.length > 1 ? 1 : 0);
+              }),
+              router = function(routes) {
+                  var self = _.getInstance(this, router);
+                  self.routes = routes || _.environment();
+
+                  self.route = function(path, f) {
+                      var predicate = _.constant(_.andThen(format, toRegExp)(path())),
+                          callback = _.andThen(perform(predicate), _.then(f));
+
+                      return router(self.routes.method('call', is(predicate), callback));
+                  };
+
+                  self.query = function() {
+                      return self.routes.call.call(null, _.rest(arguments));
+                  }
+
+                  return self;
+              },
+              search = function() {
+                  return '/search/:query';
+              },
+              blog = function() {
+                  return '/blog/:author/:id';
+              },
+              config = router()
+                  .route(
+                      search,
+                      function(query) {
+                          logger('Search Query', query);
+                      }
+                  )
+                  .route(
+                      blog,
+                      function(author, id) {
+                          logger('Blog Author', author);
+                          logger('Blog Id', id);
+                      }
+                  );
+
+          config.query('/search/' + _.arb(String, 20));
+          config.query('/blog/' + _.arb(String, 10) + '/' + _.arb(_.Integer, 10));
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>Router using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert">
+              <pre>
+var search = function() {
+        return '/search/:query';
+    },
+    blog = function() {
+        return '/blog/:author/:id';
+    };
+
+router()
+    .route(
+        search,
+        function(query) {
+            logger('Search Query', query);
+        }
+    )
+    .route(
+        blog,
+        function(author, id) {
+            logger('Blog Author', author);
+            logger('Blog Id', id);
+        }
+    );
+              </pre>
+          </div>
+          <hr />
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
