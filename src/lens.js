@@ -9,7 +9,6 @@
 //  * `andThen(b)` - Helper method to enable chaining of lens objects.
 //  * `compose(b)` - Enabling of composing lenses together.
 //
-
 var Lens = tagged('Lens', ['run']),
     PartialLens = tagged('PartialLens', ['run']);
 

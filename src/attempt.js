@@ -208,18 +208,10 @@ Attempt.prototype.toRight = function() {
 //
 //  ### toArray()
 //
-//  Return an empty array or array with one element on the success
-//  of this attempt.
+//  Return an empty array for a `Failure` `Attempt`.
 //
-Attempt.prototype.toArray = function() {
-    return this.match({
-        Success: function(x) {
-            return [x];
-        },
-        Failure: function(x) {
-            return [];
-        }
-    });
+Attempt.Failure.prototype.toArray = function() {
+    return [];
 };
 
 //

@@ -54,6 +54,7 @@
 //   * `takeWhile(f)` - Returns the longest prefix of this list whose elements satisfy the predicate.
 //   * `zip(a, b)` - Returns a list formed from this list and the specified list that by associating each element of the former with the element at the same position in the latter.
 //   * `zipWithIndex(a)` -  Returns a list form from this list and a index of the value that is associated with each element index position.
+//   * `toArray()` - Returns a array from a list.
 //
 var List = taggedSum('List', {
     Cons: ['head', 'tail'],
@@ -618,25 +619,6 @@ List.prototype.zipWithIndex = function(b) {
         p = p.tail;
     }
     return accum.reverse();
-};
-
-//
-//  ### toArray()
-//
-//  Returns a list as a array.
-//
-List.prototype.toArray = function() {
-    var accum = [],
-        p = this;
-    while(p.isNonEmpty) {
-        accum.push(p.head);
-        p = p.tail;
-    }
-    return accum;
-};
-
-List.prototype.toString = function() {
-    return 'List(' + this.toArray().join(', ') + ')';
 };
 
 //

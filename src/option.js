@@ -219,21 +219,6 @@ Option.prototype.toRight = function(o) {
 };
 
 //
-//  ### toArray()
-//
-//  Return an empty array or array with one element on the some
-//  of this option.
-//
-Option.prototype.toArray = function() {
-    return this.match({
-        Some: function(x) {
-            return [x];
-        },
-        None: constant([])
-    });
-};
-
-//
 //  ## of(x)
 //
 //  Constructor `of` Monad creating `Option` with value of `x`.

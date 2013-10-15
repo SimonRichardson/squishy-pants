@@ -195,16 +195,10 @@ Either.prototype.toAttempt = function() {
 //
 //  ### toArray()
 //
-//  Return an empty array or array with one element on the right
-//  of this either.
+//  Return an empty array for a `Left` `Either`.
 //
-Either.prototype.toArray = function() {
-    return this.match({
-        Left: constant([]),
-        Right: function(x) {
-            return [x];
-        }
-    });
+Either.Left.prototype.toArray = function() {
+    return [];
 };
 
 //

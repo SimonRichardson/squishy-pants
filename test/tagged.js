@@ -7,19 +7,29 @@ var _ = require('./lib/test'),
 exports.tagged = {
     'when creating a tagged type, should return correct first value': _.check(
         function(a, b) {
-            return _.equal(_.tagged('T', ['a', 'b'])(a, b).a, a);
+            return _.expect(_.tagged('T', ['a', 'b'])(a, b).a).toBe(a);
         },
         [_.AnyVal, _.AnyVal]
     ),
     'when creating a tagged type, should return correct second value': _.check(
         function(a, b) {
-            return _.equal(_.tagged('T', ['a', 'b'])(a, b).a, a);
+            return _.expect(_.tagged('T', ['a', 'b'])(a, b).a).toBe(a);
         },
         [_.AnyVal, _.AnyVal]
     ),
     'when creating a tagged type, should return correct toString value': _.check(
         function(a, b, c) {
-            return _.equal(_.tagged(a, ['b', 'c'])(b, c).toString(), a + '(' + b + ', ' + c + ')');
+            var actual = _.tagged(a, ['b', 'c'])(b, c).toString();
+
+            return _.expect(actual).toBe(a + '(' + b + ', ' + c + ')');
+        },
+        [String, Number, Number]
+    ),
+    'when creating a tagged type, should return correct toArray value': _.check(
+        function(a, b, c) {
+            var actual = _.tagged(a, ['b', 'c'])(b, c).toArray();
+
+            return _.expect(actual).toBe([b, c]);
         },
         [String, Number, Number]
     )
@@ -71,6 +81,27 @@ exports.taggedSum = {
             var actual = List.Cons(a, List.Cons(b, List.Nil));
 
             return _.expect(actual.toString()).toBe('Cons(' + a + ', Cons(' + b + ', Nil))');
+        },
+        [Number, Number]
+    ),
+    'when checking toArray for List.Nil should return correct value': _.check(
+        function(a, b) {
+            var actual = List.Nil.toArray();
+            return _.expect(actual).toBe([]);
+        },
+        [Number, Number]
+    ),
+    'when checking toArray for List.Cons should return correct value': _.check(
+        function(a, b) {
+            var actual = List.Cons(a, List.Cons(b, List.Nil)).toArray();
+            return _.expect(actual).toBe([a, b]);
+        },
+        [Number, Number]
+    ),
+    'when checking flat toArray for List.Cons should return correct value': _.check(
+        function(a, b) {
+            var actual = List.Cons(a, b).toArray();
+            return _.expect(actual).toBe([a, b]);
         },
         [Number, Number]
     )

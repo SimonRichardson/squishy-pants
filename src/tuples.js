@@ -97,15 +97,6 @@ Tuple2.prototype.chain = function(f) {
 };
 
 //
-//  ### toArray()
-//
-//  Return an array with each element of the tuple.
-//
-Tuple2.prototype.toArray = function() {
-    return [this._1, this._2];
-};
-
-//
 //   ## Tuple3
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
@@ -154,15 +145,6 @@ Tuple3.prototype.equal = function(b) {
 //
 Tuple3.prototype.chain = function(f) {
     return f(this);
-};
-
-//
-//  ### toArray()
-//
-//  Return an array with each element of the tuple.
-//
-Tuple3.prototype.toArray = function() {
-    return [this._1, this._2, this._3];
 };
 
 //
@@ -218,15 +200,6 @@ Tuple4.prototype.chain = function(f) {
 };
 
 //
-//  ### toArray()
-//
-//  Return an array with each element of the tuple.
-//
-Tuple4.prototype.toArray = function() {
-    return [this._1, this._2, this._3, this._4];
-};
-
-//
 //   ## Tuple5
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
@@ -277,15 +250,6 @@ Tuple5.prototype.equal = function(b) {
 //
 Tuple5.prototype.chain = function(f) {
     return f(this);
-};
-
-//
-//  ### toArray()
-//
-//  Return an array with each element of the tuple.
-//
-Tuple5.prototype.toArray = function() {
-    return [this._1, this._2, this._3, this._4, this._5];
 };
 
 //

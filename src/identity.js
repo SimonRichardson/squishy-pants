@@ -5,11 +5,11 @@
 //  strategy. It simply applies the bound function to its input without
 //  any modification.
 //
-//  * `ap(a)` - applicative ap(ply)
-//  * `chain(f)` - chain values
-//  * `concat(s, plus)` - Semigroup concat
-//  * `map(f)` - functor map
-//
+//   * `ap(a)` - applicative ap(ply)
+//   * `chain(f)` - chain values
+//   * `concat(s, plus)` - Semigroup concat
+//   * `map(f)` - functor map
+//   * `toArray()` - `[x]` if `Identity(x)`
 //
 var Identity = tagged('Identity', ['x']);
 
@@ -211,6 +211,9 @@ squishy = squishy
     })
     .method('negate', isIdentity, function(a) {
         return a.negate();
+    })
+    .method('toArray', isIdentity, function(a) {
+        return a.toArray();
     })
 
     .method('ap', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {

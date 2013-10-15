@@ -15,15 +15,20 @@ function tagged(name, fields) {
             values = [].slice.call(arguments),
             i;
 
-        if(values.length != total) {
+        if (values.length != total) {
             throw new TypeError("Expected " + fields.length + " arguments, got " + values.length + " for " + name);
         }
-        for(i = 0; i < total; i++) {
+
+        for (i = 0; i < total; i++) {
             self[fields[i]] = values[i];
         }
 
-        /* Make sure we're creating an immutable toString */
         self.toString = makeToString(values);
+
+        /* Make sure we don't overwrite already existing implementations */
+        if (!self.toArray) {
+            self.toArray = makeToArray(values);
+        }
 
         return self;
     }
@@ -37,6 +42,18 @@ function tagged(name, fields) {
                     return x + ', ' + y;
                 });
             return name + (values.length > 0 ? '(' + flattened + ')' : '');
+        };
+    }
+
+    function makeToArray(a) {
+        return function() {
+            var values = squishy.map(a, function(x) {
+                    return x.toArray ? x.toArray() : x;
+                }),
+                flattened = squishy.fold(values, [], function(x, y) {
+                    return squishy.concat(x, y);
+                });
+            return flattened;
         };
     }
 
@@ -105,21 +122,23 @@ function taggedSum(name, constructors) {
             - Make sure that taggedSum items have a toString
         */
         proto._name = key;
+        proto._tagged = definitions;
         proto._constructors = constructors;
+
         proto.toString = constant(key);
 
         return proto;
     }
 
-    for(key in constructors) {
-        if(!constructors[key].length) {
+    for (key in constructors) {
+        if (!constructors[key].length) {
             definitions[key] = makeProto(key, definitions);
+            definitions[key].toArray = constant([]);
             continue;
         }
 
         definitions[key] = tagged(key, constructors[key]);
         definitions[key].prototype = makeProto(key, constructors);
-        definitions[key].prototype._tagged = definitions;
     }
 
     definitions._name = name;
