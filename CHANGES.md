@@ -1,6 +1,17 @@
 Changes
 =======
 
+0.0.6 - 15/10/2013
+- #43 Get code coverage working for unit tests.
+- #42 Implement Profunctors via dimap
+- #39 Merge the method types where possible when appending to squishy
+- #38 Implement transformers for all types
+- #37 Implement a better recursive matching
+- #36 Implement toString & toJson & toArray for all structures
+- #35 Expose squishy pants macros
+- #34 Add easy lens accessor to all structures.
+- #31 Fix checkStream
+
 0.0.5 - 19/09/2013
 - #30 Implement do if expression macro
 - #29 Implement bracket less macro

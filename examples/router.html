@@ -44,17 +44,17 @@
               }),
               router = function(routes) {
                   var self = _.getInstance(this, router);
-                  self.routes = routes || _.partial();
+                  self.routes = routes || _.environment();
 
                   self.route = function(path, f) {
                       var predicate = _.constant(_.andThen(format, toRegExp)(path())),
                           callback = _.andThen(perform(predicate), _.then(f));
 
-                      return router(self.routes.method(is(predicate), callback));
+                      return router(self.routes.method('call', is(predicate), callback));
                   };
 
                   self.query = function() {
-                      return self.routes.call(null, _.rest(arguments));
+                      return self.routes.call.call(null, _.rest(arguments));
                   }
 
                   return self;
