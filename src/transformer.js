@@ -29,7 +29,7 @@ var transformer = function(ctor) {
         //  value of `M.empty()`.
         //
         ctor.empty = function() {
-            return ctor(empty(M)());
+            return ctor(zero(M)());
         };
 
         //
