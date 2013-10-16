@@ -221,9 +221,7 @@ var andThen = curry(function(g, f) {
 //  Lazy chaining of structures / containers together.
 //
 var sequence = curry(function(a, b) {
-    return squishy.chain(a, function() {
-        return b;
-    });
+    return squishy.chain(a, constant(b));
 });
 
 //
@@ -451,14 +449,14 @@ function retrieveMethod(a, n) {
 //  ## point(a)
 //
 function point(a) {
-    return retrieveMethod(a, 'of') || retrieveMethod(a.constructor, 'of');
+    return retrieveMethod(a, 'of');
 }
 
 //
 //  ## zero(a)
 //
 function zero(a) {
-    return retrieveMethod(a, 'empty') || retrieveMethod(a.constructor, 'empty');
+    return retrieveMethod(a, 'empty');
 }
 
 //

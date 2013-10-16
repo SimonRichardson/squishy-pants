@@ -177,23 +177,44 @@ exports.extend = {
 };
 
 exports.bind = {
-    testBind: function(test) {
-        var a = _.bind(function(a, b, c) {
-            test.equal(a + b + c, 6);
-        });
+    'when testing bind should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.bind(function(a, b, c) {
+                return a + b + c;
+            });
 
-        a()(1, 2, 3);
+            return _.expect(x()(a, b, c)).toBe(a + b + c);
+        },
+        [_.Integer, _.Integer, _.Integer]
+    ),
+    'when testing bind with an argument should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.bind(function(a, b, c) {
+                return a + b + c;
+            }, null, a);
 
-        test.expect(1);
-        test.done();
-    },
-    testCurryFunctionName: function(test) {
+            return _.expect(x(b, c)).toBe(a + b + c);
+        },
+        [_.Integer, _.Integer, _.Integer]
+    ),
+    'when testing bind with an argument and binding should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.bind(function(a, b, c) {
+                    return a + b + c;
+                }, null, a),
+                y = _.bind(x, null, b);
+
+            return _.expect(y(c)).toBe(a + b + c);
+        },
+        [_.Integer, _.Integer, _.Integer]
+    ),
+    'when testing function name with bind should return correct value': function(test) {
         var a = _.bind(function namedFunction(a, b, c) {})();
 
         test.equal(_.functionName(a), 'namedFunction');
         test.done();
     },
-    testCurryFunctionLength: function(test) {
+    'when testing function length with bind should return correct value': function(test) {
         var a = _.bind(function(a, b, c) {})();
 
         test.equal(_.functionLength(a), 3);
@@ -251,10 +272,21 @@ exports.andThen = {
 };
 
 exports.sequence = {
-    testSequence: function(test) {
-        test.equal(_.sequence(_.Identity(1), _.Identity(2)).x, 2);
-        test.done();
-    }
+    'when testing sequence with identity should return correct value': _.check(
+        function(a, b) {
+            return _.expect(_.sequence(_.Identity(a), _.Identity(b)).x).toBe(b);
+        },
+        [_.Integer, _.Integer]
+    )
+};
+
+exports.minus = {
+    'when testing minus with identity should return correct value': _.check(
+        function(a, b) {
+            return _.expect(_.minus(_.Identity(a), _.Identity(b)).x).toBe(a - b);
+        },
+        [_.Integer, _.Integer]
+    )
 };
 
 exports.then = {
@@ -371,6 +403,50 @@ exports.curry = {
     }
 };
 
+exports.inc = {
+    'when testing inc should return the correct value': _.check(
+        function(a) {
+            return _.expect(_.inc(a)).toBe(a + 1);
+        },
+        [_.Integer]
+    )
+};
+
+exports.dec = {
+    'when testing dec should return the correct value': _.check(
+        function(a) {
+            return _.expect(_.dec(a)).toBe(a - 1);
+        },
+        [_.Integer]
+    )
+};
+
+exports.point = {
+    'when testing point should return correct method': _.check(
+        function(a) {
+            return _.expect(_.point(a)).toBe(a.of);
+        },
+        [_.objectLike({
+            of: _.objectLike({
+                a: Boolean
+            })
+        })]
+    )
+};
+
+exports.zero = {
+    'when testing zero should return correct method': _.check(
+        function(a) {
+            return _.expect(_.zero(a)).toBe(a.empty);
+        },
+        [_.objectLike({
+            empty: _.objectLike({
+                a: Boolean
+            })
+        })]
+    )
+};
+
 exports.flip = {
     'when testing flip should return the first two flipped arguments': _.check(
         function(a, b) {
@@ -415,4 +491,3 @@ exports.randomRange = {
         test.done();
     }
 };
-
