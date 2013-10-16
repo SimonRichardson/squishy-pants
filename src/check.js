@@ -105,7 +105,7 @@ function forAll(property, args) {
 //
 //  Default is `100`.
 //
-var goal = 30;//00;
+var goal = 10;//00;
 
 //
 //  ## AnyVal
@@ -248,20 +248,17 @@ squishy = squishy
 
         while(x) {
             x = Math.floor(x / 2);
-
-            if (x) accum.push(a.slice(a.length = x));
+            if (x) accum.push(a.slice(0, a.length - x));
         }
 
         return accum;
     })
     .method('shrink', isBoolean, function(b) {
-        return b ? [false] : [];
+        return b ? [false] : [true];
     })
     .method('shrink', isNumber, function(n) {
         var accum = [0],
             x = n;
-
-        if (n < 0) accum.push(-n);
 
         while(x) {
             x = x / 2;
