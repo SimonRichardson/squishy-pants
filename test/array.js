@@ -88,6 +88,48 @@ exports.array = {
         },
         [_.arrayOf(Number)]
     ),
+    'when testing find with array should yield items': _.check(
+        function(a) {
+            var result = null,
+                i;
+
+            for(i = 0; i < a.length; i++) {
+                if (_.isEven(a[i])) {
+                    result = a[i];
+                    break;
+                }
+            }
+
+            return _.expect(_.find(a, _.isEven)).toBe(result);
+        },
+        [_.arrayOf(Number)]
+    ),
+    'when testing first with array should yield items': _.check(
+        function(a) {
+            return _.expect(_.first(a)).toBe(a[0]);
+        },
+        [_.arrayOf(Number)]
+    ),
+    'when testing flatten with array should yield items': _.check(
+        function(a) {
+            var accum = [],
+                i;
+
+            for(i = 0; i < a.length; i++) {
+                accum.push.apply(accum, a[i]);
+            }
+
+            return _.expect(_.flatten(a, _.isEven)).toBe(accum);
+        },
+        [_.arrayOf(_.arrayOf(Number))]
+    ),
+    'when testing flatten with array should yield items': function(test) {
+        var a = [[1, 2], [3, 4], 5, 6],
+            accum = [1, 2, 3, 4, 5, 6];
+
+        test.deepEqual(_.flatten(a, _.isEven), accum);
+        test.done();
+    },
     'when testing chain with array should yield items': _.check(
         function(a) {
             var accum = [],
@@ -190,6 +232,12 @@ exports.array = {
             }
 
             return _.expect(_.reduceRight(a, minus)).toBe(accum);
+        },
+        [_.arrayOf(Number)]
+    ),
+    'when testing tail with array should yield items': _.check(
+        function(a) {
+            return _.expect(_.tail(a)).toBe(a.slice(1));
         },
         [_.arrayOf(Number)]
     ),
