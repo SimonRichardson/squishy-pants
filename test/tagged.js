@@ -32,10 +32,65 @@ exports.tagged = {
             return _.expect(actual).toBe([b, c]);
         },
         [String, Number, Number]
-    )
+    ),
+    'when creating a tagged type with to many arguments throws correct error': _.check(
+        function(a, b) {
+            var t = _.tagged('T', ['a']),
+                msg = '';
+
+            try {
+                t(a, b);
+            } catch(e) {
+                msg = e.message;
+            }
+            return _.expect(msg).toBe('Expected 1 arguments, got 2 for T');
+        },
+        [Number, Number]
+    ),
+    'when creating a tagged type with to few arguments throws correct error': _.check(
+        function(a, b) {
+            var t = _.tagged('T', ['a', 'b', 'c']),
+                msg = '';
+
+            try {
+                t(a, b);
+            } catch(e) {
+                msg = e.message;
+            }
+            return _.expect(msg).toBe('Expected 3 arguments, got 2 for T');
+        },
+        [Number, Number]
+    ),
+    'when creating a tagged value should return correct toString': _.check(
+        function(a) {
+            var t = _.tagged(a, []);
+            return _.expect(t().toString()).toBe(a);
+        },
+        [String]
+    ),
+    'when creating a tagged value not using an array should throw correct error': function(test) {
+        var msg = '';
+        try {
+            _.tagged('T', 1);
+        } catch(e) {
+            msg = e.message;
+        }
+        test.ok(msg === 'Expected Array but got `number`');
+        test.done();
+    }
 };
 
 exports.taggedSum = {
+    'when creating a taggedSum and calling definition should throw correct value': function(test) {
+        var msg = '';
+        try {
+            List();
+        } catch(e) {
+            msg = e.message;
+        }
+        test.ok(msg === 'Tagged sum was called instead of one of its properties.');
+        test.done();
+    },
     'when checking head value should return correct value': _.check(
         function(a) {
             var list = List.Cons(a, List.Nil);
@@ -49,6 +104,23 @@ exports.taggedSum = {
             var list = List.Cons(a, List.Nil);
 
             return _.expect(list.tail).toBe(List.Nil);
+        },
+        [Number]
+    ),
+    'when checking match without all properties throws correct error': _.check(
+        function(a) {
+            var list = List.Cons(a, List.Nil),
+                msg = '';
+
+            try {
+                list.match({
+                    Nil: _.error('Failed if called')
+                });
+            } catch(e) {
+                msg = e.message;
+            }
+
+            return _.expect(msg).toBe('Constructors given to match didn\'t include: Cons');
         },
         [Number]
     ),
