@@ -102,6 +102,96 @@ exports.isArray = {
     }
 };
 
+exports.isSameTypeOf = {
+    'when testing isSameTypeOf with strings should be correct value': _.check(
+        function(a, b) {
+            return _.isSameTypeOf(a, b);
+        },
+        [String, String]
+    ),
+    'when testing isSameTypeOf with arrays should be correct value': _.check(
+        function(a, b) {
+            return _.isSameTypeOf(a, b);
+        },
+        [_.arrayOf(Number), _.arrayOf(String)]
+    )
+};
+
+exports.isNaN = {
+    'when testing isNaN should return correct value': _.check(
+        function(a) {
+            return !_.isNaN(a);
+        },
+        [Number]
+    ),
+    'when testing isNaN with string should return correct value': _.check(
+        function(a) {
+            return _.isNaN(a);
+        },
+        [String]
+    )
+};
+
+exports.isNotNaN = {
+    'when testing isNotNaN should return correct value': _.check(
+        function(a) {
+            return _.isNotNaN(a);
+        },
+        [Number]
+    ),
+    'when testing isNotNaN with string should return correct value': _.check(
+        function(a) {
+            return !_.isNotNaN(a);
+        },
+        [String]
+    )
+};
+
+exports.isAnyOf = {
+    'when testing isAnyOf with Number should be correct value': _.check(
+        function(a, b) {
+            return _.isAnyOf([b, a], a);
+        },
+        [Number, String]
+    ),
+    'when testing isAnyOf with Boolean should be correct value': _.check(
+        function(a, b, c) {
+            return !_.isAnyOf([b, c], a);
+        },
+        [Boolean, Number, String]
+    )
+};
+
+exports.isAnyTypeOf = {
+    'when testing isAnyTypeOf with Number should be correct value': _.check(
+        function(a) {
+            return _.isAnyTypeOf(['number', 'string'], a);
+        },
+        [Number]
+    ),
+    'when testing isAnyTypeOf with Boolean should be correct value': _.check(
+        function(a) {
+            return !_.isAnyTypeOf(['number', 'string'], a);
+        },
+        [Boolean]
+    )
+};
+
+exports.isAnyInstanceOf = {
+    'when testing isAnyInstanceOf with Number should be correct value': _.check(
+        function(a) {
+            return _.isAnyInstanceOf([Number, _.Identity], a);
+        },
+        [_.identityOf(Number)]
+    ),
+    'when testing isAnyInstanceOf with Boolean should be correct value': _.check(
+        function(a) {
+            return !_.isAnyInstanceOf([Number, String], a);
+        },
+        [Boolean]
+    )
+};
+
 exports.isEven = {
     testIsEven: function(test) {
         test.ok(_.isEven(2));
@@ -209,6 +299,12 @@ exports.isComparable = {
 };
 
 exports.isPlainObject = {
+    'when testing isPlainObject should return false if number': _.check(
+        function(a) {
+            return !_.isPlainObject(a);
+        },
+        [Number]
+    ),
     'when testing isPlainObject should return true if plain': _.check(
         function(a) {
             return _.isPlainObject(a);
@@ -249,4 +345,59 @@ exports.isPlainObject = {
             )
         ]
     )
+};
+
+exports.isEmpty = {
+    'when test isEmpty with true should return correct value': function(test) {
+        test.ok(!_.isEmpty(true));
+        test.done();
+    },
+    'when test isEmpty with false should return correct value': function(test) {
+        test.ok(_.isEmpty(false));
+        test.done();
+    },
+    'when test isEmpty with function() {} should return correct value': function(test) {
+        test.ok(!_.isEmpty(function() {}));
+        test.done();
+    },
+    'when test isEmpty with number should return correct value': function(test) {
+        test.ok(!_.isEmpty(1));
+        test.done();
+    },
+    'when test isEmpty with negative number should return correct value': function(test) {
+        test.ok(_.isEmpty(-1));
+        test.done();
+    },
+    'when test isEmpty with NaN number should return correct value': function(test) {
+        test.ok(_.isEmpty(NaN));
+        test.done();
+    },
+    'when test isEmpty with empty string should return correct value': function(test) {
+        test.ok(_.isEmpty(''));
+        test.done();
+    },
+    'when test isEmpty with whitespace string should return correct value': function(test) {
+        test.ok(_.isEmpty('        '));
+        test.done();
+    },
+    'when test isEmpty with a value string should return correct value': function(test) {
+        test.ok(!_.isEmpty('a'));
+        test.done();
+    },
+    'when test isEmpty with a empty array should return correct value': function(test) {
+        test.ok(_.isEmpty([]));
+        test.done();
+    },
+    'when test isEmpty with a non empty array should return correct value': function(test) {
+        test.ok(!_.isEmpty([1]));
+        test.done();
+    },
+    'when test isEmpty with a empty object should return correct value': function(test) {
+        test.ok(_.isEmpty({}));
+        test.done();
+    },
+    'when test isEmpty with a non empty object should return correct value': function(test) {
+        test.ok(!_.isEmpty({a: 1}));
+        test.done();
+    }
 };

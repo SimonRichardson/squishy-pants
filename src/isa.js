@@ -61,7 +61,7 @@ var isSameTypeOf = curry(function(a, b) {
     if (isArray(a) && isArray(b)) {
         return true;
     }
-    return isTypeOf(a) === isTypeOf(b);
+    return (typeof a) === (typeof b);
 });
 
 //
@@ -207,15 +207,6 @@ var isAnyInstanceOf = curry(function(a, b) {
 });
 
 //
-//  ## isEnvironment(a)
-//
-//  Returns `true` if `a` is an instance of `environment`.
-//
-var isEnvironment = function(a) {
-    return isInstanceOf(environment, a);
-};
-
-//
 //  ## isComparable(a)
 //
 //  Returns `true` if `a` has a method called `equal`
@@ -267,12 +258,12 @@ squishy = squishy
         return a.length < 1;
     })
     .method('isEmpty', isObject, function(a) {
-        var i,
-            index;
+        var index = 0;
 
-        for(i in o) {
+        for(var i in a) {
             index++;
         }
+
         return index < 1;
     })
     .method('isEmpty', strictEquals(null), constant(false))
@@ -301,7 +292,6 @@ squishy = squishy
     .property('isAnyOf', isAnyOf)
     .property('isAnyTypeOf', isAnyTypeOf)
     .property('isAnyInstanceOf', isAnyInstanceOf)
-    .property('isEnvironment', isEnvironment)
     .property('isComparable', isComparable)
     .property('isPlainObject', isPlainObject);
 
