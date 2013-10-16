@@ -3,12 +3,10 @@ squishy = squishy
         return compose(b, a);
     }))
     .method('concat', isFunction, curry(function(a, b) {
-        return a().concat(b());
+        return this.concat(a(), b());
     }))
-    .method('ap', isFunction, curry(function(a, b) {
-        return function(x) {
-            return a(x)(b(x));
-        };
+    .method('ap', isFunction, curry(function(a, b, x) {
+        return a(x)(b(x));
     }));
 
 squishy = squishy
@@ -18,12 +16,9 @@ squishy = squishy
             return compose(compose(b, c), a);
         };
     })
-    .method('kleisli', isFunction, function(a, b) {
-        var env = this;
-        return function(x) {
-            return env.chain(a(x), b);
-        };
-    });
+    .method('kleisli', isFunction, curry(function(a, b, x) {
+        return this.chain(a(x), b);
+    }));
 
 squishy = squishy
     .method('concat', isBoolean, curry(function(a, b) {
