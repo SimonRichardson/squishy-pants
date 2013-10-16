@@ -207,7 +207,7 @@ Either.Left.prototype.toArray = function() {
 //  Return an empty stream or stream with one element on the right
 //  of this either.
 //
-Attempt.prototype.toStream = function() {
+Either.prototype.toStream = function() {
     return this.match({
         Left: Stream.empty,
         Right: Stream.of

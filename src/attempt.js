@@ -200,8 +200,8 @@ Attempt.prototype.toLeft = function() {
 //
 Attempt.prototype.toRight = function() {
     return this.match({
-        Success: Either.Left,
-        Failure: Either.Right
+        Success: Either.Right,
+        Failure: Either.Left
     });
 };
 
@@ -258,7 +258,7 @@ Attempt.of = function(x) {
 //  Constructor `empty` Monad creating `Attempt.Failure`.
 //
 Attempt.empty = function() {
-    return Attempt.Failure();
+    return Attempt.Failure([]);
 };
 
 //
@@ -374,8 +374,8 @@ Attempt.lens = function() {
             },
             function() {
                 return a.match({
-                    Success: identity,
-                    Failure: identity
+                    Success: Attempt.of,
+                    Failure: Attempt.Failure
                 });
             }
         );
@@ -398,8 +398,8 @@ squishy = squishy
     .property('isFailureOf', isFailureOf)
     .property('isAttemptT', isAttemptT)
     .property('isAttemptTOf', isAttemptTOf)
-    .method('of', strictEquals(Attempt), function(x) {
-        return Attempt.of(x);
+    .method('of', strictEquals(Attempt), function(a, b) {
+        return Attempt.of(b);
     })
     .method('empty', strictEquals(Attempt), function() {
         return Attempt.empty();

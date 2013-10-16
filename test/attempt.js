@@ -221,7 +221,145 @@ exports.attempt = {
             return _.expect(_.Attempt.lens().run(a).set(b)).toBe(_.Failure(b));
         },
         [_.failureOf(_.AnyVal), _.AnyVal]
-    )
+    ),
+    'when creating a success and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Attempt.lens().run(a).get()).toBe(a);
+        },
+        [_.successOf(_.AnyVal)]
+    ),
+    'when creating a failure and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Attempt.lens().run(a).get()).toBe(a);
+        },
+        [_.failureOf(_.AnyVal)]
+    ),
+    'when creating a success and calling toOption should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).toOption()).toBe(_.Some(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling toOption should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).toOption()).toBe(_.None);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a success and calling toLeft should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).toLeft()).toBe(_.Left(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling toLeft should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).toLeft()).toBe(_.Right(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a success and calling toRight should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).toRight()).toBe(_.Right(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling toRight should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).toRight()).toBe(_.Left(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a success and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Success(a).toArray()).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Failure(a).toArray()).toBe([]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a success and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.Success(a).toStream().equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.Failure(a).toStream().equal(_.Stream.empty());
+        },
+        [_.AnyVal]
+    ),
+    'when creating a failure and calling empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Attempt.empty()).toBe(_.Failure([]));
+        },
+        [_.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Attempt, a)).toBe(_.Success(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Attempt)).toBe(_.Failure([]));
+        },
+        [_.AnyVal]
+    ),
+    'when using extract for success should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.successOf(_.AnyVal)]
+    ),
+    'when using extract for failure should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.failureOf(_.AnyVal)]
+    ),
+    'when using fold should be correct value': _.check(
+        function(a) {
+            return _.expect(_.fold(_.Success(a), _.identity, _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.toArray(_.Success(a))).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when using toStream should be correct value': _.check(
+        function(a) {
+            return _.toStream(_.Success(a)).equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.ap(_.Success(_.constant(a)), _.Success(b)).value).toBe(a);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Success(a), _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Success(a))).toBe([]);
+        },
+        [_.AnyVal]
+    ),
 };
 
 exports.attemptT = {
