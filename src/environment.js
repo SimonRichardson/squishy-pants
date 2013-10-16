@@ -88,12 +88,14 @@ function makeMethod(name, registrations) {
 //
 function environment(methods, properties) {
     var self = getInstance(this, environment),
-        i;
+        method;
 
     methods = methods || {};
     properties = properties || {};
 
     self.method = function(name, predicate, f) {
+        if(!isUndefined(properties[name])) throw new Error("Method `" + name + "` name is already in environment.");
+
         var newMethods = extend(methods, singleton(name, (methods[name] || []).concat({
             predicate: predicate,
             f: f
@@ -104,10 +106,6 @@ function environment(methods, properties) {
     self.property = function(name, value) {
         var newProperties = extend(properties, singleton(name, value));
         return environment(methods, newProperties);
-    };
-
-    self.isDefined = function(name) {
-        return self[name] && functionName(self[name]) === name;
     };
 
     self.isDefinedAt = function(name) {
@@ -121,19 +119,16 @@ function environment(methods, properties) {
         return result;
     };
 
-    for(i in methods) {
-        if(self[i]) throw new Error("Method `" + i + "` already in environment.");
-        else {
-            /* Make sure the methods are names */
-            var method = makeMethod(i, methods[i]);
-            method._name = i;
-            self[i] = method;
-        }
+    for(var i in methods) {
+        /* Make sure the methods are names */
+        method = makeMethod(i, methods[i]);
+        method._name = i;
+        self[i] = method;
     }
 
-    for(i in properties) {
-        if(self[i]) throw new Error("Property `" + i + "` already in environment.");
-        else self[i] = properties[i];
+    for(var j in properties) {
+        if(!isUndefined(self[j])) throw new Error("Property `" + j + "` name is already in environment.");
+        else self[j] = properties[j];
     }
 
     return self;
