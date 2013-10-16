@@ -374,8 +374,8 @@ Attempt.lens = function() {
             },
             function() {
                 return a.match({
-                    Success: Attempt.of,
-                    Failure: Attempt.Failure
+                    Success: identity,
+                    Failure: identity
                 });
             }
         );

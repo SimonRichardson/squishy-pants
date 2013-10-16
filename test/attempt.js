@@ -224,13 +224,13 @@ exports.attempt = {
     ),
     'when creating a success and using lens get should be correct value': _.check(
         function(a, b) {
-            return _.expect(_.Attempt.lens().run(a).get()).toBe(a);
+            return _.expect(_.Attempt.lens().run(a).get()).toBe(a.extract());
         },
         [_.successOf(_.AnyVal)]
     ),
     'when creating a failure and using lens get should be correct value': _.check(
         function(a, b) {
-            return _.expect(_.Attempt.lens().run(a).get()).toBe(a);
+            return _.expect(_.Attempt.lens().run(a).get()).toBe(a.extract());
         },
         [_.failureOf(_.AnyVal)]
     ),

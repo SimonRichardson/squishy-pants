@@ -38,24 +38,6 @@ Tuple2.of = function(a, b) {
 };
 
 //
-//  ### first(t)
-//
-//  Retrieve the first argument.
-//
-Tuple2.first = function(t) {
-    return t._1;
-};
-
-//
-//  ### second(t)
-//
-//  Retrieve the second argument.
-//
-Tuple2.second = function(t) {
-    return t._2;
-};
-
-//
 //   ### flip()
 //
 //   Flip the values of the first and second.
