@@ -34,7 +34,7 @@ exports.fo = {
                         _.Identity(a) / _.Box(function(x) {
                             return _.Identity(x + 1);
                         })
-                    )
+                    );
             } catch(e) {
                 msg = e.message;
             }

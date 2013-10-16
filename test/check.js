@@ -36,16 +36,6 @@ exports.forAll = {
         test.ok(reporter.isSome);
         test.done();
     },
-    'when testing forAll should return correct option': function(test) {
-        var reporter = _.forAll(
-            function(s) {
-                return false;
-            },
-            [String]
-        );
-        test.ok(reporter.isSome);
-        test.done();
-    },
     'when testing forAll with success should return correct value': function(test) {
         var reporter = _.forAll(
             function(s) {

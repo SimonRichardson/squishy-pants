@@ -46,13 +46,12 @@ var transformer = function(ctor) {
         //  transformer
         //  Applicative ap(ply)
         //
-        if (isFunction(retrieveMethod(M, 'ap'))) {
-            ctor.prototype.ap = function(a) {
-                return this.chain(function(f) {
-                    return squishy.map(a, f);
-                });
-            };
-        }
+        ctor.prototype.ap = function(a) {
+            return this.chain(function(f) {
+                return squishy.map(a, f);
+            });
+        };
+
 
         //
         //  ### chain(f)
@@ -60,24 +59,22 @@ var transformer = function(ctor) {
         //  Bind through the value of the identity transformer
         //  Monadic flatMap/bind
         //
-        if (isFunction(retrieveMethod(M, 'chain'))) {
-            ctor.prototype.chain = function(f) {
-                return ctor(this.run.chain(function(x) {
-                    return f(x).run;
-                }));
-            };
-        }
+        ctor.prototype.chain = function(f) {
+            return ctor(this.run.chain(function(x) {
+                return f(x).run;
+            }));
+        };
+
 
         //
         //  ### equal(b)
         //
         //  Compare two option values for equality
         //
-        if (isFunction(retrieveMethod(M, 'equal'))) {
-            ctor.prototype.equal = function(b) {
-                return squishy.equal(this.run, b.run);
-            };
-        }
+        ctor.prototype.equal = function(b) {
+            return squishy.equal(this.run, b.run);
+        };
+
 
         //
         //  ### map(f)
@@ -85,13 +82,12 @@ var transformer = function(ctor) {
         //  Map on the value of this identity.
         //  Functor map
         //
-        if (isFunction(retrieveMethod(M, 'map'))) {
-            ctor.prototype.map = function(f) {
-                return this.chain(function(a) {
-                    return ctor.of(f(a));
-                });
-            };
-        }
+        ctor.prototype.map = function(f) {
+            return this.chain(function(a) {
+                return ctor.of(f(a));
+            });
+        };
+
 
         return ctor;
     };

@@ -123,7 +123,7 @@ exports.array = {
         },
         [_.arrayOf(_.arrayOf(Number))]
     ),
-    'when testing flatten with array should yield items': function(test) {
+    'when testing flatten with array and native elements should yield items': function(test) {
         var a = [[1, 2], [3, 4], 5, 6],
             accum = [1, 2, 3, 4, 5, 6];
 
