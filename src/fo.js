@@ -177,7 +177,7 @@ fo.unsafeSetValueOf = function(proto) {
     var prev = proto.valueOf;
     proto.valueOf = function() {
 
-        if(foQueue === void(0)) {
+        if(isUndefined(foQueue)) {
             return prev.call(this);
         }
 
