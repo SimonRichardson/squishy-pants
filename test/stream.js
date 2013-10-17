@@ -324,6 +324,10 @@ exports.stream = {
         },
         [_.AnyVal]
     ),
+    'when using null for of should be correct value': function(test) {
+        test.ok(_.expect(_.of(_.Stream, null).extract()).toBe(null));
+        test.done();
+    },
     'when using of should be correct value': _.check(
         function(a) {
             return _.expect(_.of(_.Stream, a).extract()).toBe(a);
@@ -343,6 +347,30 @@ exports.stream = {
             }).extract()).toBe(a);
         },
         [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a, b) {
+            var actual = _.ap(_.Stream.of(_.concat(a)), _.Stream.of(b)),
+                expected = _.Stream.of(_.concat(a)).ap(_.Stream.of(b));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.Integer, _.Integer]
+    ),
+    'when using concat should be correct value': _.check(
+        function(a, b) {
+            var actual = _.concat(_.Stream.of(a), _.Stream.of(b)),
+                expected = _.Stream.of(a).concat(_.Stream.of(b));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.Integer, _.Integer]
+    ),
+    'when using equal should be correct value': _.check(
+        function(a, b) {
+            var actual = _.equal(_.Stream.of(a), _.Stream.of(b)),
+                expected = _.Stream.of(a).equal(_.Stream.of(b));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.Integer, _.Integer]
     ),
     'when using extract should be correct value': _.check(
         function(a) {
@@ -364,9 +392,17 @@ exports.stream = {
             return _.expect(_.shrink(_.Stream.of(a))).toBe([]);
         },
         [_.AnyVal]
+    ),
+    'when using zip should be correct value': _.check(
+        function(a, b) {
+            var actual = _.zip(_.Stream.of(a), _.Stream.of(b)),
+                expected = _.Stream.of(a).zip(_.Stream.of(b));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.Integer, _.Integer]
     )
 };
-/*
+
 exports.streamT = {
     'when testing streamT ap should return correct value': _.check(
         function(a) {
@@ -443,4 +479,3 @@ exports.streamT = {
         [_.streamTOf(Number), Number]
     )
 };
-*/

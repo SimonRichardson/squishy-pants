@@ -110,13 +110,22 @@ Stream.prototype.both = function(a, t) {
 //  is successfully fulfilled. `f` must return a new stream.
 //
 Stream.prototype.chain = function(f) {
-    var env = this;
+    var env = this,
+        latest;
     return Stream(function(next, done) {
         return env.fork(
             function(a) {
-                return f(a).fork(next, identity);
+                return f(a).fork(
+                    next,
+                    function(x) {
+                        latest = x;
+                        return x;
+                    }
+                );
             },
-            done
+            function(x) {
+                return done(isUndefined(latest) ? x : latest);
+            }
         );
     });
 };
@@ -550,7 +559,7 @@ squishy = squishy
     })
 
     .method('concat', isStream, function(a, b) {
-        return a.chain(b);
+        return a.concat(b);
     })
     .method('extract', isStream, function(a) {
         return a.extract();
@@ -558,7 +567,7 @@ squishy = squishy
     .method('fold', isStream, function(a, b, c) {
         return a.fold(b, c);
     })
-    .method('zip', isStream, function(b) {
+    .method('zip', isStream, function(a, b) {
         return a.zip(b);
     })
 
