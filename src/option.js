@@ -31,10 +31,9 @@ var Option = taggedSum('Option', {
 
 //
 //  ### toOption(a)
-//  @deprecated
 //
-Option.toOption = function(a) {
-    return a !== null ? Option.Some(a) : Option.None;
+Option.toOption = function(a, f) {
+    return f(a) ? Option.Some(a) : Option.None;
 };
 
 //
@@ -174,6 +173,22 @@ Option.prototype.map = function(f) {
 };
 
 //
+//  ### traverse(f, p)
+//
+//  Traverse the option when finding a none option return point.
+//
+Option.prototype.traverse = function(f, p) {
+    return this.match({
+        Some: function(x) {
+            return Option.Some(f(x));
+        },
+        None: function() {
+            return squishy.of(p, Option.None);
+        }
+    });
+};
+
+//
 //  ### toAttempt()
 //
 //  Return failure if option is a some and success if option is none.
@@ -182,9 +197,7 @@ Option.prototype.map = function(f) {
 Option.prototype.toAttempt = function() {
     return this.match({
         Some: Attempt.Success,
-        None: function() {
-            return Attempt.Failure(squishy.empty(Array));
-        }
+        None: Attempt.empty
     });
 };
 
@@ -194,11 +207,11 @@ Option.prototype.toAttempt = function() {
 //  Return an left either bias if option is a some.
 //  `Left(x)` if `Some(x)`, `Right(x)` if `None`
 //
-Option.prototype.toLeft = function(o) {
+Option.prototype.toLeft = function() {
     return this.match({
         Some: Either.Left,
         None: function() {
-            return Either.Right(o);
+            return Either.Right([]);
         }
     });
 };
@@ -209,12 +222,25 @@ Option.prototype.toLeft = function(o) {
 //  Return an right either bias if option is a some.
 //  `Right(x)` if `Some(x)`, `Left(x)` if `None`
 //
-Option.prototype.toRight = function(o) {
+Option.prototype.toRight = function() {
     return this.match({
         Some: Either.Right,
         None: function() {
-            return Either.Left(o);
+            return Either.Left([]);
         }
+    });
+};
+
+//
+//  ### toStream()
+//
+//  Return an empty stream or stream with one element on the right
+//  of this either.
+//
+Option.prototype.toStream = function() {
+    return this.match({
+        Some: Stream.of,
+        None: Stream.empty
     });
 };
 
@@ -364,7 +390,9 @@ Option.lens = function() {
             function() {
                 return a.match({
                     Some: identity,
-                    None: identity
+                    None: function() {
+                        return null;
+                    }
                 });
             }
         );
@@ -388,11 +416,11 @@ squishy = squishy
     .property('isNoneOf', isNoneOf)
     .property('isOptionTOf', isOptionTOf)
     .property('toOption', Option.toOption)
-    .method('of', strictEquals(Option.Some), function(x) {
-        return Option.Some.of(x);
+    .method('of', strictEquals(Option), function(x, y) {
+        return Option.of(y);
     })
-    .method('empty', strictEquals(Option.Some), function(x) {
-        return Option.None;
+    .method('empty', strictEquals(Option), function(x) {
+        return Option.empty();
     })
 
     .method('arb', isSomeOf, function(a, b) {
@@ -416,6 +444,9 @@ squishy = squishy
     })
     .method('toArray', isOption, function(a) {
         return a.toArray();
+    })
+    .method('toStream', isOption, function(a) {
+        return a.toStream();
     })
 
     .method('ap', squishy.liftA2(or, isOption, isOptionT), function(a, b) {

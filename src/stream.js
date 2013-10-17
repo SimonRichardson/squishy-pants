@@ -34,7 +34,12 @@ var Stream = tagged('Stream', ['fork']);
 Stream.of = function(a) {
     return Stream(
         function(next, done) {
-            squishy.toOption(a).fold(
+            squishy.toOption(
+              a,
+              function(x) {
+                  return x !== null;
+              }
+            ).fold(
                 next,
                 nothing
             );

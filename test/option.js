@@ -120,7 +120,7 @@ exports.option = {
     ),
     'when testing none with toLeft should fold to correct value': _.check(
         function(a, b) {
-            return _.None.toLeft(a).fold(_.badLeft, _.identity) == a;
+            return _.expect(_.None.toLeft().fold(_.badLeft, _.identity)).toBe([]);
         },
         [_.AnyVal, _.AnyVal]
     ),
@@ -132,7 +132,7 @@ exports.option = {
     ),
     'when testing none with toRight should fold to correct value': _.check(
         function(a, b) {
-           return _.None.toRight(a).fold(_.identity, _.badRight) == a;
+           return _.expect(_.None.toRight().fold(_.identity, _.badRight)).toBe([]);
         },
         [_.AnyVal, _.AnyVal]
     ),
@@ -198,6 +198,18 @@ exports.option = {
         test.ok(_.None.extract() === null);
         test.done();
     },
+    'when testing traverse with some should return correct value': _.check(
+        function(a) {
+            return _.expect(a.traverse(_.identity)).toBe(a);
+        },
+        [_.someOf(_.AnyVal)]
+    ),
+    'when testing traverse with none should return correct value': _.check(
+        function(a) {
+            return _.expect(a.traverse(_.identity, _.Option)).toBe(_.Some(_.None));
+        },
+        [_.noneOf()]
+    ),
     'when creating a some and using lens should be correct value': _.check(
         function(a, b) {
             return _.expect(_.Option.lens().run(a).set(b)).toBe(_.Some(b));
@@ -209,6 +221,162 @@ exports.option = {
             return _.expect(_.Option.lens().run(a).set(b)).toBe(_.None);
         },
         [_.noneOf(), _.AnyVal]
+    ),
+    'when creating a some and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Option.lens().run(a).get()).toBe(a.extract());
+        },
+        [_.someOf(_.AnyVal)]
+    ),
+    'when creating a none and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Option.lens().run(a).get()).toBe(null);
+        },
+        [_.noneOf()]
+    ),
+    'when using Option.toOption with number against predicate should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Option.toOption(a, _.isNumber)).toBe(_.Some(a));
+        },
+        [Number]
+    ),
+    'when using Option.toOption with number against invalid predicate should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Option.toOption(a, _.isString)).toBe(_.None);
+        },
+        [Number]
+    ),
+    'when creating a none and calling toLeft should be correct value': _.check(
+        function(a) {
+            return _.expect(_.None.toLeft()).toBe(_.Right([]));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a some and calling toLeft should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Some(a).toLeft()).toBe(_.Left(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a none and calling toRight should be correct value': _.check(
+        function(a) {
+            return _.expect(_.None.toRight()).toBe(_.Left([]));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a some and calling toRight should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Some(a).toRight()).toBe(_.Right(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a none and calling toAttempt should be correct value': _.check(
+        function(a) {
+            return _.expect(_.None.toAttempt()).toBe(_.Failure([]));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a some and calling toAttempt should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Some(a).toAttempt()).toBe(_.Success(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a none and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.None.toArray()).toBe([]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a some and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Some(a).toArray()).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a none and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.None.toStream().equal(_.Stream.empty());
+        },
+        [_.AnyVal]
+    ),
+    'when creating a some and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.Some(a).toStream().equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a none and calling empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Option.empty()).toBe(_.None);
+        },
+        [_.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Option, a)).toBe(_.Some(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Option)).toBe(_.None);
+        },
+        [_.AnyVal]
+    ),
+    'when using extract for some should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.someOf(_.AnyVal)]
+    ),
+    'when using extract for none should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.noneOf()]
+    ),
+    'when using fold should be correct value': _.check(
+        function(a) {
+            return _.expect(_.fold(_.Some(a), _.identity, _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.toArray(_.Some(a))).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when using toStream should be correct value': _.check(
+        function(a) {
+            return _.toStream(_.Some(a)).equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.ap(_.Some(_.constant(a)), _.Some(b)).value).toBe(a);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when using concat should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.concat(_.Some(a), _.Some(b))).toBe(_.Some(a).concat(_.Some(b)));
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Some(a), _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Some(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
 
