@@ -50,6 +50,7 @@ exports.stream = {
                         return a + 1;
                     }
                 );
+
             stream.fork(
                 _.identity,
                 function() {
@@ -137,6 +138,23 @@ exports.stream = {
         },
         [_.arrayOf(_.AnyVal)]
     ),
+    'when testing drop with all values should dispatch all items': function(test) {
+        var x = _.Stream.fromArray([1, 2, 3, 4]),
+            result = x.drop(2).toPromise().extract();
+
+        test.deepEqual(result, [3, 4]);
+        test.done();
+    },
+    'when testing drop with different values should dispatch all items': _.check(
+        function(a) {
+            var x = _.Stream.fromArray(a),
+                y = Math.floor(a.length / 2) || 0,
+                result = x.drop(y).toPromise().extract();
+
+            return _.expect(result).toBe(a.slice(y));
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
     'when testing equality with same stream should return true': _.checkStream(
         function(a) {
             return a.equal(a);
@@ -146,7 +164,7 @@ exports.stream = {
     'when testing extract with the stream should dispatch all items': _.check(
         function(a) {
             var actual = _.Stream.fromArray(a).extract();
-            return _.expect(actual).toBe(null);
+            return _.expect(actual).toBe(a);
         },
         [_.arrayOf(_.Integer)]
     ),
@@ -192,14 +210,14 @@ exports.stream = {
         function(a, b) {
             var x = _.Stream.fromArray(a),
                 y = _.Stream(function (next, done) {
-                    // Pretent to be a state/writer monad
+                    // Pretend to be a state / writer monad
                     x.pipe({
                         run: next
-                    });
+                    }).extract();
                 }),
                 expected = _.Stream.fromArray(a);
 
-            return expected.equal(y);
+            return y.equal(expected);
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
@@ -248,6 +266,22 @@ exports.stream = {
         },
         [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
     ),
+    'when testing zip swapped with the stream should dispatch all items': _.checkStream(
+        function(a, b) {
+            var x = _.Stream(function(next, done) {
+                    setTimeout(function() {
+                        _.map(a, next);
+                        done();
+                    }, 0);
+                }),
+                y = _.Stream.fromArray(b),
+                actual = y.zip(x),
+                expected = _.Stream.fromArray(_.zip(b, a));
+
+            return actual.equal(expected);
+        },
+        [_.arrayOf(_.AnyVal), _.arrayOf(_.AnyVal)]
+    ),
     'when testing zipWithIndex with the stream should dispatch all items': _.checkStream(
         function(a) {
             var x = _.Stream.fromArray(a),
@@ -273,9 +307,66 @@ exports.stream = {
             );
         },
         [_.streamOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a stream and using lens get should be correct value': _.check(
+        function(a) {
+            var fork = _.Stream.lens().run(_.Stream.of(a)).get(),
+                v;
+
+            return fork(
+                function(x) {
+                    v = x;
+                },
+                function() {
+                    return _.expect(v).toBe(a);
+                }
+            );
+        },
+        [_.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Stream, a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Stream).extract()).toBe(null);
+        },
+        [_.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Stream.of(a), function(x) {
+                return _.Stream.of(x);
+            }).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using extract should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(_.Stream.of(a))).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using fold should be correct value': _.check(
+        function(a) {
+            return _.expect(_.fold(_.Stream.of(a), [], function(a, b) {
+                a.push(b);
+                return a;
+            }).extract()).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Stream.of(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
-
+/*
 exports.streamT = {
     'when testing streamT ap should return correct value': _.check(
         function(a) {
@@ -290,13 +381,13 @@ exports.streamT = {
     ),
     'when testing streamT map should return correct value': _.check(
         function(a) {
-            var streamT = _.Stream.StreamT(_.Stream.of(a)),
-                actual = streamT(_.Stream.of(a)).map(_.inc),
-                expected = streamT(_.Stream.of(a + 1));
+            var transformer = _.Stream.StreamT(_.Stream),
+                actual = transformer(_.Stream.of(a)).map(_.inc),
+                expected = transformer(_.Stream.of(a + 1));
 
             return resolveEquality(actual, expected);
         },
-        [_.AnyVal]
+        [_.Integer]
     ),
     'when testing streamT chain should return correct value': _.check(
         function(a, b) {
@@ -316,7 +407,7 @@ exports.streamT = {
     'when creating a streamT and using chain should be correct value': _.check(
         function(a, b) {
             var monad = _.Stream.of(1),
-                transformer = _.Stream.StreamT(monad),
+                transformer = _.Stream.StreamT(_.Stream),
                 actual = transformer(_.Stream.of(b)).chain(function(x) {
                     return _.Stream.StreamT(monad).of(x + 1);
                 }),
@@ -352,3 +443,4 @@ exports.streamT = {
         [_.streamTOf(Number), Number]
     )
 };
+*/
