@@ -98,5 +98,35 @@ exports.asyncOnce = {
             return _.expect(result).toBe([a, b, c]);
         },
         [_.AnyVal]
+    ),
+    'when testing asyncOnce with resolving with multiple listeners should return correct value': _.check(
+        function(a, b, c) {
+            var xx, xxx,
+                once = _.asyncOnce(
+                    function(resolve, args) {
+                        xx = resolve;
+                        xxx = args;
+                    },
+                    a, b, c
+                ),
+                result0,
+                result1;
+
+            once(
+                function(a) {
+                    result0 = a;
+                }
+            );
+            once(
+                function(a) {
+                    result1 = a;
+                }
+            );
+
+            xx(xxx);
+
+            return _.expect(result0).toBe([a, b, c]);
+        },
+        [_.AnyVal]
     )
 };
