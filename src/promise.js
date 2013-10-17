@@ -40,7 +40,7 @@ Promise.of = function(x) {
 //  Creates a Empty Promise that contains no value.
 //
 Promise.empty = function() {
-    return Promise.of();
+    return Promise.of(null);
 };
 
 //
@@ -140,6 +140,21 @@ Promise.prototype.reject = function(f) {
             );
         }
     );
+};
+
+//
+//  ### toStream()
+//
+//  Return an stream from the promise
+//
+Promise.prototype.toStream = function() {
+    var env = this;
+    return Stream(function(next, done) {
+        return env.fork(
+            done,
+            done
+        );
+    });
 };
 
 //
@@ -252,8 +267,8 @@ squishy = squishy
     .property('isPromise', isPromise)
     .property('isPromiseOf', isPromiseOf)
     .property('isPromiseTOf', isPromiseTOf)
-    .method('of', strictEquals(Promise), function(x) {
-        return Promise.of(x);
+    .method('of', strictEquals(Promise), function(x, y) {
+        return Promise.of(y);
     })
     .method('empty', strictEquals(Promise), function() {
         return Promise.empty();
@@ -271,6 +286,9 @@ squishy = squishy
     })
     .method('extract', isPromise, function(a) {
         return a.extract();
+    })
+    .method('toStream', isPromise, function(a) {
+        return a.toStream();
     })
 
     .method('chain', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {

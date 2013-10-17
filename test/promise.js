@@ -25,9 +25,7 @@ exports.promise = {
                 function(data) {
                     return _.expect(data).toBe(a);
                 },
-                function(errors) {
-                    _.error('Failed if called')();
-                }
+                _.error('Failed if called')
             );
         },
         [_.AnyVal]
@@ -48,9 +46,7 @@ exports.promise = {
                     function(data) {
                         return _.expect(data).toBe(a);
                     },
-                    function(errors) {
-                        _.error('Failed if called')();
-                    }
+                    _.error('Failed if called')
                 );
             }
 
@@ -88,9 +84,7 @@ exports.promise = {
                 function(data) {
                     test.equal(expected, data);
                 },
-                function(errors) {
-                    _.error('Failed if called')();
-                }
+                _.error('Failed if called')
             );
         }
 
@@ -110,9 +104,7 @@ exports.promise = {
                 function(b) {
                     return _.expect(b).toBe(a);
                 },
-                function(errors) {
-                    _.error('Failed if called')();
-                }
+                _.error('Failed if called')
             );
         },
         [_.AnyVal]
@@ -120,9 +112,7 @@ exports.promise = {
     'testing error with fork should return correct value': _.check(
         function(a) {
             return _.Promise.error(a).fork(
-                function(a) {
-                    _.error('Failed if called')();
-                },
+                _.error('Failed if called'),
                 function(b) {
                     return _.expect(b).toBe(a);
                 }
@@ -140,9 +130,7 @@ exports.promise = {
                     function(b) {
                         return _.expect(b).toBe(a + 1);
                     },
-                    function(errors) {
-                        _.error('Failed if called')();
-                    }
+                    _.error('Failed if called')
                 );
         },
         [Number]
@@ -154,9 +142,7 @@ exports.promise = {
                         return _.Promise.error(a + 1);
                     }
                 ).fork(
-                    function(a) {
-                        _.error('Failed if called')();
-                    },
+                    _.error('Failed if called'),
                     function(b) {
                         return _.expect(b).toBe(a + 1);
                     }
@@ -171,9 +157,7 @@ exports.promise = {
                         return _.Promise.error(a + 1);
                     }
                 ).fork(
-                    function(a) {
-                        _.error('Failed if called')();
-                    },
+                    _.error('Failed if called'),
                     function(b) {
                         return _.expect(b).toBe(a + 1);
                     }
@@ -191,9 +175,7 @@ exports.promise = {
                     function(b) {
                         return _.expect(b).toBe(a + 1);
                     },
-                    function(errors) {
-                        _.error('Failed if called')();
-                    }
+                    _.error('Failed if called')
                 );
         },
         [Number]
@@ -208,9 +190,7 @@ exports.promise = {
                     function(b) {
                         return _.expect(b).toBe(a + 1);
                     },
-                    function(errors) {
-                        _.error('Failed if called')();
-                    }
+                    _.error('Failed if called')
                 );
         },
         [Number]
@@ -222,9 +202,7 @@ exports.promise = {
                         return a + 1;
                     }
                 ).fork(
-                    function(b) {
-                        _.error('Failed if called')();
-                    },
+                    _.error('Failed if called'),
                     function(b) {
                         return _.expect(b).toBe(a);
                     }
@@ -242,9 +220,7 @@ exports.promise = {
                     function(b) {
                         return _.expect(b).toBe(a);
                     },
-                    function(b) {
-                        _.error('Failed if called')();
-                    }
+                    _.error('Failed if called')
                 );
         },
         [Number]
@@ -261,6 +237,16 @@ exports.promise = {
         },
         [_.AnyVal]
     ),
+    'when using expand with promises should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Promise.of(a).expand(
+                function(x) {
+                    return x.extract();
+                }
+            ).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
     'when creating a promise and using lens should be correct value': _.check(
         function(a, b) {
             var fork = function(resolve, reject) {
@@ -272,12 +258,69 @@ exports.promise = {
                 function(x) {
                     return _.expect(x).toBe(b);
                 },
-                function() {
-                    _.error('Failed if called')();
-                }
+                _.error('Failed if called')
             );
         },
         [_.promiseOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a promise and using get lens should be correct value': _.check(
+        function(a) {
+            var fork = _.Promise.lens().run(a).get();
+
+            return fork(
+                function(x) {
+                    return _.expect(x).toBe(a.extract());
+                },
+                _.error('Failed if called')
+            );
+        },
+        [_.promiseOf(_.AnyVal)]
+    ),
+    'when using toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.toStream(_.Promise.of(a)).equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Promise, a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Promise).extract()).toBe(null);
+        },
+        [_.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Promise.of(a), function(x) {
+                return _.Promise.of(x);
+            }).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using expand should be correct value': _.check(
+        function(a) {
+            return _.expect(_.expand(_.Promise.of(a), function(x) {
+                return x.extract();
+            }).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using extract should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(_.Promise.of(a))).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Promise.of(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
 

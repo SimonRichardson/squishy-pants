@@ -368,7 +368,7 @@ exports.either = {
         },
         [_.AnyVal]
     ),
-    'when using toStream should be correct value': _.check(
+    'when using toStream should be correct value': _.checkStream(
         function(a) {
             return _.toStream(_.Right(a)).equal(_.Stream.of(a));
         },
