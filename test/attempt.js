@@ -359,7 +359,7 @@ exports.attempt = {
             return _.expect(_.shrink(_.Success(a))).toBe([]);
         },
         [_.AnyVal]
-    ),
+    )
 };
 
 exports.attemptT = {

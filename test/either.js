@@ -265,6 +265,138 @@ exports.either = {
             return _.expect(_.Either.lens().run(a).set(b)).toBe(_.Right(b));
         },
         [_.rightOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a right and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Either.lens().run(a).get()).toBe(a.extract());
+        },
+        [_.rightOf(_.AnyVal)]
+    ),
+    'when creating a left and using lens get should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.Either.lens().run(a).get()).toBe(a.extract());
+        },
+        [_.leftOf(_.AnyVal)]
+    ),
+    'when creating a left and calling toOption should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).toOption()).toBe(_.None);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a right and calling toOption should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).toOption()).toBe(_.Some(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a left and calling toAttempt should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).toAttempt()).toBe(_.Failure(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a right and calling toAttempt should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).toAttempt()).toBe(_.Success(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a left and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Left(a).toArray()).toBe([]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a right and calling toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Right(a).toArray()).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when creating a left and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.Left(a).toStream().equal(_.Stream.empty());
+        },
+        [_.AnyVal]
+    ),
+    'when creating a right and calling toStream should be correct value': _.checkStream(
+        function(a) {
+            return _.Right(a).toStream().equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when creating a left and calling empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.Either.empty()).toBe(_.Left([]));
+        },
+        [_.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Either, a)).toBe(_.Right(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Either)).toBe(_.Left([]));
+        },
+        [_.AnyVal]
+    ),
+    'when using extract for right should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.rightOf(_.AnyVal)]
+    ),
+    'when using extract for left should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(a)).toBe(a.extract());
+        },
+        [_.leftOf(_.AnyVal)]
+    ),
+    'when using fold should be correct value': _.check(
+        function(a) {
+            return _.expect(_.fold(_.Right(a), _.identity, _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.toArray(_.Right(a))).toBe([a]);
+        },
+        [_.AnyVal]
+    ),
+    'when using toStream should be correct value': _.check(
+        function(a) {
+            return _.toStream(_.Right(a)).equal(_.Stream.of(a));
+        },
+        [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.ap(_.Right(_.constant(a)), _.Right(b)).value).toBe(a);
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when using concat should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.concat(_.Right(a), _.Right(b))).toBe(_.Right(a).concat(_.Right(b)));
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Right(a), _.identity)).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Right(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
 

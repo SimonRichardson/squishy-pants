@@ -61,7 +61,7 @@ Either.prototype.chain = function(f) {
 //  Concatenate two eithers associatively together.
 //  Semigroup concat
 //
-Either.prototype.concat = function(s, f) {
+Either.prototype.concat = function(s) {
     var env = this;
     return env.match({
         Left: function() {
@@ -73,7 +73,7 @@ Either.prototype.concat = function(s, f) {
         },
         Right: function(y) {
             return squishy.map(s, function(x) {
-                return f(x, y);
+                return squishy.concat(x, y);
             });
         }
     });
@@ -244,8 +244,8 @@ Either.of = function(x) {
 //
 //  Constructor `empty` Monad creating `Either.Left`.
 //
-Either.Right.empty = function() {
-    return Either.Left();
+Either.empty = function() {
+    return Either.Left([]);
 };
 
 
@@ -386,11 +386,11 @@ squishy = squishy
     .property('isLeftOf', isLeftOf)
     .property('isRightOf', isRightOf)
     .property('isEitherTOf', isEitherTOf)
-    .method('of', strictEquals(Either), function(x) {
-        return Either.of(x);
+    .method('of', strictEquals(Either), function(x, y) {
+        return Either.of(y);
     })
     .method('empty', strictEquals(Either), function(x) {
-        return Either.Left.empty();
+        return Either.empty();
     })
 
     .method('arb', isLeftOf, function(a, b) {
@@ -404,7 +404,7 @@ squishy = squishy
     })
 
     .method('concat', isEither, function(a, b) {
-        return a.concat(b, this.concat);
+        return a.concat(b);
     })
     .method('extract', isEither, function(a) {
         return a.extract();
@@ -415,7 +415,7 @@ squishy = squishy
     .method('toArray', isEither, function(a) {
         return a.toArray();
     })
-    .method('toStream', isAttempt, function(a) {
+    .method('toStream', isEither, function(a) {
         return a.toStream();
     })
 
