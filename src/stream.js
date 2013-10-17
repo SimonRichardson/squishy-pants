@@ -34,16 +34,8 @@ var Stream = tagged('Stream', ['fork']);
 Stream.of = function(a) {
     return Stream(
         function(next, done) {
-            squishy.toOption(
-              a,
-              function(x) {
-                  return x !== null;
-              }
-            ).fold(
-                next,
-                nothing
-            );
-            return done();
+            if (!isNull(a)) next(a);
+            return done(a);
         }
     );
 };
@@ -54,7 +46,11 @@ Stream.of = function(a) {
 //  Creates a Empty stream that contains no value.
 //
 Stream.empty = function() {
-    return Stream.of();
+    return Stream(
+        function(next, done) {
+            return done(null);
+        }
+    );
 };
 
 //
@@ -118,7 +114,7 @@ Stream.prototype.chain = function(f) {
     return Stream(function(next, done) {
         return env.fork(
             function(a) {
-                return f(a).fork(next, nothing);
+                return f(a).fork(next, identity);
             },
             done
         );
@@ -184,7 +180,7 @@ Stream.prototype.equal = function(a) {
 Stream.prototype.extract = function() {
     return this.fork(
         identity,
-        constant(null)
+        identity
     );
 };
 
@@ -223,7 +219,7 @@ Stream.prototype.fold = function(v, f) {
                 },
                 function() {
                     next(v);
-                    return done();
+                    return done(v);
                 }
             );
         }
@@ -388,15 +384,41 @@ Stream.prototype.zipWithIndex = function() {
 };
 
 //
+//  ## toPromise()
+//
+//  Returns a promise with all the values sent in a stream.
+//
+Stream.prototype.toPromise = function() {
+    var env = this;
+    return Promise(function(resolve) {
+        var accum = [];
+        return env.fork(
+            function(x) {
+                accum.push(x);
+            },
+            function() {
+                return resolve(accum);
+            }
+        );
+    });
+};
+
+//
 //  ## fromArray(a)
 //
 //  Returns a new stream which iterates over each element of the array.
 //
 Stream.fromArray = function(a) {
+    if (a.length < 1) {
+        return Stream(function(next, done) {
+            return done([]);
+        });
+    }
+
     return Stream(
         function(next, done) {
             squishy.map(a, next);
-            return done();
+            return done(a);
         }
     );
 };
@@ -512,8 +534,8 @@ squishy = squishy
     .property('isStreamT', isStreamT)
     .property('isStreamOf', isStreamOf)
     .property('isStreamTOf', isStreamTOf)
-    .method('of', strictEquals(Stream), function(x) {
-        return Stream.of(x);
+    .method('of', strictEquals(Stream), function(x, y) {
+        return Stream.of(y);
     })
     .method('empty', strictEquals(Stream), function() {
         return Stream.empty();
@@ -533,8 +555,8 @@ squishy = squishy
     .method('extract', isStream, function(a) {
         return a.extract();
     })
-    .method('fold', isStream, function(a, b) {
-        return a.chain(b);
+    .method('fold', isStream, function(a, b, c) {
+        return a.fold(b, c);
     })
     .method('zip', isStream, function(b) {
         return a.zip(b);
