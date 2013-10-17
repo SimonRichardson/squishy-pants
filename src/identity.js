@@ -21,6 +21,15 @@ var Identity = tagged('Identity', ['x']);
 Identity.of = Identity;
 
 //
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Identity`.
+//
+Identity.empty = function() {
+    return Identity(null);
+};
+
+//
 //  ### ap(b)
 //
 //  Apply a function in the environment of the value of the identity
@@ -192,8 +201,8 @@ squishy = squishy
     .property('isIdentityOf', isIdentityOf)
     .property('isIdentityT', isIdentityT)
     .property('isIdentityTOf', isIdentityTOf)
-    .method('of', strictEquals(Identity), function(x) {
-        return Identity.of(x);
+    .method('of', strictEquals(Identity), function(x, y) {
+        return Identity.of(y);
     })
     .method('empty', strictEquals(Identity), function(x) {
         return Identity.empty();
