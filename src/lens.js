@@ -127,7 +127,7 @@ Lens.prototype.compose = function(b) {
 };
 
 //
-//  ### toPartail
+//  ### toPartial()
 //
 //  Return an partial lens from a lens.
 //
@@ -151,18 +151,18 @@ Lens.prototype.toPartial = function() {
 
 
 //
-//  ### identityLens
+//  ### identityLens()
 //
 //  Identity partial lens that returns the original target.
 //
 PartialLens.identityLens = function() {
     return PartialLens(function(target) {
-        return Option.Some(Lens.identity().run(target));
+        return Option.Some(Lens.identityLens().run(target));
     });
 };
 
 //
-//  ### objectLens
+//  ### objectLens(property)
 //
 //  PartialLens access for a object at a given property if the property
 //  exists otherwise returns none.
@@ -177,7 +177,7 @@ PartialLens.objectLens = function(property) {
 };
 
 //
-//  ### arrayLens
+//  ### arrayLens(index)
 //
 //  PartialLens access for an array at a given index if the index exists
 //  otherwise returns none.
@@ -192,7 +192,7 @@ PartialLens.arrayLens = function(index) {
 };
 
 //
-//  ### andThen
+//  ### andThen(b)
 //
 //  Helper method to enable chaining of lens objects.
 //
@@ -201,7 +201,7 @@ PartialLens.prototype.andThen = function(b) {
 };
 
 //
-//  ### compose
+//  ### compose(b)
 //
 //  Enabling of composing lenses together.
 //

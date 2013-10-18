@@ -275,6 +275,50 @@ exports.lens = {
 };
 
 exports.partialLens = {
+    'when creating a partial lens from a lens within range should return correct value': _.check(
+        function(a) {
+            var index = a.length,
+                actual = _.Lens.arrayLens(index - 1).toPartial().run(a).fold(
+                    function(x) {
+                        return x.get();
+                    },
+                    _.error('Failed if called')
+                ),
+                expected = index < 1 ? undefined : a[index - 1];
+            return _.equal(actual, expected);
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
+    'when using PartialLens with identity should return correct value': _.check(
+        function(a) {
+            var c = _.PartialLens.identityLens();
+
+            return _.equal(
+                c.run(a).get().get(),
+                a
+            );
+        },
+        [Object]
+    ),
+    'when using PartialLens with array should return correct value': _.check(
+        function(a) {
+            var index = a.length,
+                c = _.PartialLens.arrayLens(index - 1);
+
+            return _.equal(
+                c.run(a).fold(
+                    function(x) {
+                        return _.Some(x.get());
+                    },
+                    function() {
+                        return _.None;
+                    }
+                ),
+                index < 1 ? _.None : _.Some(a[index - 1])
+            );
+        },
+        [_.arrayOf(_.AnyVal)]
+    ),
     'when using PartialLens with get should only retrieve numbers over and including 0': _.check(
         function(a) {
             var c = _.PartialLens.objectLens('c'),
