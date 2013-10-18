@@ -50,6 +50,19 @@ exports.list = {
         },
         [_.AnyVal, _.AnyVal]
     ),
+    'when testing chain should return correct value': _.check(
+        function(a, b, c) {
+            var list = _.Cons(b, _.Cons(a, _.Nil)),
+                expected = _.Cons(c, _.Cons(b,  _.Cons(c, _.Cons(a, _.Nil))));
+
+            return _.expect(list.chain(
+                    function(a) {
+                        return _.Cons(c, _.Cons(a, _.Nil));
+                    }
+                )).toBe(expected);
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
     'when testing concat should return correct value': _.check(
         function(a, b, c) {
             return _.expect(_.Cons(a, _.Nil).concat(_.Cons(b, _.Cons(c, _.Nil)))).toBe(_.Cons(a, _.Cons(b, _.Cons(c, _.Nil))));
@@ -90,6 +103,16 @@ exports.list = {
         },
         [_.listOf(_.Integer)]
     ),
+    'when testing equals should return correct value': _.check(
+        function(a) {
+            return _.expect(a).toBe(a);
+        },
+        [_.listOf(_.AnyVal)]
+    ),
+    'when testing equals which don\'t match should return correct value': function(test) {
+        test.ok(!_.List.fromArray([1, 2, 3]).equal(_.List.fromArray([4, 5, 6])));
+        test.done();
+    },
     'when testing exists should return correct value': _.check(
         function(a) {
             var size = a.size(),
@@ -102,23 +125,22 @@ exports.list = {
         },
         [_.listOf(_.AnyVal)]
     ),
-    'when testing chain should return correct value': _.check(
-        function(a, b, c) {
-            var list = _.Cons(b, _.Cons(a, _.Nil)),
-                expected = _.Cons(c, _.Cons(b,  _.Cons(c, _.Cons(a, _.Nil))));
-
-            return _.expect(list.chain(
-                    function(a) {
-                        return _.Cons(c, _.Cons(a, _.Nil));
-                    }
-                )).toBe(expected);
-        },
-        [_.AnyVal, _.AnyVal, _.AnyVal]
-    ),
     'when testing filter should return correct value': _.check(
         function(a) {
             var expected = _.List.fromArray(_.filter(a.toArray(), _.isEven));
             return _.expect(a.filter(_.isEven)).toBe(expected);
+        },
+        [_.listOf(_.Integer)]
+    ),
+    'when testing find should return correct value': _.check(
+        function(a) {
+            return _.expect(a.find(_.isEven)).toBe(_.find(a.toArray(), _.isEven));
+        },
+        [_.listOf(_.Integer)]
+    ),
+    'when testing first should return correct value': _.check(
+        function(a) {
+            return _.expect(a.first()).toBe(_.first(a.toArray()));
         },
         [_.listOf(_.Integer)]
     ),
@@ -142,11 +164,23 @@ exports.list = {
         },
         [_.listOf(_.Integer)]
     ),
+    'when testing last should return correct value': _.check(
+        function(a) {
+            return _.expect(a.last()).toBe(_.last(a.toArray()));
+        },
+        [_.listOf(_.Integer)]
+    ),
     'when testing map should return correct value': _.check(
         function(a) {
             return _.expect(_.Cons(a, _.Nil).map(_.inc).extract()).toBe(a + 1);
         },
         [Number]
+    ),
+    'when testing partition should return correct value': _.check(
+        function(a) {
+            return _.expect(a.partition(_.isEven)).toBe(_.partition(a.toArray(), _.isEven));
+        },
+        [_.listOf(_.Integer)]
     ),
     'when testing prepend should return correct value': _.check(
         function(a) {
@@ -259,7 +293,7 @@ exports.list = {
         },
         [_.listOf(_.AnyVal)]
     ),
-    'when using list lens with set then get should get correct value': _.check(
+    'when using list lens with set should get correct value': _.check(
         function(a, b) {
             var index = Math.floor(_.randomRange(0, a.size())),
                 array = a.toArray(),
@@ -275,6 +309,18 @@ exports.list = {
             return _.expect(_.List.lens(index).run(a).set(b)).toBe(list);
         },
         [_.listOf(_.AnyVal), _.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.List, a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.List)).toBe(_.List.Nil);
+        },
+        [_.AnyVal]
     )
 };
 

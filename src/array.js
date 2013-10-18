@@ -255,6 +255,7 @@ var foldRight = curry(function(a, v, f) {
 //  Retrieve the last value
 //
 var last = function(a) {
+    if (a.length < 1) return null;
     return a[a.length - 1];
 };
 

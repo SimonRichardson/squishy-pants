@@ -175,6 +175,12 @@ exports.array = {
         },
         [_.arrayOf(Number)]
     ),
+    'when testing last should return correct value': _.check(
+        function(a) {
+            return _.expect(_.last(a)).toBe(a.length < 1 ? null : a[a.length - 1]);
+        },
+        [_.arrayOf(_.Integer)]
+    ),
     'when testing map with array should yield items': _.check(
         function(a) {
             var accum = [],

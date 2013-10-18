@@ -338,7 +338,7 @@ List.prototype.find = function(f) {
 //  Retrieve the first value.
 //
 List.prototype.first = function() {
-    return a.head;
+    return this.head;
 };
 
 //
@@ -794,8 +794,8 @@ squishy = squishy
     .property('isListOf', isListOf)
     .property('isListTOf', isListTOf)
     .property('listRange', List.range)
-    .method('of', strictEquals(List), function(x) {
-        return List.of(x);
+    .method('of', strictEquals(List), function(x, y) {
+        return List.of(y);
     })
     .method('empty', strictEquals(List), function(x) {
         return List.empty();
