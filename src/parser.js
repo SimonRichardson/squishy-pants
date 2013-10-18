@@ -169,33 +169,26 @@ Parser.prototype.many = function() {
     var env = this,
         recursive = function(stream) {
             return function rec(index, attempt, values) {
-                return attempt.fold(
-                    function() {
-                        var outcome = env.run(stream, index, attempt, Option.None);
-                        return outcome._3.fold(
-                            function(x) {
-                                var y = squishy.concat(values, x);
-                                return rec(outcome._2, outcome._3, y);
-                            },
-                            function() {
-                                return Tuple3(index, values, outcome._3.fold(
-                                    constant(outcome._3),
-                                    function(x) {
-                                        return outcome._4.fold(
-                                            function(y) {
-                                                return Attempt.Failure(y);
-                                            },
-                                            function() {
-                                                return Attempt.Failure(x);
-                                            }
-                                        );
-                                    }
-                                ));
-                            }
-                        );
+                var outcome = env.run(stream, index, attempt, Option.None);
+                return outcome._3.fold(
+                    function(x) {
+                        var y = squishy.concat(values, x);
+                        return rec(outcome._2, outcome._3, y);
                     },
                     function() {
-                        return Tuple3(index, values, attempt);
+                        return Tuple3(index, values, outcome._3.fold(
+                            constant(outcome._3),
+                            function(x) {
+                                return outcome._4.fold(
+                                    function(y) {
+                                        return Attempt.Failure(y);
+                                    },
+                                    function() {
+                                        return Attempt.Failure(x);
+                                    }
+                                );
+                            }
+                        ));
                     }
                 );
             };
@@ -217,14 +210,8 @@ Parser.prototype.many = function() {
 //
 Parser.prototype.map = function(f) {
     return this.chain(function(stream, index, attempt, possibleFailure) {
-        return attempt.fold(
-            function(x) {
-                return Parser.put(Tuple4(stream, index, Attempt.of(f(x)), possibleFailure));
-            },
-            function() {
-                return Parser.put(Tuple4(stream, index, attempt, possibleFailure));
-            }
-        );
+        var x = f(attempt.value);
+        return Parser.put(Tuple4(stream, index, Attempt.of(x), possibleFailure));
     });
 };
 

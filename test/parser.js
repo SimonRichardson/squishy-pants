@@ -325,5 +325,69 @@ exports.parser = {
 
         test.ok(_.expect(expr.parse(value)).toBe(_.Failure(expected)));
         test.done();
-    }
+    },
+    'when testing of should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Parser.of(a).run()).toBe(_.Tuple4(a, 0, _.Attempt.of([]), _.None));
+        },
+        [_.AnyVal]
+    ),
+    'when testing empty should return correct value': _.check(
+        function(a) {
+            return _.expect(_.Parser.empty().run(a)).toBe(_.Tuple4(a, 0, _.Attempt.of([]), _.None));
+        },
+        [_.AnyVal]
+    ),
+    'when testing fail should return correct value': _.check(
+        function(a, b, c) {
+            return _.expect(_.Parser.fail(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of([a]), _.Some([])));
+        },
+        [_.AnyVal, Number, Number]
+    ),
+    'when testing success should return correct value': _.check(
+        function(a, b, c) {
+            return _.expect(_.Parser.success(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of([a]), _.None));
+        },
+        [_.AnyVal, Number, Number]
+    ),
+    'when testing chain should return correct value': _.check(
+        function(a) {
+            var round = _.map(_.map(number, toInt), toFloat),
+                expr = _.chain(leftBracket.skip(optionalWhitespace), function(a, b, c, d) {
+                    return round.skip(optionalWhitespace).skip(rightBracket);
+                }),
+                value = '(' + a + ')',
+                expected = toFloat(toInt(a)).toString();
+
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
+        },
+        [Number]
+    ),
+    'when testing map should return correct value': _.check(
+        function(a) {
+            var round = _.map(_.map(number, toInt), toFloat),
+                expr = leftBracket.skip(optionalWhitespace).chain(function(a, b, c, d) {
+                    return round.skip(optionalWhitespace).skip(rightBracket);
+                }),
+                value = '(' + a + ')',
+                expected = toFloat(toInt(a)).toString();
+
+            return _.expect(expr.parse(value)).toBe(_.Success(expected));
+        },
+        [Number]
+    ),
+    'when testing two numbers brackets in should fail in also return correct value': _.check(
+        function(a, b) {
+            var expr = leftBracket.also(function() {
+                    return alpha.orElse(alpha).also(function() {
+                          return number.skip(rightBracket);
+                    });
+                }),
+                value = '(' + a + ' ' + b + ')',
+                expected = [[a + ' ' + b + ')', 1]];
+
+            return _.expect(expr.parse(value)).toBe(_.Failure(expected));
+        },
+        [Number, Number]
+    )
 };
