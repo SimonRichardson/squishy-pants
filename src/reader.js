@@ -36,7 +36,7 @@ Reader.of = function(a) {
 //  Constructor `empty` Monad creating a `Reader`.
 //
 Reader.empty = function() {
-    return Reader(nothing);
+    return Reader(constant(null));
 };
 
 //
@@ -62,6 +62,15 @@ Reader.prototype.chain = function(f) {
     return Reader(function(e) {
         return f(env.run(e)).run(e);
     });
+};
+
+//
+//  ### extract()
+//
+//  Executes a reader to get a value.
+//
+Reader.prototype.extract = function(a) {
+    return this.run(a);
 };
 
 //
@@ -161,7 +170,7 @@ Reader.lens = function() {
                 return Reader(s);
             },
             function() {
-                return a.run;
+                return a;
             }
         );
     });
@@ -178,8 +187,8 @@ squishy = squishy
     .property('isReader', isReader)
     .property('isReaderOf', isReaderOf)
     .property('isReaderTOf', isReaderTOf)
-    .method('of', strictEquals(Reader), function(x) {
-        return Reader.of(x);
+    .method('of', strictEquals(Reader), function(x, y) {
+        return Reader.of(y);
     })
     .method('empty', strictEquals(Reader), function() {
         return Reader.empty();
@@ -190,6 +199,10 @@ squishy = squishy
     })
     .method('arb', isReaderTOf, function(a, b) {
         return Reader.ReaderT(this.arb(readerOf(a.type), b - 1));
+    })
+
+    .method('extract', isReader, function(a, b) {
+        return a.extract(b);
     })
 
     .method('ap', squishy.liftA2(or, isReader, isReaderT), function(a, b) {

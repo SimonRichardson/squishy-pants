@@ -48,6 +48,54 @@ exports.reader = {
             return _.expect(reader.run(b)).toBe(c);
         },
         [_.readerOf(_.AnyVal), _.AnyVal, _.AnyVal]
+    ),
+    'when creating a reader and using lens get should be correct value': _.check(
+        function(a, b) {
+            var reader = _.Reader.lens().run(a).get();
+            return _.expect(reader.run(b)).toBe(a.run());
+        },
+        [_.readerOf(_.AnyVal), _.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Reader, a).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Reader).extract()).toBe(null);
+        },
+        [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a) {
+            var reader = _.Reader.of(_.concat(1)),
+                actual = _.ap(reader, _.Reader.of(a)),
+                expected = reader.ap(_.Reader.of(a));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Reader.of(a), function(x) {
+                return _.Reader.of(x);
+            }).extract()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using extract should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(_.Reader.of(a))).toBe(a);
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Reader.of(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
 
