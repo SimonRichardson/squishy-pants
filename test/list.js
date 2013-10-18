@@ -310,6 +310,20 @@ exports.list = {
         },
         [_.listOf(_.AnyVal), _.AnyVal]
     ),
+    'when using list lens get correct value': _.check(
+        function(a, b) {
+            var index = Math.floor(_.randomRange(0, a.size()));
+            return _.expect(_.List.lens(index).run(a).get()).toBe(a.get(index));
+        },
+        [_.listOf(_.AnyVal), _.AnyVal]
+    ),
+    'when using list cons lens get correct value': _.check(
+        function(a) {
+            var x = _.Cons(a, _.Nil);
+            return _.expect(_.List.Cons.lens().run(x).get()).toBe(a);
+        },
+        [_.AnyVal]
+    ),
     'when using of should be correct value': _.check(
         function(a) {
             return _.expect(_.of(_.List, a).extract()).toBe(a);
@@ -321,7 +335,143 @@ exports.list = {
             return _.expect(_.empty(_.List)).toBe(_.List.Nil);
         },
         [_.AnyVal]
-    )
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            var expected = [_.Nil],
+                x = a.size();
+
+            while(x) {
+                x = Math.floor(x / 2);
+                if (x) expected.push(a.dropRight(x));
+            }
+
+            return _.expect(_.shrink(a)).toBe(expected);
+        },
+        [_.listOf(_.AnyVal)]
+    ),
+    'when using concat should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.concat(a, b)).toBe(a.concat(b));
+        },
+        [_.listOf(Number), _.listOf(Number)]
+    ),
+    'when using count should be correct value': _.check(
+        function(a) {
+            return _.expect(_.count(a, _.inc)).toBe(a.count(_.inc));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using drop should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.drop(a, b)).toBe(a.drop(b));
+        },
+        [_.listOf(Number), _.Integer]
+    ),
+    'when using dropRight should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.dropRight(a, b)).toBe(a.dropRight(b));
+        },
+        [_.listOf(Number), _.Integer]
+    ),
+    'when using dropWhile should be correct value': _.check(
+        function(a) {
+            return _.expect(_.dropWhile(a, _.isEven)).toBe(a.dropWhile(_.isEven));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using exists should be correct value': _.check(
+        function(a) {
+            return _.expect(_.exists(a, _.isEven)).toBe(a.exists(_.isEven));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using find should be correct value': _.check(
+        function(a) {
+            return _.expect(_.find(a, _.isEven)).toBe(a.find(_.isEven));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using first should be correct value': _.check(
+        function(a) {
+            return _.expect(_.first(a)).toBe(a.first());
+        },
+        [_.listOf(Number)]
+    ),
+    'when using fold should be correct value': _.check(
+        function(a) {
+            return _.expect(_.fold(a, 0, _.add)).toBe(a.fold(0, _.add));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using last should be correct value': _.check(
+        function(a) {
+            return _.expect(_.last(a)).toBe(a.last());
+        },
+        [_.listOf(Number)]
+    ),
+    'when using partition should be correct value': _.check(
+        function(a) {
+            return _.expect(_.partition(a, _.isEven)).toBe(a.partition(_.isEven));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using reduce should be correct value': _.check(
+        function(a) {
+            return _.expect(_.reduce(a, _.add)).toBe(a.reduce(_.add));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using reduceRight should be correct value': _.check(
+        function(a) {
+            return _.expect(_.reduceRight(a, _.add)).toBe(a.reduceRight(_.add));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using take should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.take(a, b)).toBe(a.take(b));
+        },
+        [_.listOf(Number), Number]
+    ),
+    'when using takeRight should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.takeRight(a, b)).toBe(a.takeRight(b));
+        },
+        [_.listOf(Number), Number]
+    ),
+    'when using zip should be correct value': _.check(
+        function(a, b) {
+            return _.expect(_.zip(a, b)).toBe(a.zip(b));
+        },
+        [_.listOf(Number), _.listOf(Number)]
+    ),
+    'when using zipWithIndex should be correct value': _.check(
+        function(a) {
+            return _.expect(_.zipWithIndex(a)).toBe(a.zipWithIndex());
+        },
+        [_.listOf(Number)]
+    ),
+    'when using toArray should be correct value': _.check(
+        function(a) {
+            return _.expect(_.toArray(a)).toBe(a.toArray());
+        },
+        [_.listOf(Number)]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a) {
+            var size = a.size(),
+                concat = _.List.range(0, size).map(_.constant(_.identity));
+            return _.expect(_.ap(concat, a)).toBe(concat.ap(a));
+        },
+        [_.listOf(Number)]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(a, _.List.of)).toBe(a.chain(_.List.of));
+        },
+        [_.listOf(Number)]
+    ),
 };
 
 exports.listT = {
@@ -395,5 +545,11 @@ exports.listT = {
             ).toBe(_.List.ListT(_.List.of(1)).of(b + 1));
         },
         [_.listTOf(Number), Number]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(a)).toBe([]);
+        },
+        [_.listTOf(_.AnyVal)]
     )
 };

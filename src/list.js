@@ -804,13 +804,15 @@ squishy = squishy
     .method('arb', isListOf, function(a, b) {
         var accum = List.Nil,
             length = this.randomRange(0, b),
+            value,
             i;
 
         for(i = 0; i < length; i++) {
-            accum = accum.prepend(this.arb(a.type, b - 1));
+            value = this.arb(a.type, b - 1);
+            accum = accum.prepend(value);
         }
 
-        return accum.reverse();
+        return accum;
     })
     .method('arb', isListTOf, function(a, b) {
         return List.ListT(this.arb(listOf(a.type), b - 1));
@@ -823,12 +825,12 @@ squishy = squishy
         while(x) {
             x = Math.floor(x / 2);
 
-            if (x) accum.push(a.take(x));
+            if (x) accum.push(a.dropRight(x));
         }
 
         return accum;
     })
-    .method('shrink', isListT, function(a) {
+    .method('shrink', strictEquals(ListT), function(a) {
         return [];
     })
 
