@@ -95,9 +95,63 @@ exports.store = {
     'when creating a store and using lens should be correct value': _.check(
         function(a, b) {
             var store = _.Store.lens().run(a).set(b);
-
             return _.expect(store.get()).toBe(b);
         },
         [_.storeOf(_.AnyVal), _.AnyVal]
+    ),
+    'when creating a store and using lens get should be correct value': _.check(
+        function(a) {
+            var store = _.Store.lens().run(a).get();
+            return _.expect(store).toBe(a);
+        },
+        [_.storeOf(_.AnyVal)]
+    ),
+    'when testing expand should return correct value': _.check(
+        function(a) {
+            var store = _.Store(
+                    _.identity,
+                    function() {
+                        return a;
+                    }
+                );
+            return _.expect(_.expand(store).get()).toBe(store.expand().get());
+        },
+        [_.AnyVal]
+    ),
+    'when testing extract should return correct value': _.check(
+        function(a) {
+            var store = _.Store(
+                    _.identity,
+                    function() {
+                        return a;
+                    }
+                );
+            return _.expect(_.extract(store)).toBe(store.extract());
+        },
+        [_.AnyVal]
+    ),
+    'when testing map should return correct value': _.check(
+        function(a) {
+            var store = _.Store(
+                    _.identity,
+                    function() {
+                        return a;
+                    }
+                );
+            return _.expect(_.map(store, _.inc).extract()).toBe(store.map(_.inc).extract());
+        },
+        [_.AnyVal]
+    ),
+    'when testing shrink should return correct value': _.check(
+        function(a) {
+            var store = _.Store(
+                    _.identity,
+                    function() {
+                        return a;
+                    }
+                );
+            return _.expect(_.shrink(store)).toBe([]);
+        },
+        [_.AnyVal]
     )
 };

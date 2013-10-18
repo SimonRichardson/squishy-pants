@@ -94,7 +94,7 @@ Store.lens = function() {
                 );
             },
             function() {
-                return a.run;
+                return a;
             }
         );
     });
