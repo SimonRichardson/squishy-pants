@@ -74,6 +74,15 @@ Writer.prototype.chain = function(f) {
 };
 
 //
+//  ### extract()
+//
+//  Executes a writer to get a value.
+//
+Writer.prototype.extract = function(a) {
+    return this.run(a);
+};
+
+//
 //  ### map(f)
 //
 //  Map on the value of this writer.
@@ -170,7 +179,7 @@ Writer.lens = function() {
                 return Writer(s);
             },
             function() {
-                return a.run;
+                return a;
             }
         );
     });
@@ -188,8 +197,8 @@ squishy = squishy
     .property('isWriterT', isWriterT)
     .property('isWriterOf', isWriterOf)
     .property('isWriterTOf', isWriterTOf)
-    .method('of', strictEquals(Writer), function(x) {
-        return Writer.of(x);
+    .method('of', strictEquals(Writer), function(x, y) {
+        return Writer.of(y);
     })
     .method('empty', strictEquals(Writer), function(x) {
         return Writer.empty();
@@ -200,6 +209,10 @@ squishy = squishy
     })
     .method('arb', isWriterTOf, function(a, b) {
         return Writer.WriterT(this.arb(writerOf(a.type), b - 1));
+    })
+
+    .method('extract', isWriter, function(a, b) {
+        return a.extract(b);
     })
 
     .method('ap', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {

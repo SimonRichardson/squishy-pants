@@ -73,6 +73,54 @@ exports.writer = {
             return _.expect(writer.run(c)).toBe(_.Tuple2.of(b, c));
         },
         [_.writerOf(_.AnyVal), _.AnyVal, _.AnyVal]
+    ),
+    'when creating a writer and using lens get should be correct value': _.check(
+        function(a, b) {
+            var writer = _.Writer.lens().run(a).get();
+            return _.expect(writer.run()).toBe(a.extract());
+        },
+        [_.writerOf(_.AnyVal), _.AnyVal]
+    ),
+    'when using of should be correct value': _.check(
+        function(a) {
+            return _.expect(_.of(_.Writer, a).extract()).toBe(_.Tuple2(a, ''));
+        },
+        [_.AnyVal]
+    ),
+    'when using empty should be correct value': _.check(
+        function(a) {
+            return _.expect(_.empty(_.Writer).extract()._1).toBe(null);
+        },
+        [_.AnyVal]
+    ),
+    'when using ap should be correct value': _.check(
+        function(a) {
+            var writer = _.Writer.of(_.concat(1)),
+                actual = _.ap(writer, _.Writer.of(a)),
+                expected = writer.ap(_.Writer.of(a));
+            return _.expect(actual.extract()).toBe(expected.extract());
+        },
+        [_.AnyVal]
+    ),
+    'when using chain should be correct value': _.check(
+        function(a) {
+            return _.expect(_.chain(_.Writer.of(a), function(x) {
+                return _.Writer.of(x);
+            }).extract()).toBe(_.Tuple2(a, ''));
+        },
+        [_.AnyVal]
+    ),
+    'when using extract should be correct value': _.check(
+        function(a) {
+            return _.expect(_.extract(_.Writer.of(a))).toBe(_.Tuple2(a, ''));
+        },
+        [_.AnyVal]
+    ),
+    'when using shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(_.Writer.of(a))).toBe([]);
+        },
+        [_.AnyVal]
     )
 };
 
