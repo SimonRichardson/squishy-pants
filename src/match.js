@@ -141,17 +141,7 @@ var match = (function() {
 
                 return result.fold(
                     identity,
-                    function() {
-                        /* Handle the default case */
-                        var defaultCase = env.find(patterns, function(x) {
-                            return x[0] === wildcardAsString;
-                        });
-                        if (isArray(defaultCase)) {
-                            return defaultCase[1].apply(this, []);
-                        }
-
-                        throw new TypeError('No default case found.');
-                    }
+                    error('No default case found.')
                 );
             };
         };
@@ -297,8 +287,6 @@ var match = (function() {
     //  Compare two option values for equality
     //
     Token.prototype.equal = function(b) {
-        if (b.wildcard) return true;
-
         var env = this;
         return env.match({
             TIdent: function(x) {
@@ -307,10 +295,10 @@ var match = (function() {
                 return squishy.equal(last0, last1);
             },
             TNumber: function(x) {
-                return b.isNumber && squishy.equal(b.number, x);
+                return isNumber(b) && squishy.equal(b.number, x);
             },
             TString: function(x) {
-                return b.isString && squishy.equal(b.string, x);
+                return isString(b) && squishy.equal(b.string, x);
             },
             TWildcard: constant(true)
         });
@@ -322,8 +310,6 @@ var match = (function() {
     //  Compare two option values for similarity
     //
     Token.prototype.similar = function(b) {
-        if (b.wildcard) return true;
-
         return this.match({
             TIdent: function(c) {
                 return squishy.equal(c[0], functionName(b));

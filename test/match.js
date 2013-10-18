@@ -243,5 +243,39 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(-1);
         },
         [Number]
+    ),
+    'when checking a invalid namespace branch': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Some(a)', function(x, y) {
+                        return x + y;
+                    }]
+                ],
+                args = List.Cons(a, List.Cons(b, List.Nil));
+
+            var called = false;
+            try {
+                _.match(patterns)(args);
+            } catch(e) {
+                called = true;
+            }
+
+            return called;
+        },
+        [Number, Number]
+    ),
+    'when checking a invalid equal wildcard branch': _.check(
+        function(a, b) {
+            var patterns = [
+                    ['Cons(1, "abc")', function() {
+                        return 1;
+                    }],
+                    ['_', _.error('Failed if called')]
+                ],
+                args = List.Cons(1, "abc");
+
+            return _.expect(_.match(patterns)(args)).toBe(1);
+        },
+        [Number, Number]
     )
 };
