@@ -1,17 +1,5 @@
 var Cofree = tagged('Cofree', ['a', 'h']);
 
-Cofree.fromArray = function(a) {
-    var result = Option.None,
-        index = a.length;
-
-    while(--index > -1) {
-        result = Option.Some(Cofree(a[index], result));
-    }
-
-    return result;
-};
-
-
 Cofree.fromList = function(a) {
     var result = Option.None,
         p = a;
@@ -70,16 +58,12 @@ Cofree.prototype.traverse = function(f, p) {
 };
 
 Cofree.prototype.toArray = function() {
-    var env = this;
-    return squishy.concat(
-        [env.a],
-        env.h.match({
-            Some: function(z) {
-                return z.toArray();
-            },
-            None: constant([])
-        })
-    );
+    var env = this,
+        result = [];
+    env.map(function(a) {
+        result.push(a);
+    });
+    return result;
 };
 
 Cofree.prototype.toList = function() {

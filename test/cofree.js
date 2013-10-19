@@ -1,11 +1,21 @@
-var _ = require('./lib/test');
+var _ = require('./lib/test'),
+    fromArray = function(a) {
+        var result = _.None,
+            index = a.length;
+
+        while(--index > -1) {
+            result = _.Some(_.Cofree(a[index], result));
+        }
+
+        return result;
+    };
 
 exports.cofree = {
     'when testing map should return correct value': _.check(
         function(a) {
             if (a.length < 1) return true;
 
-            var x = _.Cofree.fromArray(a).get(),
+            var x = fromArray(a).get(),
                 actual = x.map(_.inc),
                 expected = _.map(a, _.inc);
 
@@ -17,7 +27,7 @@ exports.cofree = {
         function(a) {
             if (a.length < 1) return true;
 
-            var x = _.Cofree.fromArray(a).get();
+            var x = fromArray(a).get();
             return _.expect(x.toArray()).toBe(a);
         },
         [_.arrayOf(Number)]
