@@ -34,7 +34,7 @@ Cofree.prototype.extend = function(f) {
         squishy.map(
             this.h,
             function(cf) {
-                return squishy.extend(cf, f);
+                return cf.extend(f);
             }
         )
     );
@@ -51,7 +51,7 @@ Cofree.prototype.traverse = function(f, p) {
                     };
                 }
             ),
-            x.f.traverse(go, p)
+            x.h.traverse(go, p)
         );
     }
     return go(this);
@@ -83,10 +83,46 @@ Cofree.prototype.toList = function() {
 var isCofree = isInstanceOf(Cofree);
 
 //
+//  ## cofreeOf(type)
+//
+//  Sentinel value for when an cofree of a particular type is needed:
+//
+//       cofreeOf(Number)
+//
+function cofreeOf(type) {
+    var self = getInstance(this, cofreeOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isListOf(a)
+//
+//  Returns `true` if `a` is an instance of `cofreeOf`.
+//
+var isCofreeOf = isInstanceOf(cofreeOf);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
     .property('Cofree', Cofree)
+    .property('isCofree', isCofree)
+    .property('cofreeOf', cofreeOf)
+    .property('isCofreeOf', isCofreeOf)
+    .method('arb', isCofreeOf, function(a, b) {
+        var result = Option.None,
+            index = Math.max(1, b - 1);
+
+        while(--index > -1) {
+            result = Option.Some(Cofree(this.arb(a.type, b - 1), result));
+        }
+
+        return result.get();
+    })
     .method('map', isCofree, function(a, b) {
         return a.map(b);
+    })
+    .method('shrink', isCofree, function() {
+        return [];
     });
