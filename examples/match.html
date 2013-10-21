@@ -35,7 +35,7 @@
               c = 3,
               args = _.Cons(a, _.Cons(_.Some(_.Some(b)), _.Cons(c, _.Nil)));
 
-            setTimeout(function() {
+            function run() {
                 var a = 0,
                     match,
                     i;
@@ -56,8 +56,9 @@
                 console.timeEnd('Pattern matching cached');
 
                 logger(a);
-            }, 2000);
+            }
 
+            run();
       });
 
     </script>
@@ -77,6 +78,9 @@ var patterns = [
     }],
     ['_', _.constant(-1)]
 ];
+
+var list = _.Cons(1, _.Cons(_.Some(_.Some(2)), _.Cons(3, _.Nil)));
+var result = _.match(patterns)(list);
               </pre>
           </div>
           <hr />
