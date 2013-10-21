@@ -170,22 +170,19 @@ Parser.prototype.many = function() {
         recursive = function(stream) {
             return function rec(index, attempt, values) {
                 var outcome = env.run(stream, index, attempt, Option.None);
-                return outcome._3.fold(
-                    function(x) {
-                        var y = squishy.concat(values, x);
-                        return rec(outcome._2, outcome._3, y);
-                    },
-                    function(x) {
-                        return Tuple3(index, values, outcome._4.fold(
+                if (outcome._3.isSuccess) {
+                    var y = squishy.concat(values, outcome._3.value);
+                    return rec(outcome._2, outcome._3, y);
+                }
+
+                return Tuple3(index, values, outcome._4.fold(
                             function(y) {
                                 return Attempt.Failure(y);
                             },
                             function() {
-                                return Attempt.Failure(x);
+                                return Attempt.Failure(outcome._3.errors);
                             }
                         ));
-                    }
-                );
             };
         };
     return Parser(function(stream, index, attempt) {
