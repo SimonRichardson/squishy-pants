@@ -113,10 +113,8 @@ var match = (function() {
                 return [x];
             } else if (isTuple2(x)) {
                 return [normalise(x._1), merge(normalise(x._2))];
-            } else if (isUndefined(x)) {
-                return [];
             } else {
-                throw new TypeError('Unexpected value found : ' + x);
+                return [];
             }
         },
 
@@ -155,20 +153,8 @@ var match = (function() {
             return Token.TObject(a);
         }),
 
-        escapes = {
-            b: '\b',
-            f: '\f',
-            n: '\n',
-            r: '\r',
-            t: '\t'
-        },
         stringLiteral = regexp(/^"(\\.|.)*?"/).map(function(str) {
-            var value = str[0].slice(1, -1).replace(/\\u(\d{4})/, function(x, hex) {
-                return String.fromCharCode(parseInt(hex, 16));
-            }).replace(/\\(.)/, function(x, ch) {
-                return escapes.hasOwnProperty(ch) ? escapes[ch] : ch;
-            });
-            return Token.TString(value);
+            return Token.TString(str[0].slice(1, -1));
         }),
 
         numberLiteral = regexp(/^\d+(([.]|e[+-]?)\d+)?/i).map(function(str) {
