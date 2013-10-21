@@ -23,6 +23,7 @@ var match = (function() {
             TString: ['string'],
             TNumber: ['number'],
             TIdent: ['ident'],
+            TObject: ['object'],
             TWildcard: []
         }),
 
@@ -45,9 +46,15 @@ var match = (function() {
         number = regexp(/^[\+\-]?\d+(\.\d+)?/),
         ident = regexp(/^[a-zA-Z\_][a-zA-Z0-9\_\-\.]*/),
         wildcard = regexp(/^\_/),
+        colon = regexp(/^\s*:\s*/m),
         comma = regexp(/^(\s|\,|\s)*/),
-        leftBracket = string('('),
-        rightBracket = string(')'),
+        commaObject = regexp(/^,\s*/m),
+        leftParen = string('('),
+        rightParen = string(')'),
+        leftCurly = regexp(/^[{]\s*/m),
+        rightCurly = string('}'),
+        leftSquare = regexp(/^\[\s*/m),
+        rightSquare = string(']'),
         optionalWhitespace = regexp(/^\s*/),
         emptyString = string(''),
         wildcardAsString = '_',
@@ -73,10 +80,119 @@ var match = (function() {
             return Token.TWildcard;
         }),
 
+        /* Destructuring */
+        merge = function(x) {
+            var total = x.length,
+                accum = [],
+                value,
+                i;
+
+            for(i = 0; i < total; i++) {
+                value = x[i];
+                if (isArray(value)) {
+                    if (!isArray(accum[0])) {
+                        accum[0] = [];
+                    }
+                    accum[0] = accum[0].concat(value);
+                } else {
+                    accum.push(value);
+                }
+            }
+
+            return accum;
+        },
+
+        normalise = function(x) {
+            if (isArray(x)) {
+                return recursiveFlatten(x).map(function(a) {
+                    return normalise(a);
+                });
+            } else if (isToken(x)) {
+                return [x.extract()];
+            } else if (isString(x) || isNumber(x)) {
+                return [x];
+            } else if (isTuple2(x)) {
+                return [normalise(x._1), merge(normalise(x._2))];
+            } else if (isUndefined(x)) {
+                return [];
+            } else {
+                throw new TypeError('Unexpected value found : ' + x);
+            }
+        },
+
+        consume = function(parser) {
+            return parser.chain(function(stream, index, attempt) {
+                var x = attempt.fold(identity, constant([])),
+                    a = normalise(x);
+                return commaObject.chain(function() {
+                    return parser;
+                }).many().map(function(y) {
+                    var b = merge(normalise(y));
+                    return squishy.concat(a, b[0]);
+                });
+            });
+        },
+
+        array = leftSquare.chain(function() {
+            return consume(destructure).skip(rightSquare);
+        }),
+
+        object = leftCurly.chain(function() {
+            return consume(pair);
+        }).skip(rightCurly).map(function(pairs) {
+            var accum = {},
+                clean = pairs.filter(function(a) {
+                    return !!a;
+                }),
+                i;
+            for (i = 0; i < clean.length; i += 2) {
+                accum[clean[i]] = clean[i + 1][0];
+            }
+            return accum;
+        }),
+
+        objectToken = object.map(function(a) {
+            return Token.TObject(a);
+        }),
+
+        escapes = {
+            b: '\b',
+            f: '\f',
+            n: '\n',
+            r: '\r',
+            t: '\t'
+        },
+        stringLiteral = regexp(/^"(\\.|.)*?"/).map(function(str) {
+            var value = str[0].slice(1, -1).replace(/\\u(\d{4})/, function(x, hex) {
+                return String.fromCharCode(parseInt(hex, 16));
+            }).replace(/\\(.)/, function(x, ch) {
+                return escapes.hasOwnProperty(ch) ? escapes[ch] : ch;
+            });
+            return Token.TString(value);
+        }),
+
+        numberLiteral = regexp(/^\d+(([.]|e[+-]?)\d+)?/i).map(function(str) {
+            return Token.TNumber(parseFloat(str, 10));
+        }),
+
+        pair = stringLiteral.orElse(ident).chain(function(stream, index, attempt) {
+            return colon.chain(function() {
+                return destructure;
+            }).map(function(res) {
+                var key = attempt.fold(identity, constant(''));
+                return Tuple2(key, res);
+            });
+        }),
+
+        destructure = object.orElse(stringLiteral)
+                            .orElse(numberLiteral)
+                            .orElse(array)
+                            .skip(optionalWhitespace),
+
         /* Block */
         block = identToken.many().also(function() {
-            return leftBracket.skip(optionalWhitespace).chain(function() {
-                return expr.many().skip(rightBracket);
+            return leftParen.skip(optionalWhitespace).chain(function() {
+                return expr.many().skip(rightParen);
             });
         }),
         expr = block.orElse(wildcardToken)
@@ -84,6 +200,7 @@ var match = (function() {
                     .orElse(stringToken)
                     .orElse(numberToken)
                     .orElse(identToken)
+                    .orElse(objectToken)
                     .skip(comma),
         parser = block.orElse(wildcardToken)
                       .orElse(identToken),
@@ -127,6 +244,7 @@ var match = (function() {
                     args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
                     result = until(patterns, function(c) {
                         var result = compile(c[0]),
+                            /*xx = console.log(JSON.stringify(result)),*/
                             value = result.fold(
                                 extract(args, key),
                                 constant(result)
@@ -300,6 +418,9 @@ var match = (function() {
             TString: function(x) {
                 return isString(b) && squishy.equal(b.string, x);
             },
+            TObject: function(x) {
+                return isPlainObject(b) && squishy.equal(b.object, x);
+            },
             TWildcard: constant(true)
         });
     };
@@ -311,19 +432,44 @@ var match = (function() {
     //
     Token.prototype.similar = function(b) {
         return this.match({
-            TIdent: function(c) {
-                return squishy.equal(c[0], functionName(b));
+            TIdent: function(x) {
+                return squishy.equal(x[0], functionName(b));
             },
-            TNumber: function(c) {
-                return isNumber(b) && squishy.equal(c, b);
+            TNumber: function(x) {
+                var norm = isUndefined(x[0]) ? x : x[0];
+                return isNumber(b) && squishy.equal(norm, b);
             },
-            TString: function(c) {
-                return isString(b) && squishy.equal(c[0], b);
+            TString: function(x) {
+                return isString(b) && squishy.equal(x[0], b);
+            },
+            TObject: function(x) {
+                //console.log('TObj', x, b);
+                return isPlainObject(b) && squishy.equal(x, b);
             },
             TWildcard: constant(true)
         });
     };
 
+    //
+    //  ### extract()
+    //
+    //  Extract the possible value of each
+    //
+    Token.prototype.extract = function() {
+        return this.match({
+            TIdent: identity,
+            TNumber: identity,
+            TString: identity,
+            TObject: identity,
+            TWildcard: constant(null)
+        });
+    };
+
+    //
+    //  ### namespace()
+    //
+    //  Retrieve the possible TIdent namespace
+    //
     Token.TIdent.prototype.namespace = function() {
         return this.ident.join('').split('.');
     };
@@ -336,6 +482,7 @@ var match = (function() {
     Token.TIdent.prototype.isIdent = true;
     Token.TIdent.prototype.isNumber = false;
     Token.TIdent.prototype.isString = false;
+    Token.TIdent.prototype.isObject = false;
     Token.TIdent.prototype.isWildcard = false;
 
     //
@@ -346,6 +493,7 @@ var match = (function() {
     Token.TNumber.prototype.isIdent = false;
     Token.TNumber.prototype.isNumber = true;
     Token.TNumber.prototype.isString = false;
+    Token.TNumber.prototype.isObject = false;
     Token.TNumber.prototype.isWildcard = false;
 
     //
@@ -356,7 +504,19 @@ var match = (function() {
     Token.TString.prototype.isIdent = false;
     Token.TString.prototype.isNumber = false;
     Token.TString.prototype.isString = true;
+    Token.TString.prototype.isObject = false;
     Token.TString.prototype.isWildcard = false;
+
+    //
+    //  ## TObject(x)
+    //
+    //  Constructor to represent the object token with a value, `x`.
+    //
+    Token.TObject.prototype.isIdent = false;
+    Token.TObject.prototype.isNumber = false;
+    Token.TObject.prototype.isString = false;
+    Token.TObject.prototype.isObject = true;
+    Token.TObject.prototype.isWildcard = false;
 
     //
     //  ## TWildcard(x)
@@ -366,6 +526,7 @@ var match = (function() {
     Token.TWildcard.isIdent = false;
     Token.TWildcard.isNumber = false;
     Token.TWildcard.isString = false;
+    Token.TWildcard.isObject = false;
     Token.TWildcard.isWildcard = true;
 
     //

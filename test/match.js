@@ -277,5 +277,89 @@ exports.match = {
             return _.expect(_.match(patterns)(args)).toBe(1);
         },
         [Number, Number]
+    ),
+    'when testing destructuring with strings should return correct value': function(test) {
+        var patterns = [
+                ['Cons(_, Cons({a : "x", b : "y"}, Nil))', function() {
+                    return 1;
+                }],
+                ['_', function() {
+                    return -1;
+                }]
+            ],
+            value = List.Cons(1, List.Cons({a: 'x', b:'y'}, List.Nil));
+
+        test.equals(_.match(patterns)(value), 1);
+        test.done();
+    },
+    'when testing destructuring array with numbers should return correct value': function(test) {
+        var patterns = [
+                ['Cons(_, Cons({a : [1, 2], b : "x"}, Nil))', function() {
+                    return 1;
+                }],
+                ['_', function() {
+                    return -1;
+                }]
+            ],
+            value = List.Cons(1, List.Cons({a:[1, 2], b:'x'}, List.Nil));
+
+        test.equals(_.match(patterns)(value), 1);
+        test.done();
+    },
+    'when testing destructuring array with strings should return correct value': function(test) {
+        var patterns = [
+                ['Cons(_, Cons({a : ["x", "y", "z"], b : "x"}, Nil))', function() {
+                    return 1;
+                }],
+                ['_', function() {
+                    return -1;
+                }]
+            ],
+            value = List.Cons(1, List.Cons({a:['x', 'y', 'z'], b:'x'}, List.Nil));
+
+        test.equals(_.match(patterns)(value), 1);
+        test.done();
+    },
+    'when testing destructuring with strings idents should return correct value': function(test) {
+        var patterns = [
+                ['Cons(_, Cons({"a" : ["x", "y", "z"], "b" : "x"}, Nil))', function() {
+                    return 1;
+                }],
+                ['_', function() {
+                    return -1;
+                }]
+            ],
+            value = List.Cons(1, List.Cons({a:['x', 'y', 'z'], b:'x'}, List.Nil));
+
+        test.equals(_.match(patterns)(value), 1);
+        test.done();
+    },
+    'when checking destructuring of arrays in objects should be correct value': _.check(
+        function(a, b) {
+            var patterns = [
+                ['Cons(_, Cons({a : [' + a.toString() + '], b : "x"}, Nil))', function() {
+                    return 1;
+                }],
+                ['_', _.error('Failed if called')]
+            ],
+            value = List.Cons(1, List.Cons({a:a, b:'x'}, List.Nil));
+
+            return _.expect(_.match(patterns)(value)).toBe(1);
+        },
+        [_.arrayOf(Number), Number]
+    ),
+    'when checking destructuring objects should be correct value': _.check(
+        function(a) {
+            var patterns = [
+                ['Cons(_, Cons(' + JSON.stringify(a) + ', Nil))', function() {
+                    return 1;
+                }],
+                ['_', _.error('Failed if called')]
+            ],
+            value = List.Cons(1, List.Cons(a, List.Nil));
+
+            return _.expect(_.match(patterns)(value)).toBe(1);
+        },
+        [Object]
     )
 };
