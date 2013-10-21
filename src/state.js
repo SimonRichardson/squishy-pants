@@ -107,105 +107,34 @@ State.prototype.map = function(f) {
     });
 };
 
-// Transformer
-State.StateT = function(M) {
+//
+//  ## isState(a)
+//
+//  Returns `true` if `a` is `State`.
+//
+var isState = isInstanceOf(State);
 
-    //
-    //  Monadic state transformer.
-    //
-    //   * `ap(b, concat)` - Applicative ap(ply)
-    //   * `chain(f)` - Monadic flatMap/bind
-    //   * `map(f)` - Functor map
-    //
-    var StateT = tagged('StateT', ['run']);
+//
+//  ## State Transformer
+//
+//  The trivial monad transformer, which maps a monad to an equivalent monad.
+//
+//  * `chain(f)` - chain values
+//  * `map(f)` - functor map
+//  * `ap(a)` - applicative ap(ply)
+//
+var StateT = tagged('StateT', ['run']);
 
-    //
-    //  ## lift(m)
-    //
-    //  Constructor `lift` Monad creating a `StateT`.
-    //
-    StateT.lift = function(m) {
-        return StateT(function(b) {
-            return m;
-        });
-    };
+var stateTransformer = function(ctor) {
 
-    //
-    //  ## of(x)
-    //
-    //  Constructor `of` Monad creating a `StateT`.
-    //
-    StateT.of = function(a) {
-        return StateT(function(b) {
-            return M.of(Tuple2(a, b));
-        });
-    };
-
-    //
-    //  ## get()
-    //
-    //  Constructor `get` to retrieve the stateT value.
-    //
-    StateT.get = StateT(function(s) {
-        return M.of(Tuple2(s, s));
-    });
-
-    //
-    //  ## modify(f)
-    //
-    //  Constructor `modify` to alter the stateT value using the function.
-    //
-    StateT.modify = function(f) {
-        return StateT(function(s) {
-            return M.of(Tuple2(null, f(s)));
-        });
-    };
-
-    //
-    //  ## put(s)
-    //
-    //  Constructor `put` to return the value of s.
-    //
-    StateT.put = function(s) {
-        return StateT.modify(function(a) {
-            return s;
-        });
-    };
-
-    //
-    //  ### ap(b)
-    //
-    //  Apply a function in the environment of the value of this stateT
-    //  Applicative ap(ply)
-    //
-    StateT.prototype.ap = function(a) {
-        return this.chain(function(f) {
-            return squishy.map(a, f);
-        });
-    };
-
-    //
-    //  ### chain(f)
-    //
-    //  Bind through the value of the stateT
-    //  Monadic flatMap/bind
-    //
-    StateT.prototype.chain = function(f) {
-        var state = this;
-        return StateT(function(s) {
-            var result = state.run(s);
-            return result.chain(function(t) {
-                return f(t._1).run(t._2);
-            });
-        });
-    };
+    var x = transformer(ctor);
 
     //
     //  ### evalState(s)
     //
     //  Evaluate the stateT with `s`.
     //
-    StateT.prototype.evalState = function(s) {
+    ctor.prototype.evalState = function(s) {
         return this.run(s).chain(function(t) {
             return t._1;
         });
@@ -216,33 +145,80 @@ State.StateT = function(M) {
     //
     //  Execute the stateT with `s`.
     //
-    StateT.prototype.execState = function(s) {
+    ctor.prototype.execState = function(s) {
         return this.run(s).chain(function(t) {
             return t._2;
         });
     };
 
-    //
-    //  ### map(f)
-    //
-    //  Map on the value of this stateT.
-    //  Functor map
-    //
-    StateT.prototype.map = function(f) {
-        return this.chain(function(a) {
-            return StateT.of(f(a));
-        });
-    };
+    return function(M) {
+        var result = x(M);
 
-    return StateT;
+        //
+        //  ## lift(m)
+        //
+        //  Constructor `lift` Monad creating a `StateT`.
+        //
+        ctor.lift = function(m) {
+            return ctor(function(b) {
+                return m;
+            });
+        };
+
+        //
+        //  ## of(x)
+        //
+        //  Constructor `of` Monad creating a `StateT`.
+        //
+        ctor.of = function(a) {
+            return ctor(function(b) {
+                return M.of(Tuple2(a, b));
+            });
+        };
+
+        //
+        //  ## get()
+        //
+        //  Constructor `get` to retrieve the stateT value.
+        //
+        ctor.get = ctor(function(s) {
+            return M.of(Tuple2(s, s));
+        });
+
+        //
+        //  ## modify(f)
+        //
+        //  Constructor `modify` to alter the stateT value using the function.
+        //
+        ctor.modify = function(f) {
+            return ctor(function(s) {
+                return M.of(Tuple2(null, f(s)));
+            });
+        };
+
+        //
+        //  ## put(s)
+        //
+        //  Constructor `put` to return the value of s.
+        //
+        ctor.put = function(s) {
+            return ctor.modify(function(a) {
+                return s;
+            });
+        };
+
+        return result;
+    };
 };
 
+State.StateT = stateTransformer(StateT);
+
 //
-//  ## isState(a)
+//  ## isStateT(a)
 //
-//  Returns `true` if `a` is `State`.
+//  Returns `true` if `a` is `StateT`.
 //
-var isState = isInstanceOf(State);
+var isStateT = isInstanceOf(StateT);
 
 //
 //  ## stateOf(type)
@@ -292,7 +268,9 @@ State.lens = function() {
 //
 squishy = squishy
     .property('State', State)
+    .property('StateT', StateT)
     .property('isState', isState)
+    .property('isStateT', isStateT)
     .property('stateOf', stateOf)
     .property('isStateOf', isStateOf)
     .method('of', strictEquals(State), function(x) {
