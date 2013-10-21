@@ -350,6 +350,7 @@ exports.match = {
     ),
     'when checking destructuring objects should be correct value': _.check(
         function(a) {
+            console.log(JSON.stringify(a));
             var patterns = [
                 ['Cons(_, Cons(' + JSON.stringify(a) + ', Nil))', function() {
                     return 1;
