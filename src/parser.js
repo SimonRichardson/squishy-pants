@@ -116,16 +116,17 @@ Parser.string = function(a) {
 Parser.prototype.chain = function(f) {
     var env = this;
     return Parser(function(stream, index, attempt, possibleFailure) {
-        var outcome = env.run(stream, index, attempt, possibleFailure);
-        return outcome._3.fold(
-            function(x) {
-                var a = f(outcome._1, outcome._2, outcome._3, outcome._4);
-                return a.run(outcome._1, outcome._2, outcome._3, outcome._4);
-            },
-            function() {
-                return Tuple4(outcome._1, outcome._2, outcome._3, outcome._4);
-            }
-        );
+        /* NOTE: This method is inlined to improve speed */
+        var outcome = env.run(stream, index, attempt, possibleFailure),
+            outcomeAttempt = outcome._3,
+            result;
+
+        if (outcomeAttempt.isSuccess) {
+            result = f(outcome._1, outcome._2, outcomeAttempt, outcome._4);
+            return result.run(outcome._1, outcome._2, outcomeAttempt, outcome._4);
+        }
+
+        return outcome;
     });
 };
 
@@ -138,25 +139,24 @@ Parser.prototype.chain = function(f) {
 Parser.prototype.also = function(f) {
     var env = this;
     return Parser(function(stream, index, attempt, possibleFailure) {
-        var outcome = env.run(stream, index, attempt, possibleFailure);
-        return outcome._3.fold(
-            function(x) {
-                var a = f(outcome._1, outcome._2, outcome._3, outcome._4);
-                var b = a.run(outcome._1, outcome._2, outcome._3, outcome._4);
-                return b._3.fold(
-                    function(y) {
-                        var c = Attempt.of([squishy.concat(x[0], y)]);
-                        return Tuple4(b._1, b._2, c, b._4);
-                    },
-                    function() {
-                        return b;
-                    }
-                );
-            },
-            function() {
-                return Tuple4(outcome._1, outcome._2, outcome._3, outcome._4);
+        /* NOTE: This method is inlined to improve speed */
+        var outcome = env.run(stream, index, attempt, possibleFailure),
+            result,
+            resultConcat,
+            tuple;
+
+        if (outcome._3.isSuccess) {
+            result = f(outcome._1, outcome._2, outcome._3, outcome._4);
+            tuple = result.run(outcome._1, outcome._2, outcome._3, outcome._4);
+            if (tuple._3.isSuccess) {
+                resultConcat = Attempt.of([squishy.concat(outcome._3.value[0], tuple._3.value)]);
+                return Tuple4(tuple._1, tuple._2, resultConcat, tuple._4);
             }
-        );
+
+            return tuple;
+        }
+
+        return outcome;
     });
 };
 
