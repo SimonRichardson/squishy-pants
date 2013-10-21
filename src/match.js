@@ -230,7 +230,6 @@ var match = (function() {
                     args = supplied(argument, fields(argument, key)).getOrElse(constant([])),
                     result = until(patterns, function(c) {
                         var result = compile(c[0]),
-                            /*xx = console.log(JSON.stringify(result)),*/
                             value = result.fold(
                                 extract(args, key),
                                 constant(result)
@@ -419,17 +418,18 @@ var match = (function() {
     Token.prototype.similar = function(b) {
         return this.match({
             TIdent: function(x) {
-                return squishy.equal(x[0], functionName(b));
+                var norm = isUndefined(x[0]) ? x : x[0];
+                return squishy.equal(norm, functionName(b));
             },
             TNumber: function(x) {
                 var norm = isUndefined(x[0]) ? x : x[0];
                 return isNumber(b) && squishy.equal(norm, b);
             },
             TString: function(x) {
-                return isString(b) && squishy.equal(x[0], b);
+                var norm = isUndefined(x[0]) ? x : x[0];
+                return isString(b) && squishy.equal(norm, b);
             },
             TObject: function(x) {
-                //console.log('TObj', x, b);
                 return isPlainObject(b) && squishy.equal(x, b);
             },
             TWildcard: constant(true)
