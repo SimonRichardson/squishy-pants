@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Match with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../bin/squishy-pants.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML += x + '<br />';
+              })),
+              logger = function(value) {
+                  log.ap(_.IO.of('> ' + value)).unsafePerform();
+              },
+
+              patterns = [
+                  ['Cons(a, Cons(Some(Some(b)), Cons(c, Cons(_, Nil)))))', _.error('Failed if called first')],
+                  ['Cons(a, Cons(Some(Some(b)), Cons(c, Nil)))', function(x, y, z) {
+                      return x + y + z;
+                  }],
+                  ['_', _.error('Failed if called default')]
+              ],
+              a = 1,
+              b = 2,
+              c = 3,
+              args = _.Cons(a, _.Cons(_.Some(_.Some(b)), _.Cons(c, _.Nil)));
+
+            setTimeout(function() {
+                var a = 0,
+                    match,
+                    i;
+
+                console.time('Pattern matching non-cached');
+                for (i = 0; i < 20; i++) {
+                    a += _.match(patterns)(args);
+                }
+                console.timeEnd('Pattern matching non-cached');
+
+                logger(a);
+
+                console.time('Pattern matching cached');
+                match = _.match(patterns);
+                for (i = 0; i < 20; i++) {
+                    a += match(args);
+                }
+                console.timeEnd('Pattern matching cached');
+
+                logger(a);
+            }, 2000);
+
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>Match using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert">
+              <pre>
+var patterns = [
+    ['Cons(a, Cons(Some(Some(b)), Cons(c, Cons(_, Nil)))))', _.constant(-1)],
+    ['Cons(a, Cons(Some(Some(b)), Cons(c, Nil)))', function(x, y, z) {
+        return x + y + z;
+    }],
+    ['_', _.constant(-1)]
+];
+              </pre>
+          </div>
+          <hr />
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
