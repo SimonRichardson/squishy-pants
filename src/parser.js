@@ -175,18 +175,13 @@ Parser.prototype.many = function() {
                         var y = squishy.concat(values, x);
                         return rec(outcome._2, outcome._3, y);
                     },
-                    function() {
-                        return Tuple3(index, values, outcome._3.fold(
-                            constant(outcome._3),
-                            function(x) {
-                                return outcome._4.fold(
-                                    function(y) {
-                                        return Attempt.Failure(y);
-                                    },
-                                    function() {
-                                        return Attempt.Failure(x);
-                                    }
-                                );
+                    function(x) {
+                        return Tuple3(index, values, outcome._4.fold(
+                            function(y) {
+                                return Attempt.Failure(y);
+                            },
+                            function() {
+                                return Attempt.Failure(x);
                             }
                         ));
                     }
