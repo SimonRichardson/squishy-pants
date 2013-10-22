@@ -20,7 +20,6 @@ var transformer = function(ctor) {
     //
     ctor.prototype.ap = function(a) {
         return this.chain(function(f) {
-            console.log('!!', a, f);
             return squishy.map(a, f);
         });
     };
