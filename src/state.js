@@ -146,7 +146,7 @@ var stateTransformer = function(ctor) {
     //  Evaluate the stateT with `s`.
     //
     ctor.prototype.evalState = function(s) {
-        return this.run(s).chain(function(t) {
+        return this.run.run(s).chain(function(t) {
             return t._1;
         });
     };
@@ -157,12 +157,13 @@ var stateTransformer = function(ctor) {
     //  Execute the stateT with `s`.
     //
     ctor.prototype.execState = function(s) {
-        return this.run(s).chain(function(t) {
+        return this.run.run(s).chain(function(t) {
             return t._2;
         });
     };
 
     return function(M) {
+
         var result = x(M);
 
         //
@@ -252,6 +253,26 @@ function stateOf(type) {
 var isStateOf = isInstanceOf(stateOf);
 
 //
+//  ## stateTOf(type)
+//
+//  Sentinel value for when an state of a particular type is needed:
+//
+//       stateOf(Number)
+//
+function stateTOf(type) {
+    var self = getInstance(this, stateOf);
+    self.type = type;
+    return self;
+}
+
+//
+//  ## isStateOf(a)
+//
+//  Returns `true` if `a` is an instance of `stateOf`.
+//
+var isStateTOf = isInstanceOf(stateTOf);
+
+//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(State.prototype);
@@ -283,25 +304,32 @@ squishy = squishy
     .property('isState', isState)
     .property('isStateT', isStateT)
     .property('stateOf', stateOf)
+    .property('stateTOf', stateTOf)
     .property('isStateOf', isStateOf)
+    .property('isStateTOf', isStateTOf)
     .method('of', strictEquals(State), function(x, y) {
         return State.of(y);
     })
     .method('empty', strictEquals(State), function() {
         return State.empty();
     })
-    .method('ap', isState, function(a, b) {
-        return a.ap(b);
-    })
-    .method('chain', isState, function(a, b) {
-        return a.chain(b);
-    })
-    .method('map', isState, function(a, b) {
-        return a.map(b);
-    })
+
     .method('arb', isStateOf, function(a, b) {
         return State.of(this.arb(a.type, b - 1));
     })
-    .method('shrink', isState, function(a, b) {
+    .method('arb', isStateTOf, function(a, b) {
+        return State.StateT(this.arb(stateOf(a.type), b - 1));
+    })
+
+    .method('ap', squishy.liftA2(or, isState, isStateT), function(a, b) {
+        return a.ap(b);
+    })
+    .method('chain', squishy.liftA2(or, isState, isStateT), function(a, b) {
+        return a.chain(b);
+    })
+    .method('map', squishy.liftA2(or, isState, isStateT), function(a, b) {
+        return a.map(b);
+    })
+    .method('shrink', squishy.liftA2(or, isState, isStateT), function(a, b) {
         return [];
     });

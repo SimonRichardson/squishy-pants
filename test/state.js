@@ -117,5 +117,33 @@ exports.state = {
             return _.expect(_.shrink(a)).toBe([]);
         },
         [_.stateOf(_.AnyVal)]
-    ),
+    )
 };
+/*
+exports.stateT = {
+    'when testing stateT ap should return correct value': _.check(
+        function(a, b) {
+            var transformer = _.State.StateT(_.State),
+                x = transformer(_.State.of(_.inc)),
+                actual = x.ap(transformer(_.State.of(a))),
+                expected = transformer(_.State.of(a + 1));
+
+            return _.expect(actual.run.run(_.State.of(b))._1).toBe(expected.run.run(b)._1);
+        },
+        [_.Integer, _.Integer]
+    ),
+    'when testing stateT chain should return correct value': _.check(
+        function(a, b) {
+            var transformer = _.State.StateT(_.State),
+                x = transformer(_.State.of(a)),
+                actual = x.chain(function() {
+                    return transformer(_.State.of(a + 1));
+                }),
+                expected = transformer(_.State.of(a + 1));
+
+            return _.expect(actual.run.run(_.State.of(b))._1).toBe(expected.run.run(b)._1);
+        },
+        [_.Integer, _.Integer]
+    )
+};
+*/
