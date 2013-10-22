@@ -36,7 +36,7 @@ function tagged(name, fields) {
     function makeToString(a) {
         return function() {
             var values = squishy.map(a, function(x) {
-                    return x.toString ? x.toString() : '' + x;
+                    return x && x.toString ? x.toString() : '' + x;
                 }),
                 flattened = squishy.reduce(values, function(x, y) {
                     return x + ', ' + y;
@@ -48,7 +48,7 @@ function tagged(name, fields) {
     function makeToArray(a) {
         return function() {
             var values = squishy.map(a, function(x) {
-                    return x.toArray ? x.toArray() : x;
+                    return x && x.toArray ? x.toArray() : [x];
                 }),
                 flattened = squishy.fold(values, [], function(x, y) {
                     return squishy.concat(x, y);

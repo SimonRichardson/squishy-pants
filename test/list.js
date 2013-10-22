@@ -178,7 +178,9 @@ exports.list = {
     ),
     'when testing partition should return correct value': _.check(
         function(a) {
-            return _.expect(a.partition(_.isEven)).toBe(_.partition(a.toArray(), _.isEven));
+            var x = _.partition(a.toArray(), _.isEven),
+                y = _.Tuple2(_.List.fromArray(x._1), _.List.fromArray(x._2));
+            return _.expect(a.partition(_.isEven)).toBe(y);
         },
         [_.listOf(_.Integer)]
     ),

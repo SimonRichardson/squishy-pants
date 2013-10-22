@@ -1,98 +1,59 @@
 var _ = require('./lib/test');
 
-function snd(t) {
-    return t._2;
-}
-
-function discard(a, b) {
-    return a.chain(function() {
-        return b;
-    });
-}
-
-function replicate(a, x) {
-    var r = [],
-        i;
-
-    for(i = 0; i < a.length; i++) {
-        r.push(x(a[i]));
-    }
-    return r;
-}
-
-function next(f) {
-    return discard(
-        _.State.modify(function(t) {
-            return _.Tuple2(t._1, t._2 + f());
-        }),
-        _.State.get.map(snd)
-    );
-}
-
-function verbal() {
-    var args = [].slice.call(arguments),
-        result = _.reduce(
-                replicate(args, next),
-                function(a, b) {
-                    return discard(a, b);
-                }
-            ).evalState(_.Tuple2('', ''));
-
-    return new RegExp(result, 'gm');
-}
-
-function sanitize(value) {
-    return value.replace(
-            /[^\w]/g,
-            function(character) {
-                return "\\" + character;
-            }
-        );
-}
-
-function startWith(value) {
-    return function() {
-        return '^' + then(value)();
-    };
-}
-
-function endWith(value) {
-    return function() {
-        return then(value)() + '$';
-    };
-}
-
-function then(value) {
-    return function() {
-        return '(?:' + sanitize(value) + ')';
-    };
-}
-
-function maybe(value) {
-    return function() {
-        return '(?:' + sanitize(value) + ')?';
-    };
-}
-
-function anythingBut(value) {
-    return function() {
-        return '(?:[^' + sanitize(value) + ']*)';
-    };
-}
-
 exports.state = {
-    'when building a verbal expression should generate the correct value': function(test) {
-        var result = verbal(
-                    startWith('http'),
-                    maybe('s'),
-                    then('://'),
-                    maybe('www.'),
-                    anythingBut(' ')
-                );
+    'when testing ap with state should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.of(_.concat(a)),
+                y = x.ap(_.State.of(b));
 
-        test.ok('/^(?:http)(?:s)?(?:\\:\\/\\/)(?:www\\.)?(?:[^\\ ]*)/gm' === result.toString());
-        test.done();
-    },
+            return _.expect(y.run(_.Tuple2(0, 0))._1).toBe(_.concat(a, b));
+        },
+        [_.Integer, _.Integer]
+    ),
+    'when testing chain with state should return correct value': _.check(
+        function(a) {
+            var x = _.State.of(a),
+                y = x.chain(function(a) {
+                    return _.State.of(a + 1);
+                });
+
+            return _.expect(y.run(_.Tuple2(0, 0))._1).toBe(a + 1);
+        },
+        [_.Integer]
+    ),
+    'when testing evalState with state should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.of(a),
+                y = x.chain(function(a) {
+                    return _.State.of(a + 1);
+                });
+
+            return _.expect(y.evalState(b)).toBe(a + 1);
+        },
+        [_.Integer, _.tuple2Of(_.Integer, _.Integer)]
+    ),
+    'when testing execState with state should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.of(a),
+                y = x.chain(function(a) {
+                    return _.State.of(a + 1);
+                });
+
+            return _.expect(y.execState(b)).toBe(b);
+        },
+        [_.Integer, _.tuple2Of(_.Integer, _.Integer)]
+    ),
+    'when testing map with state should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.of(a),
+                y = x.map(function(a) {
+                    return a + 1;
+                });
+
+            return _.expect(y.evalState(b)).toBe(a + 1);
+        },
+        [_.Integer, _.tuple2Of(_.Integer, _.Integer)]
+    ),
     'when creating a state and using lens should be correct value': _.check(
         function(a, b, c) {
             var run = function(x) {
@@ -103,5 +64,58 @@ exports.state = {
             return _.expect(state.run(c)).toBe(_.Tuple2.of(b, c));
         },
         [_.stateOf(_.AnyVal), _.AnyVal, _.AnyVal]
-    )
+    ),
+    'when creating a state and using lens get should be correct value': _.check(
+        function(a, b) {
+            var state = _.State.of(a),
+                result = _.State.lens().run(state).get();
+
+            return _.expect(state.run(b)).toBe(_.Tuple2.of(a, b));
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when testing of should return correct value': _.check(
+        function(a, b) {
+            var state = _.of(_.State, a);
+            return _.expect(state.run(b)).toBe(_.Tuple2.of(a, b));
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when testing empty should return correct value': _.check(
+        function(a, b) {
+            var state = _.empty(_.State);
+            return _.expect(state.run(b)).toBe(_.Tuple2.of(null, b));
+        },
+        [_.AnyVal]
+    ),
+    'when testing ap should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.of(_.concat(a)),
+                y = x.ap(_.State.of(b)),
+                z = _.ap(x, _.State.of(b));
+
+            return _.expect(z.execState(_.Tuple2(0, 0))).toBe(y.execState(_.Tuple2(0, 0)));
+        },
+        [_.Integer, _.Integer]
+    ),
+    'when testing chain should return correct value': _.check(
+        function(a) {
+            var x = _.State.of(a),
+                y = x.chain(function(a) {
+                    return _.State.of(a + 1);
+                }),
+                z = _.chain(x, function(a) {
+                    return _.State.of(a + 1);
+                });
+
+            return _.expect(z.execState(_.Tuple2(0, 0))).toBe(y.execState(_.Tuple2(0, 0)));
+        },
+        [_.Integer]
+    ),
+    'when creating a state and testing shrink should be correct value': _.check(
+        function(a) {
+            return _.expect(_.shrink(a)).toBe([]);
+        },
+        [_.stateOf(_.AnyVal)]
+    ),
 };

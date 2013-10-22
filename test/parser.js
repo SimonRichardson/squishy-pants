@@ -340,13 +340,13 @@ exports.parser = {
     ),
     'when testing fail should return correct value': _.check(
         function(a, b, c) {
-            return _.expect(_.Parser.fail(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of([a]), _.Some([])));
+            return _.expect(_.Parser.fail(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of([a]), _.None));
         },
         [_.AnyVal, Number, Number]
     ),
     'when testing success should return correct value': _.check(
         function(a, b, c) {
-            return _.expect(_.Parser.success(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of([a]), _.None));
+            return _.expect(_.Parser.success(a).run(b, c)).toBe(_.Tuple4(b, c, _.Attempt.of(a), _.None));
         },
         [_.AnyVal, Number, Number]
     ),

@@ -21,6 +21,17 @@ State.of = function(a) {
 };
 
 //
+//  ## empty()
+//
+//  Constructor `empty` Monad creating a empty `State`.
+//
+State.empty = function() {
+    return State(function(b) {
+        return Tuple2(null, b);
+    });
+};
+
+//
 //  ## get()
 //
 //  Constructor `get` to retrieve the state value.
@@ -257,7 +268,7 @@ State.lens = function() {
                 return State(s);
             },
             function() {
-                return a.run;
+                return a;
             }
         );
     });
@@ -273,8 +284,11 @@ squishy = squishy
     .property('isStateT', isStateT)
     .property('stateOf', stateOf)
     .property('isStateOf', isStateOf)
-    .method('of', strictEquals(State), function(x) {
-        return State.of(x);
+    .method('of', strictEquals(State), function(x, y) {
+        return State.of(y);
+    })
+    .method('empty', strictEquals(State), function() {
+        return State.empty();
     })
     .method('ap', isState, function(a, b) {
         return a.ap(b);
