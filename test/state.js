@@ -130,18 +130,18 @@ exports.stateT = {
             return _.expect(y.evalState(c)).toBe(_.Tuple2(a, b));
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
-    ),/*
+    ),
     'when testing stateT ap should return correct value': _.check(
-        function(a, b, c) {
+        function(a, b) {
             var x = _.State.StateT(_.State),
-                y = x.of(_.concat(a)).ap(b);
+                y = x.of(function(v) {
+                    return x.of(_.State.of(_.inc(v)));
+                }).ap(a);
 
-            console.log('>>', y.evalState(c));
-
-            return _.expect(y.evalState(c)).toBe(_.Tuple2(_.Tuple2(a + b, b), c));
+            return _.expect(y.evalState(a).run(b)).toBe(_.Tuple2(a + 1, b));
         },
-        [_.Integer, _.Integer, _.Integer]
-    ),*/
+        [_.Integer, _.Integer]
+    ),
     'when testing stateT chain should return correct value': _.check(
         function(a, b, c) {
             var x = _.State.StateT(_.State),

@@ -140,6 +140,12 @@ var stateTransformer = function(ctor) {
 
     var x = transformer(ctor);
 
+    //
+    //  ### chain(f)
+    //
+    //  Bind through the value of the state transformer
+    //  Monadic flatMap/bind
+    //
     StateT.prototype.chain = function(f) {
         var state = this;
         return StateT(function(s) {
