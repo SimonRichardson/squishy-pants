@@ -66,6 +66,15 @@ exports.identity = {
 };
 
 exports.identityT = {
+    'when testing identityT should return correct value': _.check(
+        function(a) {
+            var x = _.Identity.IdentityT(_.Identity),
+                y = x.of(a).map(_.inc);
+
+            return _.expect(y.run).toBe(_.Identity(a + 1));
+        },
+        [_.Integer]
+    ),
     'when testing identityT ap should return correct value': _.check(
         function(a) {
             var monad = _.Identity(a),
