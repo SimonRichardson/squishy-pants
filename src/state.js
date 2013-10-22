@@ -140,13 +140,22 @@ var stateTransformer = function(ctor) {
 
     var x = transformer(ctor);
 
+    StateT.prototype.chain = function(f) {
+        var state = this;
+        return StateT(function(s) {
+            return state.run(s).chain(function(t) {
+                return f(t._1).run(t._2);
+            });
+        });
+    };
+
     //
     //  ### evalState(s)
     //
     //  Evaluate the stateT with `s`.
     //
     ctor.prototype.evalState = function(s) {
-        return this.run.run(s).chain(function(t) {
+        return this.run(s).chain(function(t) {
             return t._1;
         });
     };
@@ -157,7 +166,7 @@ var stateTransformer = function(ctor) {
     //  Execute the stateT with `s`.
     //
     ctor.prototype.execState = function(s) {
-        return this.run.run(s).chain(function(t) {
+        return this.run(s).chain(function(t) {
             return t._2;
         });
     };

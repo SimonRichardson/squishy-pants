@@ -119,31 +119,49 @@ exports.state = {
         [_.stateOf(_.AnyVal)]
     )
 };
-/*
+
+
 exports.stateT = {
+    'when testing stateT should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State),
+                y = x.of(a).run(b);
+
+            return _.expect(y.evalState(c)).toBe(_.Tuple2(a, b));
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),/*
     'when testing stateT ap should return correct value': _.check(
-        function(a, b) {
-            var transformer = _.State.StateT(_.State),
-                x = transformer(_.State.of(_.inc)),
-                actual = x.ap(transformer(_.State.of(a))),
-                expected = transformer(_.State.of(a + 1));
+        function(a, b, c) {
+            var x = _.State.StateT(_.State),
+                y = x.of(_.concat(a)).ap(b);
 
-            return _.expect(actual.run.run(_.State.of(b))._1).toBe(expected.run.run(b)._1);
+            console.log('>>', y.evalState(c));
+
+            return _.expect(y.evalState(c)).toBe(_.Tuple2(_.Tuple2(a + b, b), c));
         },
-        [_.Integer, _.Integer]
-    ),
+        [_.Integer, _.Integer, _.Integer]
+    ),*/
     'when testing stateT chain should return correct value': _.check(
-        function(a, b) {
-            var transformer = _.State.StateT(_.State),
-                x = transformer(_.State.of(a)),
-                actual = x.chain(function() {
-                    return transformer(_.State.of(a + 1));
-                }),
-                expected = transformer(_.State.of(a + 1));
+        function(a, b, c) {
+            var x = _.State.StateT(_.State),
+                y = x.of(a).chain(function(v) {
+                    return x.of(_.State.of(v));
+                });
 
-            return _.expect(actual.run.run(_.State.of(b))._1).toBe(expected.run.run(b)._1);
+            return _.expect(y.evalState(c).run(b)).toBe(_.Tuple2(a, b));
         },
-        [_.Integer, _.Integer]
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
+    'when testing stateT map should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State),
+                y = x.of(a).map(function(v) {
+                    return _.State.of(v + 1);
+                });
+
+            return _.expect(y.evalState(c).run(b)).toBe(_.Tuple2(a + 1, b));
+        },
+        [_.Integer, _.AnyVal, _.AnyVal]
     )
 };
-*/
