@@ -18,7 +18,13 @@ squishy = squishy
     })
     .method('kleisli', isFunction, curry(function(a, b, x) {
         return this.chain(a(x), b);
-    }));
+    }))
+    .method('tupled', isFunction, function(a, b) {
+        if (!strictEquals(functionLength(a), functionLength(b.constructor))) {
+            throw new TypeError("Expected " + functionLength(a) + " arguments, got " + functionLength(b.constructor));
+        }
+        return this.tupled(b, a);
+    });
 
 squishy = squishy
     .method('concat', isBoolean, curry(function(a, b) {

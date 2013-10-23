@@ -122,13 +122,67 @@ exports.dimap = {
 };
 
 exports.kleisli = {
-    'when testing kleisli should return correct value':  _.check(
+    'when testing kleisli should return correct value': _.check(
         function(a) {
             return _.expect(_.kleisli(function(x) {
                 return _.Identity(x);
             }, _.identity)(a)).toBe(a);
         },
         [Number]
+    )
+};
+
+exports.tupled = {
+    'when testing tupled with tuple2 should return correct value': _.check(
+        function(a) {
+            function f(x, y) {
+                return _.Tuple2(x, y);
+            }
+            return _.expect(_.tupled(f, a)).toBe(a);
+        },
+        [_.tuple2Of(_.AnyVal, _.AnyVal)]
+    ),
+    'when testing tupled with tuple3 should return correct value': _.check(
+        function(a) {
+            function f(x, y, z) {
+                return _.Tuple3(x, y, z);
+            }
+            return _.expect(_.tupled(f, a)).toBe(a);
+        },
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing tupled with tuple4 should return correct value': _.check(
+        function(a) {
+            function f(x, y, z, b) {
+                return _.Tuple4(x, y, z, b);
+            }
+            return _.expect(_.tupled(f, a)).toBe(a);
+        },
+        [_.tuple4Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing tupled with tuple5 should return correct value': _.check(
+        function(a) {
+            function f(x, y, z, b, c) {
+                return _.Tuple5(x, y, z, b, c);
+            }
+            return _.expect(_.tupled(f, a)).toBe(a);
+        },
+        [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing tupled with tuple3 when expecting 2 should throw error': _.check(
+        function(a) {
+            function f(x, y) {
+                return _.Tuple3(x, y);
+            }
+            var called = false;
+            try {
+                _.tupled(f, a);
+            } catch(e) {
+                called = true;
+            }
+            return called;
+        },
+        [_.tuple3Of(_.AnyVal, _.AnyVal, _.AnyVal)]
     )
 };
 

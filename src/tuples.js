@@ -79,6 +79,15 @@ Tuple2.prototype.chain = function(f) {
 };
 
 //
+//  ### tupled(f)
+//
+//  Call the function with the tuple as arguments
+//
+Tuple2.prototype.tupled = function(f) {
+    return f(this._1, this._2);
+};
+
+//
 //   ## Tuple3
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
@@ -127,6 +136,15 @@ Tuple3.prototype.equal = function(b) {
 //
 Tuple3.prototype.chain = function(f) {
     return f(this);
+};
+
+//
+//  ### tupled(f)
+//
+//  Call the function with the tuple as arguments
+//
+Tuple3.prototype.tupled = function(f) {
+    return f(this._1, this._2, this._3);
 };
 
 //
@@ -182,6 +200,15 @@ Tuple4.prototype.chain = function(f) {
 };
 
 //
+//  ### tupled(f)
+//
+//  Call the function with the tuple as arguments
+//
+Tuple4.prototype.tupled = function(f) {
+    return f(this._1, this._2, this._3, this._4);
+};
+
+//
 //   ## Tuple5
 //
 //   * `concat()` - Semigroup (value must also be a Semigroup)
@@ -232,6 +259,15 @@ Tuple5.prototype.equal = function(b) {
 //
 Tuple5.prototype.chain = function(f) {
     return f(this);
+};
+
+//
+//  ### tupled(f)
+//
+//  Call the function with the tuple as arguments
+//
+Tuple5.prototype.tupled = function(f) {
+    return f(this._1, this._2, this._3, this._4, this._5);
 };
 
 //
@@ -459,4 +495,7 @@ squishy = squishy
     })
     .method('toArray', isTuple, function(a, b) {
         return a.toArray();
+    })
+    .method('tupled', isTuple, function(a, b) {
+        return a.tupled(b);
     });
