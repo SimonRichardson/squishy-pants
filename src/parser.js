@@ -118,12 +118,11 @@ Parser.prototype.chain = function(f) {
     return Parser(function(stream, index, attempt, possibleFailure) {
         /* NOTE: This method is inlined to improve speed */
         var outcome = env.run(stream, index, attempt, possibleFailure),
-            outcomeAttempt = outcome._3,
             result;
 
-        if (outcomeAttempt.isSuccess) {
-            result = f(outcome._1, outcome._2, outcomeAttempt, outcome._4);
-            return result.run(outcome._1, outcome._2, outcomeAttempt, outcome._4);
+        if (outcome._3.isSuccess) {
+            result = squishy.tupled(f, outcome);
+            return squishy.tupled(result.run, outcome);
         }
 
         return outcome;
@@ -146,8 +145,9 @@ Parser.prototype.also = function(f) {
             tuple;
 
         if (outcome._3.isSuccess) {
-            result = f(outcome._1, outcome._2, outcome._3, outcome._4);
-            tuple = result.run(outcome._1, outcome._2, outcome._3, outcome._4);
+            result = squishy.tupled(f, outcome);
+            tuple = squishy.tupled(result.run, outcome);
+
             if (tuple._3.isSuccess) {
                 resultConcat = Attempt.of([squishy.concat(outcome._3.value[0], tuple._3.value)]);
                 return Tuple4(tuple._1, tuple._2, resultConcat, tuple._4);
