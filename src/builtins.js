@@ -20,6 +20,13 @@ squishy = squishy
         return this.chain(a(x), b);
     }))
     .method('tupled', isFunction, function(a, b) {
+        var x = functionLength(a),
+            y = functionLength(b.constructor);
+
+        if (x > y) {
+            throw new TypeError("Expected " + x + " arguments, got " + y);
+        }
+
         return this.tupled(b, a);
     });
 

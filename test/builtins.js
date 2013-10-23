@@ -168,6 +168,21 @@ exports.tupled = {
             return _.expect(_.tupled(f, a)).toBe(a);
         },
         [_.tuple5Of(_.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal, _.AnyVal)]
+    ),
+    'when testing tupled with tuple2 when expecting 3 should throw error': _.check(
+        function(a) {
+            function f(x, y, z) {
+                return _.Tuple3(x, y, z);
+            }
+            var called = false;
+            try {
+                _.tupled(f, a);
+            } catch(e) {
+                called = true;
+            }
+            return called;
+        },
+        [_.tuple2Of(_.AnyVal, _.AnyVal)]
     )
 };
 
