@@ -74,10 +74,18 @@ module.exports = function (grunt) {
             },
             clean: {
                 all: {
+                    src: 'bin'
                 }
             },
             sweet: {
                 all: {
+                    src: 'bin/test.sjs',
+                    dest: 'bin/test.js'
+                }
+            },
+            cover: {
+                all: {
+                    src: 'test/*.js'
                 }
             }
         };
@@ -135,13 +143,21 @@ module.exports = function (grunt) {
     });
 
     grunt.registerMultiTask('clean', 'Clean bin folder', function() {
-        var shell = require('shelljs');
-        shell.rm('-rf', 'bin');
+        var shell = require('shelljs'),
+            options = this.data;
+        shell.rm('-rf', options.src);
     });
 
     grunt.registerMultiTask('sweet', 'Run sweet.js', function() {
-        var shell = require('shelljs');
-        shell.exec('sjs -o bin/test.js bin/test.sjs');
+        var shell = require('shelljs'),
+            options = this.data;
+        shell.exec('sjs -o ' + options.dest + ' ' + options.src);
+    });
+
+    grunt.registerMultiTask('cover', 'Run istanbul for all the tests', function() {
+        var shell = require('shelljs'),
+            options = this.data;
+        shell.exec('istanbul cover nodeunit -- ' + options.src);
     });
 
     grunt.registerTask('default', ['clean', 'rig', 'jshint', 'nodeunit:test', 'uglify']);
