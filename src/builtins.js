@@ -135,7 +135,7 @@ squishy = squishy
         return false;
     })
     .method('empty', strictEquals(Function), function() {
-        return function() {};
+        return nothing;
     })
     .method('empty', strictEquals(Number), function() {
         return 0;

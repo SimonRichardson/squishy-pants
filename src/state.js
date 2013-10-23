@@ -272,10 +272,10 @@ var isStateOf = isInstanceOf(stateOf);
 //
 //  Sentinel value for when an state of a particular type is needed:
 //
-//       stateOf(Number)
+//       stateTOf(Number)
 //
 function stateTOf(type) {
-    var self = getInstance(this, stateOf);
+    var self = getInstance(this, stateTOf);
     self.type = type;
     return self;
 }
@@ -333,7 +333,7 @@ squishy = squishy
         return State.of(this.arb(a.type, b - 1));
     })
     .method('arb', isStateTOf, function(a, b) {
-        return State.StateT(this.arb(stateOf(a.type), b - 1));
+        return State.StateT(State).of(this.arb(stateOf(a.type), b - 1));
     })
 
     .method('ap', squishy.liftA2(or, isState, isStateT), function(a, b) {

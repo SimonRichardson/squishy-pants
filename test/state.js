@@ -151,10 +151,9 @@ exports.stateT = {
     ),
     'when testing StateT with execState should return correct value': _.check(
         function(a, b, c) {
-            var x = _.State.StateT(_.State),
-                y = x.of(a).run(b);
-
-            return _.expect(y.execState(c)).toBe(c);
+            var x = _.State.StateT(_.Identity),
+                y = x.of(a);
+            return _.expect(y.execState(b)).toBe(b);
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
@@ -218,5 +217,11 @@ exports.stateT = {
             return _.expect(x.put(a).run(b).run(c)).toBe(_.Tuple2(_.Tuple2(null, a), c));
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT arb should return correct value': _.check(
+        function(a, b) {
+            return _.expect(a.run(b).run(b)._2).toBe(b);
+        },
+        [_.stateTOf(_.AnyVal), _.AnyVal]
     )
 };
