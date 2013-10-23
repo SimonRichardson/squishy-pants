@@ -74,6 +74,24 @@ exports.state = {
         },
         [_.AnyVal, _.AnyVal]
     ),
+    'when testing get should return correct value': _.check(
+        function(a) {
+            return _.expect(_.State.get.run(a)).toBe(_.Tuple2(a, a));
+        },
+        [_.AnyVal]
+    ),
+    'when testing modify should return correct value': _.check(
+        function(a) {
+            return _.expect(_.State.modify(_.identity).run(a)).toBe(_.Tuple2(null, a));
+        },
+        [_.AnyVal]
+    ),
+    'when testing put should return correct value': _.check(
+        function(a, b) {
+            return _.expect(_.State.put(a).run(b)).toBe(_.Tuple2(null, a));
+        },
+        [_.tuple2Of(_.AnyVal, _.AnyVal), _.AnyVal]
+    ),
     'when testing of should return correct value': _.check(
         function(a, b) {
             var state = _.of(_.State, a);
@@ -122,7 +140,7 @@ exports.state = {
 
 
 exports.stateT = {
-    'when testing stateT should return correct value': _.check(
+    'when testing StateT with evalState should return correct value': _.check(
         function(a, b, c) {
             var x = _.State.StateT(_.State),
                 y = x.of(a).run(b);
@@ -131,7 +149,16 @@ exports.stateT = {
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
-    'when testing stateT ap should return correct value': _.check(
+    'when testing StateT with execState should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State),
+                y = x.of(a).run(b);
+
+            return _.expect(y.execState(c)).toBe(c);
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT ap should return correct value': _.check(
         function(a, b) {
             var x = _.State.StateT(_.State),
                 y = x.of(function(v) {
@@ -142,7 +169,7 @@ exports.stateT = {
         },
         [_.Integer, _.Integer]
     ),
-    'when testing stateT chain should return correct value': _.check(
+    'when testing StateT chain should return correct value': _.check(
         function(a, b, c) {
             var x = _.State.StateT(_.State),
                 y = x.of(a).chain(function(v) {
@@ -153,7 +180,7 @@ exports.stateT = {
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
-    'when testing stateT map should return correct value': _.check(
+    'when testing StateT map should return correct value': _.check(
         function(a, b, c) {
             var x = _.State.StateT(_.State),
                 y = x.of(a).map(function(v) {
@@ -163,5 +190,33 @@ exports.stateT = {
             return _.expect(y.evalState(c).run(b)).toBe(_.Tuple2(a + 1, b));
         },
         [_.Integer, _.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT lift should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State);
+            return _.expect(x.lift(_.State.of(a)).run(b).run(c)).toBe(_.Tuple2(a, c));
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT get should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State);
+            return _.expect(x.get.run(a).run(b)).toBe(_.Tuple2(_.Tuple2(a, a), b));
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT modify should return correct value': _.check(
+        function(a, b) {
+            var x = _.State.StateT(_.State);
+            return _.expect(x.modify(_.identity).run(a).run(b)).toBe(_.Tuple2(_.Tuple2(null, a), b));
+        },
+        [_.AnyVal, _.AnyVal]
+    ),
+    'when testing StateT put should return correct value': _.check(
+        function(a, b, c) {
+            var x = _.State.StateT(_.State);
+            return _.expect(x.put(a).run(b).run(c)).toBe(_.Tuple2(_.Tuple2(null, a), c));
+        },
+        [_.AnyVal, _.AnyVal, _.AnyVal]
     )
 };

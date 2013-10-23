@@ -8,7 +8,7 @@ var _ = require('./lib/test'),
     rightBracket = _.Parser.string(')');
 
 function toInt(a) {
-    return ~~a;
+    return parseInt(a, 10);
 }
 
 function toFloat(a) {
