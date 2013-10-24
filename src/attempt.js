@@ -269,27 +269,6 @@ Attempt.empty = function() {
 var isAttempt = isInstanceOf(Attempt);
 
 //
-//  ## Attempt Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//  * `equal(a)` - `true` if `a` is equal to `this`
-//
-var AttemptT = tagged('AttemptT', ['run']);
-
-Attempt.AttemptT = transformer(AttemptT);
-
-//
-//  ## isAttemptT(a)
-//
-//  Returns `true` if `a` is `AttemptT`.
-//
-var isAttemptT = isInstanceOf(AttemptT);
-
-//
 //  ## successOf(type)
 //
 //  Sentinel value for when an success of a particular type is needed:
@@ -330,26 +309,6 @@ function failureOf(type) {
 var isFailureOf = isInstanceOf(failureOf);
 
 //
-//  ## attemptTOf(type)
-//
-//  Sentinel value for when an attempt of a particular type is needed:
-//
-//       attemptTOf(Number)
-//
-function attemptTOf(type) {
-    var self = getInstance(this, attemptTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isAttemptTOf(a)
-//
-//  Returns `true` if `a` is an instance of `attemptTOf`.
-//
-var isAttemptTOf = isInstanceOf(attemptTOf);
-
-//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(Attempt.prototype);
@@ -387,34 +346,25 @@ Attempt.lens = function() {
 //
 squishy = squishy
     .property('Attempt', Attempt)
-    .property('AttemptT', Attempt.AttemptT)
     .property('Success', Attempt.Success)
     .property('Failure', Attempt.Failure)
     .property('successOf', successOf)
     .property('failureOf', failureOf)
-    .property('attemptTOf', attemptTOf)
     .property('isAttempt', isAttempt)
     .property('isSuccessOf', isSuccessOf)
     .property('isFailureOf', isFailureOf)
-    .property('isAttemptT', isAttemptT)
-    .property('isAttemptTOf', isAttemptTOf)
     .method('of', strictEquals(Attempt), function(a, b) {
         return Attempt.of(b);
     })
     .method('empty', strictEquals(Attempt), function() {
         return Attempt.empty();
     })
-
     .method('arb', isSuccessOf, function(a, b) {
         return Attempt.Success(this.arb(a.type, b - 1));
     })
     .method('arb', isFailureOf, function(a, b) {
         return Attempt.Failure(this.arb(a.type, b - 1));
     })
-    .method('arb', isAttemptTOf, function(a, b) {
-        return Attempt.AttemptT(this.arb(successOf(a.type), b - 1));
-    })
-
     .method('extract', isAttempt, function(a) {
         return a.extract();
     })
@@ -427,19 +377,18 @@ squishy = squishy
     .method('toStream', isAttempt, function(a) {
         return a.toStream();
     })
-
-    .method('ap', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+    .method('ap', isAttempt, function(a, b) {
         return a.ap(b);
     })
-    .method('chain', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+    .method('chain', isAttempt, function(a, b) {
         return a.chain(b);
     })
-    .method('equal', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+    .method('equal', isAttempt, function(a, b) {
         return a.equal(b);
     })
-    .method('map', squishy.liftA2(or, isAttempt, isAttemptT), function(a, b) {
+    .method('map', isAttempt, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isAttempt, isAttemptT), function(a) {
+    .method('shrink', isAttempt, function(a) {
         return [];
     });

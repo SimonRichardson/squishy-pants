@@ -48,9 +48,8 @@ Identity.prototype.ap = function(a) {
 //  Semigroup concat
 //
 Identity.prototype.concat = function(a) {
-    var env = this;
-    return this.map(function(f) {
-        return squishy.concat(env.x, a.x);
+    return this.map(function(x) {
+        return squishy.concat(x, a.x);
     });
 };
 
@@ -105,28 +104,6 @@ Identity.prototype.negate = function() {
 var isIdentity = isInstanceOf(Identity);
 
 //
-//  ## Identity Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//  * `equal(a)` - `true` if `a` is equal to `this`
-//
-
-var IdentityT = tagged('IdentityT', ['run']);
-
-Identity.IdentityT = transformer(IdentityT);
-
-//
-//  ## isIdentityT(a)
-//
-//  Returns `true` if `a` is `IdentityT`.
-//
-var isIdentityT = isInstanceOf(IdentityT);
-
-//
 //  ## identityOf(type)
 //
 //  Sentinel value for when an identity of a particular type is needed:
@@ -145,26 +122,6 @@ function identityOf(type) {
 //  Returns `true` if `a` is an instance of `identityOf`.
 //
 var isIdentityOf = isInstanceOf(identityOf);
-
-//
-//  ## identityTOf(type)
-//
-//  Sentinel value for when an identity of a particular type is needed:
-//
-//       identityTOf(Number)
-//
-function identityTOf(type) {
-    var self = getInstance(this, identityTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isIdentityTOf(a)
-//
-//  Returns `true` if `a` is an instance of `identityTOf`.
-//
-var isIdentityTOf = isInstanceOf(identityTOf);
 
 //
 //  ### Fantasy Overload
@@ -194,27 +151,18 @@ Identity.lens = function() {
 //
 squishy = squishy
     .property('Identity', Identity)
-    .property('IdentityT', Identity.IdentityT)
     .property('identityOf', identityOf)
-    .property('identityTOf', identityTOf)
     .property('isIdentity', isIdentity)
     .property('isIdentityOf', isIdentityOf)
-    .property('isIdentityT', isIdentityT)
-    .property('isIdentityTOf', isIdentityTOf)
     .method('of', strictEquals(Identity), function(x, y) {
         return Identity.of(y);
     })
     .method('empty', strictEquals(Identity), function(x) {
         return Identity.empty();
     })
-
     .method('arb', isIdentityOf, function(a, b) {
         return Identity(this.arb(a.type, b - 1));
     })
-    .method('arb', isIdentityTOf, function(a, b) {
-        return Identity.IdentityT(this.arb(identityOf(a.type), b - 1));
-    })
-
     .method('concat', isIdentity, function(a, b) {
         return a.concat(b);
     })
@@ -224,19 +172,18 @@ squishy = squishy
     .method('toArray', isIdentity, function(a) {
         return a.toArray();
     })
-
-    .method('ap', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+    .method('ap', isIdentity, function(a, b) {
         return a.ap(b);
     })
-    .method('equal', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+    .method('equal', isIdentity, function(a, b) {
         return a.equal(b);
     })
-    .method('chain', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+    .method('chain', isIdentity, function(a, b) {
         return a.chain(b);
     })
-    .method('map', squishy.liftA2(or, isIdentity, isIdentityT), function(a, b) {
+    .method('map', isIdentity, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isIdentity, isIdentityT), function(a) {
+    .method('shrink', isIdentity, function(a) {
         return [];
     });

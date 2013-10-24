@@ -126,128 +126,6 @@ State.prototype.map = function(f) {
 var isState = isInstanceOf(State);
 
 //
-//  ## State Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//
-var StateT = tagged('StateT', ['run']);
-
-var stateTransformer = function(ctor) {
-
-    var x = transformer(ctor);
-
-    //
-    //  ### chain(f)
-    //
-    //  Bind through the value of the state transformer
-    //  Monadic flatMap/bind
-    //
-    StateT.prototype.chain = function(f) {
-        var state = this;
-        return StateT(function(s) {
-            return state.run(s).chain(function(t) {
-                return f(t._1).run(t._2);
-            });
-        });
-    };
-
-    //
-    //  ### evalState(s)
-    //
-    //  Evaluate the stateT with `s`.
-    //
-    ctor.prototype.evalState = function(s) {
-        return this.run(s).chain(function(t) {
-            return t._1;
-        });
-    };
-
-    //
-    //  ### execState(s)
-    //
-    //  Execute the stateT with `s`.
-    //
-    ctor.prototype.execState = function(s) {
-        return this.run(s).chain(function(t) {
-            return t._2;
-        });
-    };
-
-    return function(M) {
-
-        var result = x(M);
-
-        //
-        //  ## lift(m)
-        //
-        //  Constructor `lift` Monad creating a `StateT`.
-        //
-        ctor.lift = function(m) {
-            return ctor(function(b) {
-                return m;
-            });
-        };
-
-        //
-        //  ## of(x)
-        //
-        //  Constructor `of` Monad creating a `StateT`.
-        //
-        ctor.of = function(a) {
-            return ctor(function(b) {
-                return M.of(Tuple2(a, b));
-            });
-        };
-
-        //
-        //  ## get()
-        //
-        //  Constructor `get` to retrieve the stateT value.
-        //
-        ctor.get = ctor(function(s) {
-            return M.of(Tuple2(s, s));
-        });
-
-        //
-        //  ## modify(f)
-        //
-        //  Constructor `modify` to alter the stateT value using the function.
-        //
-        ctor.modify = function(f) {
-            return ctor(function(s) {
-                return M.of(Tuple2(null, f(s)));
-            });
-        };
-
-        //
-        //  ## put(s)
-        //
-        //  Constructor `put` to return the value of s.
-        //
-        ctor.put = function(s) {
-            return ctor.modify(function(a) {
-                return s;
-            });
-        };
-
-        return result;
-    };
-};
-
-State.StateT = stateTransformer(StateT);
-
-//
-//  ## isStateT(a)
-//
-//  Returns `true` if `a` is `StateT`.
-//
-var isStateT = isInstanceOf(StateT);
-
-//
 //  ## stateOf(type)
 //
 //  Sentinel value for when an state of a particular type is needed:
@@ -266,26 +144,6 @@ function stateOf(type) {
 //  Returns `true` if `a` is an instance of `stateOf`.
 //
 var isStateOf = isInstanceOf(stateOf);
-
-//
-//  ## stateTOf(type)
-//
-//  Sentinel value for when an state of a particular type is needed:
-//
-//       stateTOf(Number)
-//
-function stateTOf(type) {
-    var self = getInstance(this, stateTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isStateOf(a)
-//
-//  Returns `true` if `a` is an instance of `stateOf`.
-//
-var isStateTOf = isInstanceOf(stateTOf);
 
 //
 //  ### Fantasy Overload
@@ -328,23 +186,18 @@ squishy = squishy
     .method('empty', strictEquals(State), function() {
         return State.empty();
     })
-
     .method('arb', isStateOf, function(a, b) {
         return State.of(this.arb(a.type, b - 1));
     })
-    .method('arb', isStateTOf, function(a, b) {
-        return State.StateT(State).of(this.arb(stateOf(a.type), b - 1));
-    })
-
-    .method('ap', squishy.liftA2(or, isState, isStateT), function(a, b) {
+    .method('ap', isState, function(a, b) {
         return a.ap(b);
     })
-    .method('chain', squishy.liftA2(or, isState, isStateT), function(a, b) {
+    .method('chain', isState, function(a, b) {
         return a.chain(b);
     })
-    .method('map', squishy.liftA2(or, isState, isStateT), function(a, b) {
+    .method('map', isState, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isState, isStateT), function(a, b) {
+    .method('shrink', isState, function(a, b) {
         return [];
     });

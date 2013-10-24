@@ -1,3 +1,7 @@
+function transformer() {
+    return {};
+}
+
 //
 //  # Helpers
 //
