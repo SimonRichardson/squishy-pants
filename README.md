@@ -5,7 +5,7 @@ Semi-serious functional programming library.
 
 ## Build status
 
-[![Build Status](https://api.travis-ci.org/SimonRichardson/squishy-pants.png)](https://travis-ci.org/SimonRichardson/squishy-pants)
+[![Build Status](https://api.travis-ci.org/SimonRichardson/squishy-pants.png?branch=master)](https://travis-ci.org/SimonRichardson/squishy-pants)
 
 ## Documentation
 
