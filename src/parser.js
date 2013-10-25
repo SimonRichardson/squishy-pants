@@ -12,16 +12,16 @@
 //   * `also(f)` - FlatMap/bind with concatenation of results
 //   * `many` - Yield array of results
 //   * `map(f)` - Functor map
-//   * `orElse(a)` - Default parser or else try alternative
-//   * `skip` - Skip the parser
-//   * `parse` - Executes parser
+//   * `orElse(a)` - Default `Parser` or else try alternative
+//   * `skip` - Skip the `Parser`
+//   * `parse` - Executes `Parser`
 //
 var Parser = tagged('Parser', ['run']);
 
 //
 //  ### of(x)
 //
-//  Creates a parser that contains a successful value.
+//  Creates a `Parser` that contains a successful value.
 //
 Parser.of = function(a) {
     return Parser(function() {
@@ -32,7 +32,7 @@ Parser.of = function(a) {
 //
 //  ### empty()
 //
-//  Creates a parser that contains a empty value.
+//  Creates a `Parser` that contains a empty value.
 //
 Parser.empty = function() {
     return Parser(function(a) {
@@ -43,7 +43,7 @@ Parser.empty = function() {
 //
 //  ### fail(x)
 //
-//  Creates a parser that contains a failed value.
+//  Creates a `Parser` that contains a failed value.
 //
 Parser.fail = function(e) {
     return Parser(function(a, b) {
@@ -54,7 +54,7 @@ Parser.fail = function(e) {
 //
 //  ### success(x)
 //
-//  Creates a parser that contains a successful value.
+//  Creates a `Parser` that contains a successful value.
 //
 Parser.success = function(s) {
     return Parser(function(a, b) {
@@ -74,7 +74,7 @@ Parser.put = function(a) {
 //
 //  ### regexp(x)
 //
-//  Parser that expects the stream to match the given regex.
+//  `Parser` that expects the stream to match the given `RegExp`.
 //
 Parser.regexp = function(a) {
     return Parser(function(stream, index, attempt, possibleFailure) {
@@ -93,7 +93,7 @@ Parser.regexp = function(a) {
 //
 //  ### string(x)
 //
-//  Parser that expects to find a string, and will yield the same.
+//  `Parser` that expects to find a `String`, and will yield the same.
 //
 Parser.string = function(a) {
     var length = a.length;
@@ -110,8 +110,8 @@ Parser.string = function(a) {
 //
 //  ### chain(f)
 //
-//  Expects another Parser to follow parser, and yields the result of
-//  another Parser.
+//  Expects another `Parser` to follow `Parser`, and yields the result of
+//  another `Parser`.
 //
 Parser.prototype.chain = function(f) {
     var env = this;
@@ -132,8 +132,8 @@ Parser.prototype.chain = function(f) {
 //
 //  ### also(f)
 //
-//  Expects another Parser to follow parser, and concatenates the result of
-//  both Parser results.
+//  Expects another `Parser` to follow `Parser`, and concatenates the result of
+//  both `Parser` results.
 //
 Parser.prototype.also = function(f) {
     var env = this;
@@ -163,7 +163,7 @@ Parser.prototype.also = function(f) {
 //
 //  ### many()
 //
-//  Expects parser zero or more times, and yields an array of the results.
+//  Expects `Parser` zero or more times, and yields an `Array` of the results.
 //
 Parser.prototype.many = function() {
     var env = this,
@@ -198,7 +198,7 @@ Parser.prototype.many = function() {
 //
 //  ### map(f)
 //
-//  Transforms the output of parser with the given function.
+//  Transforms the output of `Parser` with the given function.
 //
 Parser.prototype.map = function(f) {
     return this.chain(function(stream, index, attempt, possibleFailure) {
@@ -209,6 +209,9 @@ Parser.prototype.map = function(f) {
 
 //
 //  ### orElse(a)
+//
+//  Tries the first `Parser`, if that returns a `Attempt` of a `Failure` it then
+//  attempts the else branch.
 //
 Parser.prototype.orElse = function(a) {
     var env = this;
@@ -236,7 +239,7 @@ Parser.prototype.orElse = function(a) {
 //
 //  ### skip(a)
 //
-//  Returns a new parser which tries parser, and if it fails uses otherParser.
+//  Skips the first result from the `Parser` and chains the next ones.
 //
 Parser.prototype.skip = function(a) {
     return this.chain(function(stream, index, attempt, possibleFailure) {
@@ -251,7 +254,7 @@ Parser.prototype.skip = function(a) {
 //
 //  ### parse(stream)
 //
-//  Executes the parser with the given stream.
+//  Executes the `Parser` with the given stream.
 //
 Parser.prototype.parse = function(stream) {
     var result = this.skip(eof).run(stream, 0, Attempt.of([]), Option.None);

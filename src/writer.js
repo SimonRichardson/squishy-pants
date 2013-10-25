@@ -102,27 +102,6 @@ Writer.prototype.map = function(f) {
 var isWriter = isInstanceOf(Writer);
 
 //
-//  ## Writer Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//
-
-var WriterT = tagged('WriterT', ['run']);
-
-Writer.WriterT = transformer(WriterT);
-
-//
-//  ## isWriterT(a)
-//
-//  Returns `true` if `a` is `WriterT`.
-//
-var isWriterT = isInstanceOf(WriterT);
-
-//
 //  ## writerOf(type)
 //
 //  Sentinel value for when an writer of a particular type is needed:
@@ -141,26 +120,6 @@ function writerOf(type) {
 //  Returns `true` if `a` is an instance of `writerOf`.
 //
 var isWriterOf = isInstanceOf(writerOf);
-
-//
-//  ## writerTOf(type)
-//
-//  Sentinel value for when an writer of a particular type is needed:
-//
-//       writerTOf(Number)
-//
-function writerTOf(type) {
-    var self = getInstance(this, writerTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isWriterTOf(a)
-//
-//  Returns `true` if `a` is an instance of `writerTOf`.
-//
-var isWriterTOf = isInstanceOf(writerTOf);
 
 //
 //  ### Fantasy Overload
@@ -190,40 +149,30 @@ Writer.lens = function() {
 //
 squishy = squishy
     .property('Writer', Writer)
-    .property('WriterT', WriterT)
     .property('writerOf', writerOf)
-    .property('writerTOf', writerTOf)
     .property('isWriter', isWriter)
-    .property('isWriterT', isWriterT)
     .property('isWriterOf', isWriterOf)
-    .property('isWriterTOf', isWriterTOf)
     .method('of', strictEquals(Writer), function(x, y) {
         return Writer.of(y);
     })
     .method('empty', strictEquals(Writer), function(x) {
         return Writer.empty();
     })
-
     .method('arb', isWriterOf, function(a, b) {
         return Writer.of(this.arb(a.type, b - 1));
     })
-    .method('arb', isWriterTOf, function(a, b) {
-        return Writer.WriterT(this.arb(writerOf(a.type), b - 1));
+    .method('ap', isWriter, function(a, b) {
+        return a.ap(b);
     })
-
+    .method('chain', isWriter, function(a, b) {
+        return a.chain(b);
+    })
     .method('extract', isWriter, function(a, b) {
         return a.extract(b);
     })
-
-    .method('ap', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
-        return a.ap(b);
-    })
-    .method('chain', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
-        return a.chain(b);
-    })
-    .method('map', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+    .method('map', isWriter, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isWriter, isWriterT), function(a, b) {
+    .method('shrink', isWriter, function(a, b) {
         return [];
     });

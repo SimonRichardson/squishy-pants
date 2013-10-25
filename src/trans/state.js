@@ -30,8 +30,8 @@ StateT.prototype.ap = function(a) {
 //
 StateT.prototype.chain = function(f) {
     var env = this;
-    return StateT(function(s) {
-        return env.run(s).chain(function(t) {
+    return StateT(function(a) {
+        return env.run(a).chain(function(t) {
             return f(t._1).run(t._2);
         });
     });
@@ -40,7 +40,7 @@ StateT.prototype.chain = function(f) {
 //
 //  ### evalState(s)
 //
-//  Evaluate the stateT with `s`.
+//  Evaluate the `StateT` with `s`.
 //
 StateT.prototype.evalState = function(s) {
     return this.run(s).chain(function(t) {
@@ -51,7 +51,7 @@ StateT.prototype.evalState = function(s) {
 //
 //  ### execState(s)
 //
-//  Execute the stateT with `s`.
+//  Execute the `StateT` with `s`.
 //
 StateT.prototype.execState = function(s) {
     return this.run(s).chain(function(t) {
@@ -71,12 +71,26 @@ StateT.prototype.map = function(f) {
     });
 };
 
-State.StateT = function(M) {
+//
+//  ## StateT(m)
+//
+//  `StateT` constructor passing in a monad type.
+//
+State.StateT = function(monad) {
+
+    //
+    //  ## get()
+    //
+    //  Construct `get` to retrieve the `StateT` value.
+    //
+    StateT.get = StateT(function(s) {
+        return monad.of(Tuple2(s, s));
+    });
 
     //
     //  ## lift(m)
     //
-    //  ConstruStateT `lift` Monad creating a `StateT`.
+    //  Construct `lift` Monad creating a `StateT`.
     //
     StateT.lift = function(m) {
         return StateT(function(b) {
@@ -85,40 +99,31 @@ State.StateT = function(M) {
     };
 
     //
-    //  ## of(x)
+    //  ## modify(f)
     //
-    //  ConstruStateT `of` Monad creating a `StateT`.
+    //  Construct `modify` to alter the `StateT` value using the function.
     //
-    StateT.of = function(a) {
-        return StateT(function(b) {
-            return M.of(Tuple2(a, b));
+    StateT.modify = function(f) {
+        return StateT(function(s) {
+            return monad.of(Tuple2(null, f(s)));
         });
     };
 
     //
-    //  ## get()
+    //  ## of(x)
     //
-    //  ConstruStateT `get` to retrieve the stateT value.
+    //  Construct `of` Monad creating a `StateT`.
     //
-    StateT.get = StateT(function(s) {
-        return M.of(Tuple2(s, s));
-    });
-
-    //
-    //  ## modify(f)
-    //
-    //  ConstruStateT `modify` to alter the stateT value using the function.
-    //
-    StateT.modify = function(f) {
-        return StateT(function(s) {
-            return M.of(Tuple2(null, f(s)));
+    StateT.of = function(a) {
+        return StateT(function(b) {
+            return monad.of(Tuple2(a, b));
         });
     };
 
     //
     //  ## put(s)
     //
-    //  ConstruStateT `put` to return the value of s.
+    //  Construct `put` to return the value of s.
     //
     StateT.put = function(s) {
         return StateT.modify(function(a) {
@@ -157,6 +162,11 @@ function stateTOf(type) {
 var isStateTOf = isInstanceOf(stateTOf);
 
 //
+//  ### Fantasy Overload
+//
+fo.unsafeSetValueOf(ReaderT.prototype);
+
+//
 //  append methods to the squishy environment.
 //
 squishy = squishy
@@ -166,9 +176,6 @@ squishy = squishy
     .property('isStateTOf', isStateTOf)
     .method('of', strictEquals(StateT), function(a, b, c) {
         return State.StateT(b).of(c);
-    })
-    .method('empty', strictEquals(StateT), function(a, b) {
-        return State.StateT(b).empty();
     })
     .method('arb', isStateTOf, function(a, b) {
         return State.StateT(this.arb(a.type, b - 1));

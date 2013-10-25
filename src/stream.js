@@ -29,7 +29,7 @@ var Stream = tagged('Stream', ['fork']);
 //
 //  ### of(x)
 //
-//  Creates a stream that contains a successful value.
+//  Creates a `Stream` that contains a successful value.
 //
 Stream.of = function(a) {
     return Stream(
@@ -43,7 +43,7 @@ Stream.of = function(a) {
 //
 //  ### empty()
 //
-//  Creates a Empty stream that contains no value.
+//  Creates a Empty `Stream` that contains no value.
 //
 Stream.empty = function() {
     return Stream(
@@ -56,7 +56,7 @@ Stream.empty = function() {
 //
 //  ### ap(b)
 //
-//  Apply a function in the environment of the success of this stream
+//  Apply a function in the environment of the success of this `Stream`
 //  Applicative ap(ply)
 //
 Stream.prototype.ap = function(a) {
@@ -70,7 +70,7 @@ Stream.prototype.ap = function(a) {
 //
 //  ### both(a)
 //
-//  returns a stream formed from this stream and the specified stream that
+//  returns a `Stream` formed from this `Stream` and the specified `Stream` that
 //  by associating each element to the current element.
 //
 Stream.prototype.both = function(a, t) {
@@ -106,8 +106,8 @@ Stream.prototype.both = function(a, t) {
 //
 //  ### chain(f)
 //
-//  Returns a new stream that evaluates `f` when the current stream
-//  is successfully fulfilled. `f` must return a new stream.
+//  Returns a new `Stream` that evaluates `f` when the current `Stream`
+//  is successfully fulfilled. `f` must return a new `Stream`.
 //
 Stream.prototype.chain = function(f) {
     var env = this,
@@ -133,7 +133,7 @@ Stream.prototype.chain = function(f) {
 //
 //  ### concat(s, f)
 //
-//  Concatenate two streams associatively together.
+//  Concatenate two `Stream`s associatively together.
 //  Semigroup concat
 //
 Stream.prototype.concat = function(a) {
@@ -151,7 +151,7 @@ Stream.prototype.concat = function(a) {
 //
 //  ### drop(f)
 //
-//  Returns the stream without its n first elements.
+//  Returns the `Stream` without its n first elements.
 //
 Stream.prototype.drop = function(n) {
     var dropped = 0;
@@ -170,7 +170,7 @@ Stream.prototype.drop = function(n) {
 //
 //  ### equal(a)
 //
-//  Compare two stream values for equality
+//  Compare two `Stream` values for equality
 //
 Stream.prototype.equal = function(a) {
     return this.zip(a).fold(
@@ -184,7 +184,7 @@ Stream.prototype.equal = function(a) {
 //
 //  ### extract(a)
 //
-//  Extract the value from the stream.
+//  Extract the value from the `Stream`.
 //
 Stream.prototype.extract = function() {
     return this.fork(
@@ -196,7 +196,7 @@ Stream.prototype.extract = function() {
 //
 //  ### filter(f)
 //
-//  Returns all the elements of this stream that satisfy the predicate p.
+//  Returns all the elements of this `Stream` that satisfy the predicate p.
 //
 Stream.prototype.filter = function(f) {
     var env = this;
@@ -215,7 +215,7 @@ Stream.prototype.filter = function(f) {
 //
 //  ### fold(v, f)
 //
-//  Combines the elements of this stream together using the binary function f
+//  Combines the elements of this `Stream` together using the binary function f
 //
 Stream.prototype.fold = function(v, f) {
     var env = this;
@@ -238,7 +238,7 @@ Stream.prototype.fold = function(v, f) {
 //
 //  ### length()
 //
-//  Returns the length of the stream
+//  Returns the length of the `Stream`
 //
 Stream.prototype.length = function() {
     return this.map(
@@ -254,8 +254,8 @@ Stream.prototype.length = function() {
 //
 //  ### map(f)
 //
-//  Returns the stream resulting from applying the given function f to each
-//  element of this stream.
+//  Returns the `Stream` resulting from applying the given function f to each
+//  element of this `Stream`.
 //
 Stream.prototype.map = function(f) {
     return this.chain(
@@ -268,7 +268,7 @@ Stream.prototype.map = function(f) {
 //
 //  ### merge(a)
 //
-//  Merge the values of two streams in to one stream
+//  Merge the values of two streams in to one `Stream`
 //
 Stream.prototype.merge = function(a) {
     var env = this;
@@ -286,7 +286,7 @@ Stream.prototype.merge = function(a) {
 //
 //  ### pipe(a)
 //
-//  Pipe a stream to a state or writer monad.
+//  Pipe a `Stream` to a state or writer monad.
 //
 Stream.prototype.pipe = function(o) {
     var env = this;
@@ -305,7 +305,7 @@ Stream.prototype.pipe = function(o) {
 //
 //  ### scan(a)
 //
-//  Combines the elements of this stream together using the binary operator
+//  Combines the elements of this `Stream` together using the binary operator
 //  op, from Left to Right
 //
 Stream.prototype.scan = function(a, f) {
@@ -325,7 +325,7 @@ Stream.prototype.scan = function(a, f) {
 //
 //  ### take(v, f)
 //
-//  Returns the n first elements of this stream.
+//  Returns the n first elements of this `Stream`.
 //
 Stream.prototype.take = function(n) {
     var taken = 0;
@@ -339,7 +339,7 @@ Stream.prototype.take = function(n) {
 //
 //  ### zip(b)
 //
-//  Returns a stream formed from this stream and the specified stream that
+//  Returns a `Stream` formed from this `Stream` and the specified `Stream` that
 //  by associating each element of the former with the element at the same
 //  position in the latter.
 //
@@ -380,7 +380,7 @@ Stream.prototype.zip = function(a) {
 //
 //  ### zipWithIndex()
 //
-//  Returns a stream form from this stream and a index of the value that
+//  Returns a `Stream` form from this `Stream` and a index of the value that
 //  is associated with each element index position.
 //
 Stream.prototype.zipWithIndex = function() {
@@ -395,11 +395,11 @@ Stream.prototype.zipWithIndex = function() {
 //
 //  ## toPromise()
 //
-//  Returns a promise with all the values sent in a stream.
+//  Returns a promise with all the values sent in a `Stream`.
 //
 Stream.prototype.toPromise = function() {
     var env = this;
-    return Promise(function(resolve) {
+    return Promise(function(resolve, reject) {
         var accum = [];
         return env.fork(
             function(x) {
@@ -415,7 +415,7 @@ Stream.prototype.toPromise = function() {
 //
 //  ## fromArray(a)
 //
-//  Returns a new stream which iterates over each element of the array.
+//  Returns a new `Stream` which iterates over each element of the array.
 //
 Stream.fromArray = function(a) {
     if (a.length < 1) {
@@ -440,38 +440,9 @@ Stream.fromArray = function(a) {
 var isStream = isInstanceOf(Stream);
 
 //
-//  ## Stream Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//
-
-var StreamT = tagged('StreamT', ['run']);
-
-Stream.StreamT = transformer(StreamT);
-
-//
-//  ### fork(a, b)
-//
-//  Open up fork from the reader transformer
-//
-StreamT.prototype.fork = function(a, b) {
-    return this.run.fork(a, b);
-};
-
-//
-//  ## isStreamT(a)
-//
-//  Returns `true` if `a` is `StreamT`.
-//
-var isStreamT = isInstanceOf(StreamT);
-
-//
 //  ## streamOf(type)
 //
-//  Sentinel value for when an stream of a particular type is needed:
+//  Sentinel value for when an `Stream` of a particular type is needed:
 //
 //       streamOf(Number)
 //
@@ -489,26 +460,6 @@ function streamOf(type) {
 var isStreamOf = isInstanceOf(streamOf);
 
 //
-//  ## streamTOf(type)
-//
-//  Sentinel value for when an stream of a particular type is needed:
-//
-//       streamTOf(Number)
-//
-function streamTOf(type) {
-    var self = getInstance(this, streamTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isStreamTOf(a)
-//
-//  Returns `true` if `a` is an instance of `streamTOf`.
-//
-var isStreamTOf = isInstanceOf(streamTOf);
-
-//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(Stream.prototype);
@@ -516,7 +467,7 @@ fo.unsafeSetValueOf(Stream.prototype);
 //
 //  ### lens
 //
-//  Lens access for an reader structure.
+//  Lens access for an `Stream` structure.
 //
 Stream.lens = function() {
     return Lens(function(a) {
@@ -536,30 +487,30 @@ Stream.lens = function() {
 //
 squishy = squishy
     .property('Stream', Stream)
-    .property('StreamT', StreamT)
     .property('streamOf', streamOf)
-    .property('streamTOf', streamTOf)
     .property('isStream', isStream)
-    .property('isStreamT', isStreamT)
     .property('isStreamOf', isStreamOf)
-    .property('isStreamTOf', isStreamTOf)
     .method('of', strictEquals(Stream), function(x, y) {
         return Stream.of(y);
     })
     .method('empty', strictEquals(Stream), function() {
         return Stream.empty();
     })
-
+    .method('ap', isStream, function(a, b) {
+        return a.ap(b);
+    })
     .method('arb', isStreamOf, function(a, b) {
         var args = this.arb(a.type, b - 1);
         return Stream.fromArray(args);
     })
-    .method('arb', isStreamTOf, function(a, b) {
-        return Stream.StreamT(this.arb(streamOf(a.type), b - 1));
+    .method('chain', isStream, function(a, b) {
+        return a.chain(b);
     })
-
     .method('concat', isStream, function(a, b) {
         return a.concat(b);
+    })
+    .method('equal', isStream, function(a, b) {
+        return a.equal(b);
     })
     .method('extract', isStream, function(a) {
         return a.extract();
@@ -567,22 +518,12 @@ squishy = squishy
     .method('fold', isStream, function(a, b, c) {
         return a.fold(b, c);
     })
-    .method('zip', isStream, function(a, b) {
-        return a.zip(b);
-    })
-
-    .method('ap', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
-        return a.ap(b);
-    })
-    .method('chain', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
-        return a.chain(b);
-    })
-    .method('equal', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+    .method('map', isStream, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isStream, isStreamT), function(a, b) {
+    .method('shrink', isStream, function(a, b) {
         return [];
+    })
+    .method('zip', isStream, function(a, b) {
+        return a.zip(b);
     });

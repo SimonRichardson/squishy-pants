@@ -93,27 +93,6 @@ Reader.prototype.map = function(f) {
 var isReader = isInstanceOf(Reader);
 
 //
-//  ## Reader Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//
-
-var ReaderT = tagged('ReaderT', ['run']);
-
-Reader.ReaderT = transformer(ReaderT);
-
-//
-//  ## isReaderT(a)
-//
-//  Returns `true` if `a` is `ReaderT`.
-//
-var isReaderT = isInstanceOf(ReaderT);
-
-//
 //  ## readerOf(type)
 //
 //  Sentinel value for when an reader of a particular type is needed:
@@ -132,26 +111,6 @@ function readerOf(type) {
 //  Returns `true` if `a` is an instance of `readerOf`.
 //
 var isReaderOf = isInstanceOf(readerOf);
-
-//
-//  ## readerTOf(type)
-//
-//  Sentinel value for when an reader of a particular type is needed:
-//
-//       readerTOf(Number)
-//
-function readerTOf(type) {
-    var self = getInstance(this, readerTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isReaderTOf(a)
-//
-//  Returns `true` if `a` is an instance of `readerTOf`.
-//
-var isReaderTOf = isInstanceOf(readerTOf);
 
 //
 //  ### Fantasy Overload
@@ -181,39 +140,30 @@ Reader.lens = function() {
 //
 squishy = squishy
     .property('Reader', Reader)
-    .property('ReaderT', ReaderT)
     .property('readerOf', readerOf)
-    .property('readerTOf', readerTOf)
     .property('isReader', isReader)
     .property('isReaderOf', isReaderOf)
-    .property('isReaderTOf', isReaderTOf)
     .method('of', strictEquals(Reader), function(x, y) {
         return Reader.of(y);
     })
     .method('empty', strictEquals(Reader), function() {
         return Reader.empty();
     })
-
     .method('arb', isReaderOf, function(a, b) {
         return Reader.of(this.arb(a.type, b - 1));
     })
-    .method('arb', isReaderTOf, function(a, b) {
-        return Reader.ReaderT(this.arb(readerOf(a.type), b - 1));
-    })
-
     .method('extract', isReader, function(a, b) {
         return a.extract(b);
     })
-
-    .method('ap', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
+    .method('ap', isReader, function(a, b) {
         return a.ap(b);
     })
-    .method('chain', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
+    .method('chain', isReader, function(a, b) {
         return a.chain(b);
     })
-    .method('map', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
+    .method('map', isReader, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isReader, isReaderT), function(a, b) {
+    .method('shrink', isReader, function(a, b) {
         return [];
     });

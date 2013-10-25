@@ -23,7 +23,8 @@ module.exports = function (grunt) {
             },
             nodeunit: {
                 test: [
-                    'test/*.js'
+                    'test/*.js',
+                    'test/trans/*.js'
                 ],
                 macro: [
                     'bin/test.js'
@@ -85,7 +86,10 @@ module.exports = function (grunt) {
             },
             cover: {
                 all: {
-                    src: 'test/*.js'
+                    src: [
+                      'test/*.js',
+                      'test/trans/*.js'
+                    ]
                 }
             }
         };
@@ -157,7 +161,7 @@ module.exports = function (grunt) {
     grunt.registerMultiTask('cover', 'Run istanbul for all the tests', function() {
         var shell = require('shelljs'),
             options = this.data;
-        shell.exec('istanbul cover nodeunit -- ' + options.src);
+        shell.exec('istanbul cover nodeunit -- ' + options.src.join(' '));
     });
 
     grunt.registerTask('default', ['clean', 'rig', 'jshint', 'nodeunit:test', 'uglify']);

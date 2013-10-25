@@ -34,7 +34,7 @@ State.empty = function() {
 //
 //  ## get()
 //
-//  Constructor `get` to retrieve the state value.
+//  Constructor `get` to retrieve the `State` value.
 //
 State.get = State(function(s) {
     return Tuple2(s, s);
@@ -43,7 +43,7 @@ State.get = State(function(s) {
 //
 //  ## modify(f)
 //
-//  Constructor `modify` to alter the state value using the function.
+//  Constructor `modify` to alter the `State` value using the function.
 //
 State.modify = function(f) {
     return State(function(s) {
@@ -65,7 +65,7 @@ State.put = function(s) {
 //
 //  ### ap(b)
 //
-//  Apply a function in the environment of the value of this state
+//  Apply a function in the environment of the value of this `State`
 //  Applicative ap(ply)
 //
 State.prototype.ap = function(a) {
@@ -77,7 +77,7 @@ State.prototype.ap = function(a) {
 //
 //  ### chain(f)
 //
-//  Bind through the value of the state
+//  Bind through the value of the `State`
 //  Monadic flatMap/bind
 //
 State.prototype.chain = function(f) {
@@ -91,7 +91,7 @@ State.prototype.chain = function(f) {
 //
 //  ### evalState(s)
 //
-//  Evaluate the state with `s`.
+//  Evaluate the `State` with `s`.
 //
 State.prototype.evalState = function(s) {
     return this.run(s)._1;
@@ -100,7 +100,7 @@ State.prototype.evalState = function(s) {
 //
 //  ### execState(s)
 //
-//  Execute the state with `s`.
+//  Execute the `State` with `s`.
 //
 State.prototype.execState = function(s) {
     return this.run(s)._2;
@@ -109,7 +109,7 @@ State.prototype.execState = function(s) {
 //
 //  ### map(f)
 //
-//  Map on the value of this state.
+//  Map on the value of this `State`.
 //  Functor map
 //
 State.prototype.map = function(f) {
@@ -128,7 +128,7 @@ var isState = isInstanceOf(State);
 //
 //  ## stateOf(type)
 //
-//  Sentinel value for when an state of a particular type is needed:
+//  Sentinel value for when an `State` of a particular type is needed:
 //
 //       stateOf(Number)
 //
@@ -153,7 +153,7 @@ fo.unsafeSetValueOf(State.prototype);
 //
 //  ### lens
 //
-//  Lens access for an state structure.
+//  Lens access for an `State` structure.
 //
 State.lens = function() {
     return Lens(function(a) {
@@ -173,13 +173,9 @@ State.lens = function() {
 //
 squishy = squishy
     .property('State', State)
-    .property('StateT', StateT)
     .property('isState', isState)
-    .property('isStateT', isStateT)
     .property('stateOf', stateOf)
-    .property('stateTOf', stateTOf)
     .property('isStateOf', isStateOf)
-    .property('isStateTOf', isStateTOf)
     .method('of', strictEquals(State), function(x, y) {
         return State.of(y);
     })

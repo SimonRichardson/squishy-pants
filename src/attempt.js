@@ -45,9 +45,27 @@ var Attempt = taggedSum('Attempt', {
 });
 
 //
+//  ## of(x)
+//
+//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
+//
+Attempt.of = function(x) {
+    return Attempt.Success(x);
+};
+
+//
+//  ## empty()
+//
+//  Constructor `empty` Monad creating `Attempt.Failure`.
+//
+Attempt.empty = function() {
+    return Attempt.Failure([]);
+};
+
+//
 //  ### ap(b)
 //
-//  Apply a function in the environment of the success of this attempt,
+//  Apply a function in the environment of the success of this `Attempt`,
 //  accumulating errors
 //  Applicative ap(ply)
 //
@@ -71,7 +89,7 @@ Attempt.prototype.ap = function(b) {
 //
 //  ### chain(f)
 //
-//  Bind through the success of the attempt
+//  Bind through the success of the `Attempt`
 //  Monadic flatMap/bind
 //
 Attempt.prototype.chain = function(f) {
@@ -85,7 +103,7 @@ Attempt.prototype.chain = function(f) {
 //
 //  ### equal(a)
 //
-//  Compare two attempt values for equality
+//  Compare two `Attempt` values for equality
 //
 Attempt.prototype.equal = function(a) {
     return this.match({
@@ -111,7 +129,7 @@ Attempt.prototype.equal = function(a) {
 //
 //  ### extract()
 //
-//  Extract the value from the attempt.
+//  Extract the value from the `Attempt`.
 //
 Attempt.prototype.extract = function() {
     return this.match({
@@ -137,7 +155,7 @@ Attempt.prototype.fold = function(a, b) {
 //
 //  ### map(f)
 //
-//  Map on the success of this attempt.
+//  Map on the success of this `Attempt`.
 //  Functor map
 //
 Attempt.prototype.map = function(f) {
@@ -154,7 +172,7 @@ Attempt.prototype.map = function(f) {
 //
 //  ### swap()
 //
-//  Flip the failure/success values in this attempt.
+//  Flip the failure/success values in this `Attempt`.
 //
 Attempt.prototype.swap = function() {
     return this.match({
@@ -167,7 +185,7 @@ Attempt.prototype.swap = function() {
 //  ### toOption()
 //
 //  Return an empty option or option with one element on the success
-//  of this attempt.
+//  of this `Attempt`.
 //  `Some(x)` if `Success(x)`, `None` if `Failure()`
 //
 Attempt.prototype.toOption = function() {
@@ -182,7 +200,7 @@ Attempt.prototype.toOption = function() {
 //
 //  ### toLeft()
 //
-//  Return an left either bias if attempt is a success.
+//  Return an left either bias if `Attempt` is a success.
 //  `Left(x)` if `Success(x)`, `Right(x)` if `Failure(x)`
 //
 Attempt.prototype.toLeft = function() {
@@ -195,7 +213,7 @@ Attempt.prototype.toLeft = function() {
 //
 //  ### toRight()
 //
-//  Return an right either bias if attempt is a success.
+//  Return an right either bias if `Attempt` is a success.
 //  `Right(x)` if `Success(x)`, `Left(x)` if `Failure(x)`
 //
 Attempt.prototype.toRight = function() {
@@ -218,7 +236,7 @@ Attempt.Failure.prototype.toArray = function() {
 //  ### toStream()
 //
 //  Return an empty stream or stream with one element on the success
-//  of this attempt.
+//  of this `Attempt`.
 //
 Attempt.prototype.toStream = function() {
     return this.match({
@@ -230,7 +248,7 @@ Attempt.prototype.toStream = function() {
 //
 //  ## Success(x)
 //
-//  Constructor to represent the existance of a value, `x`.
+//  Constructor to represent the existence of a value, `x`.
 //
 Attempt.Success.prototype.isSuccess = true;
 Attempt.Success.prototype.isFailure = false;
@@ -238,28 +256,10 @@ Attempt.Success.prototype.isFailure = false;
 //
 //  ## Failure(x)
 //
-//  Constructor to represent the existance of a value, `x`.
+//  Constructor to represent the existence of a value, `x`.
 //
 Attempt.Failure.prototype.isSuccess = false;
 Attempt.Failure.prototype.isFailure = true;
-
-//
-//  ## of(x)
-//
-//  Constructor `of` Monad creating `Attempt.Success` with value of `x`.
-//
-Attempt.of = function(x) {
-    return Attempt.Success(x);
-};
-
-//
-//  ## empty()
-//
-//  Constructor `empty` Monad creating `Attempt.Failure`.
-//
-Attempt.empty = function() {
-    return Attempt.Failure([]);
-};
 
 //
 //  ## isAttempt(a)

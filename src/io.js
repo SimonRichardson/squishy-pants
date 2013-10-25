@@ -25,7 +25,7 @@ IO.of = function(x) {
 //
 //  ### ap(b)
 //
-//  Apply a function in the environment of IO
+//  Apply a function in the environment of `IO`
 //  Applicative ap(ply)
 //
 IO.prototype.ap = function(a) {
@@ -37,7 +37,7 @@ IO.prototype.ap = function(a) {
 //
 //  ### chain(f)
 //
-//  Bind through the f of an IO
+//  Bind through the f of an `IO`
 //  Monadic flatMap/bind
 //
 IO.prototype.chain = function(f) {
@@ -50,7 +50,7 @@ IO.prototype.chain = function(f) {
 //
 //  ### map(f)
 //
-//  Map on the f of this IO.
+//  Map on the f of this `IO`.
 //  Functor map
 //
 IO.prototype.map = function(f) {
@@ -62,7 +62,7 @@ IO.prototype.map = function(f) {
 //
 //  ## isIO(a)
 //
-//  Returns `true` if `a` is an `io`.
+//  Returns `true` if `a` is an `IO`.
 //
 var isIO = isInstanceOf(IO);
 

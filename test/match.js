@@ -8,6 +8,21 @@ var _ = require('./lib/test'),
         Nothing: []
     });
 
+/* We need to sanitize the object keys */
+function sanitize(a) {
+    function clean(b) {
+        if (typeof b === "string") {
+            return b.replace("\"", "_").replace("\\", "_");
+        }
+        return b;
+    }
+    var accum = {};
+    for(var i in a) {
+        accum[clean(i)] = clean(a[i]);
+    }
+    return accum;
+}
+
 exports.match = {
     'when testing a basic set up should return correct value': function(test) {
         var patterns = [
@@ -350,21 +365,14 @@ exports.match = {
     ),
     'when checking destructuring objects should be correct value': _.check(
         function(a) {
-          /*
-          {}
-          {"":204238729563340.75}
-          {"":""}
-          {"t":-116798076747776,"ò":true,"Õ":true}
-          {"<ú":"¢","\\":"^","]â":680756422639616}
-          */
-            console.log(JSON.stringify(a));
-            var patterns = [
-                ['Cons(_, Cons(' + JSON.stringify(a) + ', Nil))', function() {
-                    return 1;
-                }],
-                ['_', _.error('Failed if called')]
-            ],
-            value = List.Cons(1, List.Cons(a, List.Nil));
+            var cleaned = sanitize(a),
+                patterns = [
+                    ['Cons(_, Cons(' + JSON.stringify(cleaned) + ', Nil))', function() {
+                        return 1;
+                    }],
+                    ['_', _.error('Failed if called')]
+                ],
+                value = List.Cons(1, List.Cons(cleaned, List.Nil));
 
             return _.expect(_.match(patterns)(value)).toBe(1);
         },

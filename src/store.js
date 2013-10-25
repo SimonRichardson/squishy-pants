@@ -19,7 +19,7 @@ Store.prototype.extract = function() {
 //
 //  ### expand(f)
 //
-//  Extend the store value with the result from f, chaining stores together.
+//  Extend the `Store` value with the result from f, chaining stores together.
 //
 Store.prototype.expand = function(f) {
     var env = this;

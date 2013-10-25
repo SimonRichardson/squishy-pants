@@ -32,7 +32,7 @@ Identity.empty = function() {
 //
 //  ### ap(b)
 //
-//  Apply a function in the environment of the value of the identity
+//  Apply a function in the environment of the value of the `Identity`
 //  Applicative ap(ply)
 //
 Identity.prototype.ap = function(a) {
@@ -56,7 +56,7 @@ Identity.prototype.concat = function(a) {
 //
 //  ### chain(f)
 //
-//  Bind through the value of the identity
+//  Bind through the value of the `Identity`
 //  Monadic flatMap/bind
 //
 Identity.prototype.chain = function(f) {
@@ -75,7 +75,7 @@ Identity.prototype.equal = function(b) {
 //
 //  ### map(f)
 //
-//  Map on the value of this identity.
+//  Map on the value of this `Identity`.
 //  Functor map
 //
 Identity.prototype.map = function(f) {
@@ -106,7 +106,7 @@ var isIdentity = isInstanceOf(Identity);
 //
 //  ## identityOf(type)
 //
-//  Sentinel value for when an identity of a particular type is needed:
+//  Sentinel value for when an `Identity` of a particular type is needed:
 //
 //       identityOf(Number)
 //

@@ -664,28 +664,6 @@ List.empty = function() {
 var isList = isInstanceOf(List);
 
 //
-//  ## List Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//  * `ap(a)` - applicative ap(ply)
-//  * `equal(a)` - `true` if `a` is equal to `this`
-//
-
-var ListT = tagged('ListT', ['run']);
-
-List.ListT = transformer(ListT);
-
-//
-//  ## isListT(a)
-//
-//  Returns `true` if `a` is `ListT`.
-//
-var isListT = isInstanceOf(ListT);
-
-//
 //  ## listOf(type)
 //
 //  Sentinel value for when an list of a particular type is needed:
@@ -704,26 +682,6 @@ function listOf(type) {
 //  Returns `true` if `a` is an instance of `listOf`.
 //
 var isListOf = isInstanceOf(listOf);
-
-//
-//  ## listTOf(type)
-//
-//  Sentinel value for when an list of a particular type is needed:
-//
-//       listTOf(Number)
-//
-function listTOf(type) {
-    var self = getInstance(this, listTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isListTOf(a)
-//
-//  Returns `true` if `a` is an instance of `listTOf`.
-//
-var isListTOf = isInstanceOf(listTOf);
 
 //
 //  ### Fantasy Overload
@@ -785,14 +743,11 @@ List.Cons.lens = function() {
 //
 squishy = squishy
     .property('List', List)
-    .property('ListT', ListT)
     .property('Cons', List.Cons)
     .property('Nil', List.Nil)
     .property('isList', isList)
     .property('listOf', listOf)
-    .property('listTOf', listTOf)
     .property('isListOf', isListOf)
-    .property('isListTOf', isListTOf)
     .property('listRange', List.range)
     .method('of', strictEquals(List), function(x, y) {
         return List.of(y);
@@ -800,7 +755,6 @@ squishy = squishy
     .method('empty', strictEquals(List), function(x) {
         return List.empty();
     })
-
     .method('arb', isListOf, function(a, b) {
         var accum = List.Nil,
             length = this.randomRange(0, b),
@@ -814,10 +768,6 @@ squishy = squishy
 
         return accum;
     })
-    .method('arb', isListTOf, function(a, b) {
-        return List.ListT(this.arb(listOf(a.type), b - 1));
-    })
-
     .method('shrink', isList, function(a) {
         var accum = [List.Nil],
             x = a.size();
@@ -830,10 +780,12 @@ squishy = squishy
 
         return accum;
     })
-    .method('shrink', strictEquals(ListT), function(a) {
-        return [];
+    .method('ap', isList, function(a, b) {
+        return a.ap(b);
     })
-
+    .method('chain', isList, function(a, b) {
+        return a.chain(b);
+    })
     .method('concat', isList, function(a, b) {
         return a.concat(b);
     })
@@ -849,6 +801,9 @@ squishy = squishy
     .method('dropWhile', isList, function(a, b) {
         return a.dropWhile(b);
     })
+    .method('equal', isList, function(a, b) {
+        return a.equal(b);
+    })
     .method('exists', isList, function(a, f) {
         return a.exists(f);
     })
@@ -863,6 +818,9 @@ squishy = squishy
     })
     .method('last', isList, function(a) {
         return a.last();
+    })
+    .method('map', isList, function(a, b) {
+        return a.map(b);
     })
     .method('partition', isList, function(a, f) {
         return a.partition(f);
@@ -887,17 +845,4 @@ squishy = squishy
     })
     .method('toArray', isList, function(a) {
         return a.toArray();
-    })
-
-    .method('ap', squishy.liftA2(or, isList, isListT), function(a, b) {
-        return a.ap(b);
-    })
-    .method('chain', squishy.liftA2(or, isList, isListT), function(a, b) {
-        return a.chain(b);
-    })
-    .method('equal', squishy.liftA2(or, isList, isListT), function(a, b) {
-        return a.equal(b);
-    })
-    .method('map', squishy.liftA2(or, isList, isListT), function(a, b) {
-        return a.map(b);
     });

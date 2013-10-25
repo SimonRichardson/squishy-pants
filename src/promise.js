@@ -24,7 +24,7 @@ var Promise = tagged('Promise', ['fork']);
 //
 //  ### of(x)
 //
-//  Creates a Promise that contains a successful value.
+//  Creates a `Promise` that contains a successful value.
 //
 Promise.of = function(x) {
     return Promise(
@@ -37,7 +37,7 @@ Promise.of = function(x) {
 //
 //  ### empty()
 //
-//  Creates a Empty Promise that contains no value.
+//  Creates a Empty `Promise` that contains no value.
 //
 Promise.empty = function() {
     return Promise.of(null);
@@ -46,7 +46,7 @@ Promise.empty = function() {
 //
 //  ### error(x)
 //
-//  Creates a Promise that contains a failure value.
+//  Creates a `Promise` that contains a failure value.
 //
 Promise.error = function(x) {
     return Promise(
@@ -59,8 +59,8 @@ Promise.error = function(x) {
 //
 //  ### chain(f)
 //
-//  Returns a new promise that evaluates `f` when the current promise
-//  is successfully fulfilled. `f` must return a new promise.
+//  Returns a new `Promise` that evaluates `f` when the current `Promise`
+//  is successfully fulfilled. `f` must return a new `Promise`.
 //
 Promise.prototype.chain = function(f) {
     var env = this;
@@ -79,7 +79,7 @@ Promise.prototype.chain = function(f) {
 //
 //  ### expand()
 //
-//  Returns a new promise that evaluates `f` over the promise to get a value.
+//  Returns a new `Promise` that evaluates `f` over the `Promise` to get a value.
 //
 Promise.prototype.expand = function(f) {
     var env = this;
@@ -93,7 +93,7 @@ Promise.prototype.expand = function(f) {
 //
 //  ### extract()
 //
-//  Executes a promise to get a value.
+//  Executes a `Promise` to get a value.
 //
 Promise.prototype.extract = function() {
     return this.fork(
@@ -105,7 +105,7 @@ Promise.prototype.extract = function() {
 //
 //  ### map(f)
 //
-//  Returns a new promise that evaluates `f` on a value and passes it
+//  Returns a new `Promise` that evaluates `f` on a value and passes it
 //  through to the resolve function.
 //
 Promise.prototype.map = function(f) {
@@ -125,8 +125,8 @@ Promise.prototype.map = function(f) {
 //
 //  ### reject(f)
 //
-//  Returns a new promise that evaluates `f` when the current promise
-//  fails. `f` must return a new promise.
+//  Returns a new `Promise` that evaluates `f` when the current `Promise`
+//  fails. `f` must return a new `Promise`.
 //
 Promise.prototype.reject = function(f) {
     var env = this;
@@ -145,7 +145,7 @@ Promise.prototype.reject = function(f) {
 //
 //  ### toStream()
 //
-//  Return an stream from the promise
+//  Return an stream from the `Promise`
 //
 Promise.prototype.toStream = function() {
     var env = this;
@@ -165,38 +165,9 @@ Promise.prototype.toStream = function() {
 var isPromise = isInstanceOf(Promise);
 
 //
-//  ## Promise Transformer
-//
-//  The trivial monad transformer, which maps a monad to an equivalent monad.
-//
-//  * `chain(f)` - chain values
-//  * `map(f)` - functor map
-//
-
-var PromiseT = tagged('PromiseT', ['run']);
-
-Promise.PromiseT = transformer(PromiseT);
-
-//
-//  ### fork(a, b)
-//
-//  Open up fork from the reader transformer
-//
-PromiseT.prototype.fork = function(a, b) {
-    return this.run.fork(a, b);
-};
-
-//
-//  ## isPromiseT(a)
-//
-//  Returns `true` if `a` is `PromiseT`.
-//
-var isPromiseT = isInstanceOf(PromiseT);
-
-//
 //  ## promiseOf(type)
 //
-//  Sentinel value for when an promise of a particular type is needed:
+//  Sentinel value for when an `Promise` of a particular type is needed:
 //
 //       promiseOf(Number)
 //
@@ -214,26 +185,6 @@ function promiseOf(type) {
 var isPromiseOf = isInstanceOf(promiseOf);
 
 //
-//  ## promiseTOf(type)
-//
-//  Sentinel value for when an promise of a particular type is needed:
-//
-//       promiseTOf(Number)
-//
-function promiseTOf(type) {
-    var self = getInstance(this, promiseTOf);
-    self.type = type;
-    return self;
-}
-
-//
-//  ## isPromiseTOf(a)
-//
-//  Returns `true` if `a` is an instance of `promiseTOf`.
-//
-var isPromiseTOf = isInstanceOf(promiseTOf);
-
-//
 //  ### Fantasy Overload
 //
 fo.unsafeSetValueOf(Promise.prototype);
@@ -241,7 +192,7 @@ fo.unsafeSetValueOf(Promise.prototype);
 //
 //  ### lens
 //
-//  Lens access for an promise structure.
+//  Lens access for an `Promise` structure.
 //
 Promise.lens = function() {
     return Lens(function(a) {
@@ -250,7 +201,7 @@ Promise.lens = function() {
                 return Promise(s);
             },
             function() {
-                return a.fork;
+                return a;
             }
         );
     });
@@ -261,42 +212,33 @@ Promise.lens = function() {
 //
 squishy = squishy
     .property('Promise', Promise)
-    .property('PromiseT', PromiseT)
     .property('promiseOf', promiseOf)
-    .property('promiseTOf', promiseTOf)
     .property('isPromise', isPromise)
     .property('isPromiseOf', isPromiseOf)
-    .property('isPromiseTOf', isPromiseTOf)
     .method('of', strictEquals(Promise), function(x, y) {
         return Promise.of(y);
     })
     .method('empty', strictEquals(Promise), function() {
         return Promise.empty();
     })
-
     .method('arb', isPromiseOf, function(a, b) {
         return Promise.of(this.arb(a.type, b - 1));
     })
-    .method('arb', isPromiseTOf, function(a, b) {
-        return Promise.PromiseT(this.arb(promiseOf(a.type), b - 1));
+    .method('chain', isPromise, function(a, b) {
+        return a.chain(b);
     })
-
     .method('expand', isPromise, function(a, b) {
         return a.expand(b);
     })
     .method('extract', isPromise, function(a) {
         return a.extract();
     })
-    .method('toStream', isPromise, function(a) {
-        return a.toStream();
-    })
-
-    .method('chain', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
-        return a.chain(b);
-    })
-    .method('map', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
+    .method('map', isPromise, function(a, b) {
         return a.map(b);
     })
-    .method('shrink', squishy.liftA2(or, isPromise, isPromiseT), function(a, b) {
+    .method('shrink', isPromise, function(a, b) {
         return [];
+    })
+    .method('toStream', isPromise, function(a) {
+        return a.toStream();
     });

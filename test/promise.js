@@ -265,7 +265,7 @@ exports.promise = {
     ),
     'when creating a promise and using get lens should be correct value': _.check(
         function(a) {
-            var fork = _.Promise.lens().run(a).get();
+            var fork = _.Promise.lens().run(a).get().fork;
 
             return fork(
                 function(x) {
@@ -321,71 +321,5 @@ exports.promise = {
             return _.expect(_.shrink(_.Promise.of(a))).toBe([]);
         },
         [_.AnyVal]
-    )
-};
-
-exports.promiseT = {
-    'when testing promiseT map should return correct value': _.check(
-        function(a) {
-            var promiseT = _.Promise.PromiseT(_.Promise.of(a)),
-                actual = promiseT(_.Promise.of(a)).map(_.inc),
-                expected = promiseT(_.Promise.of(a + 1));
-
-            return resolveEquality(actual, expected);
-        },
-        [_.AnyVal]
-    ),
-    'when testing promiseT chain should return correct value': _.check(
-        function(a, b) {
-            var promiseT0 = _.Promise.PromiseT(_.Promise.of(a)),
-                promiseT1 = _.Promise.PromiseT(_.Promise.of(b)),
-                actual = promiseT0(_.Promise.of(a)).chain(
-                    function() {
-                        return promiseT1(_.Promise.of(b));
-                    }
-                ),
-                expected = promiseT0(_.Promise.of(b));
-
-            return resolveEquality(actual, expected);
-        },
-        [_.AnyVal, _.AnyVal]
-    ),
-    'when creating a promiseT and using chain should be correct value': _.check(
-        function(a, b) {
-            var monad = _.Promise.of(1),
-                transformer = _.Promise.PromiseT(monad),
-                actual = transformer(_.Promise.of(b)).chain(function(x) {
-                    return _.Promise.PromiseT(monad).of(x + 1);
-                }),
-                expected = _.Promise.PromiseT(monad).of(b + 1);
-
-            return resolveEquality(actual, expected);
-        },
-        [Number, Number]
-    ),
-    'when creating a promiseT using promiseTOf and chain should be correct value': _.check(
-        function(a, b) {
-            var actual = a(_.Promise.of(b)).chain(function(x) {
-                    return _.Promise.PromiseT(_.Promise.of(1)).of(x + 1);
-                }),
-                expected = _.Promise.PromiseT(_.Promise.of(1)).of(b + 1);
-
-            return resolveEquality(actual, expected);
-        },
-        [_.promiseTOf(Number), Number]
-    ),
-    'when creating a promiseT using promiseTOf and map should be correct value': _.check(
-        function(a, b) {
-            var actual = _.map(
-                    a(_.Promise.of(b)),
-                    function(x) {
-                        return x + 1;
-                    }
-                ),
-                expected = _.Promise.PromiseT(_.Promise.of(1)).of(b + 1);
-
-            return resolveEquality(actual, expected);
-        },
-        [_.promiseTOf(Number), Number]
     )
 };
