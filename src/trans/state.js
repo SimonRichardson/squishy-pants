@@ -31,8 +31,9 @@ StateT.prototype.ap = function(a) {
 StateT.prototype.chain = function(f) {
     var env = this;
     return StateT(function(a) {
-        return env.run(a).chain(function(t) {
-            return f(t._1).run(t._2);
+        var result = env.run(a);
+        return result.chain(function(b) {
+            return f(b._1).run(b._2);
         });
     });
 };
@@ -43,7 +44,7 @@ StateT.prototype.chain = function(f) {
 //  Evaluate the `StateT` with `s`.
 //
 StateT.prototype.evalState = function(s) {
-    return this.run(s).chain(function(t) {
+    return this.run(s).map(function(t) {
         return t._1;
     });
 };
@@ -54,7 +55,7 @@ StateT.prototype.evalState = function(s) {
 //  Execute the `StateT` with `s`.
 //
 StateT.prototype.execState = function(s) {
-    return this.run(s).chain(function(t) {
+    return this.run(s).map(function(t) {
         return t._2;
     });
 };
@@ -94,7 +95,9 @@ State.StateT = function(monad) {
     //
     StateT.lift = function(m) {
         return StateT(function(b) {
-            return m;
+            return m.map(function(c) {
+                return Tuple2(c, b);
+            });
         });
     };
 

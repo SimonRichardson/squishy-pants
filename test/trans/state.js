@@ -14,7 +14,8 @@ exports.stateT = {
         function(a, b, c) {
             var x = _.State.StateT(_.Identity),
                 y = x.of(a);
-            return _.expect(y.execState(b)).toBe(b);
+
+            return _.expect(y.execState(b)).toBe(_.Identity(b));
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
@@ -25,7 +26,7 @@ exports.stateT = {
                     return x.of(_.State.of(_.inc(v)));
                 }).ap(a);
 
-            return _.expect(y.evalState(a).run(b)).toBe(_.Tuple2(a + 1, b));
+            return _.expect(y.evalState(a).run(b)._2).toBe(b);
         },
         [_.Integer, _.Integer]
     ),
@@ -36,7 +37,7 @@ exports.stateT = {
                     return x.of(_.State.of(v));
                 });
 
-            return _.expect(y.evalState(c).run(b)).toBe(_.Tuple2(a, b));
+            return _.expect(y.evalState(c).run(b)._2).toBe(b);
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
@@ -47,14 +48,14 @@ exports.stateT = {
                     return _.State.of(v + 1);
                 });
 
-            return _.expect(y.evalState(c).run(b)).toBe(_.Tuple2(a + 1, b));
+            return _.expect(y.evalState(c).run(b)._2).toBe(b);
         },
         [_.Integer, _.AnyVal, _.AnyVal]
     ),
     'when testing StateT lift should return correct value': _.check(
         function(a, b, c) {
             var x = _.State.StateT(_.State);
-            return _.expect(x.lift(_.State.of(a)).run(b).run(c)).toBe(_.Tuple2(a, c));
+            return _.expect(x.lift(_.State.of(a)).run(b).run(c)._2).toBe(c);
         },
         [_.AnyVal, _.AnyVal, _.AnyVal]
     ),
